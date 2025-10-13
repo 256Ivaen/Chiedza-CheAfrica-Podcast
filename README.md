@@ -1,6 +1,6 @@
 # Chiedza CheAfrica Podcast - Website
 
-<img src="public/mainlogo.png" alt="Chiedza CheAfrica Logo" width="50" height="50" />
+<img src="public/mainlogo.png" alt="Chiedza CheAfrica Logo" width="100" height="100" />
 
 A comprehensive web platform for Chiedza CheAfrica Podcast, built to showcase and amplify African stories of innovation, courage, and purpose through modern web technologies.
 
