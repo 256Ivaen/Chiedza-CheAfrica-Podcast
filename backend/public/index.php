@@ -69,44 +69,54 @@ $userController = new UserController($db);
 
 if ($method === 'POST' && $resource === 'auth' && ($uriParts[1] ?? '') === 'login') {
     $authController->login($data);
+    exit;
 }
 
 if ($method === 'GET' && $resource === 'blogs' && !isset($uriParts[1])) {
     $blogController->getAll($queryParams);
+    exit;
 }
 
 if ($method === 'GET' && $resource === 'blogs' && isset($uriParts[1]) && is_numeric($uriParts[1]) && !isset($uriParts[2])) {
     $identifier = $_SERVER['REMOTE_ADDR'] . '_' . ($_SERVER['HTTP_USER_AGENT'] ?? '');
     $blogController->getById($uriParts[1], $identifier);
+    exit;
 }
 
 if ($method === 'GET' && $resource === 'blogs' && isset($uriParts[1]) && ($uriParts[2] ?? '') === 'comments') {
     $commentController->getByBlogId($uriParts[1]);
+    exit;
 }
 
 if ($method === 'POST' && $resource === 'blogs' && isset($uriParts[1]) && ($uriParts[2] ?? '') === 'comments' && !isset($uriParts[3])) {
     $commentController->create($uriParts[1], $data);
+    exit;
 }
 
 if ($method === 'GET' && $resource === 'blogs' && isset($uriParts[1]) && ($uriParts[2] ?? '') === 'reactions') {
     $identifier = $queryParams['identifier'] ?? null;
     $reactionController->getByBlogId($uriParts[1], $identifier);
+    exit;
 }
 
 if ($method === 'POST' && $resource === 'blogs' && isset($uriParts[1]) && ($uriParts[2] ?? '') === 'reactions') {
     $reactionController->add($uriParts[1], $data);
+    exit;
 }
 
 if ($method === 'DELETE' && $resource === 'blogs' && isset($uriParts[1]) && ($uriParts[2] ?? '') === 'reactions') {
     $reactionController->remove($uriParts[1], $data);
+    exit;
 }
 
 if ($method === 'PUT' && $resource === 'views' && isset($uriParts[1])) {
     $blogController->updateViewDuration($uriParts[1], $data);
+    exit;
 }
 
 if ($method === 'GET' && $resource === 'health') {
     Response::success(['status' => 'healthy', 'timestamp' => date('Y-m-d H:i:s')]);
+    exit;
 }
 
 $user = AuthMiddleware::authenticate();
