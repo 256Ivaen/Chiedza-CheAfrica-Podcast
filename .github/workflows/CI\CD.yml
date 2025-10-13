@@ -56,8 +56,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
       
-    - name: Create backend .env for dev
-      if: github.ref == 'refs/heads/dev'
+    - name: Create backend .env
       run: |
         cat > backend/.env << EOF
         DB_HOST=${{ secrets.DB_HOST }}
@@ -72,42 +71,23 @@ jobs:
         SMTP_PASS=${{ secrets.SMTP_PASS }}
         SMTP_FROM=${{ secrets.SMTP_FROM }}
         SMTP_FROM_NAME=${{ secrets.SMTP_FROM_NAME }}
-        APP_URL=https://chiedzacheafrica.com/api
-        APP_ENV=development
+        APP_URL=https://api.chiedzacheafrica.com
+        APP_ENV=${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
         EOF
-        
-    - name: Create backend .env for production
-      if: github.ref == 'refs/heads/main'
-      run: |
-        cat > backend/.env << EOF
-        DB_HOST=${{ secrets.DB_HOST }}
-        DB_NAME=${{ secrets.DB_NAME }}
-        DB_USER=${{ secrets.DB_USER }}
-        DB_PASS=${{ secrets.DB_PASS }}
-        JWT_SECRET=${{ secrets.JWT_SECRET }}
-        JWT_EXPIRY=86400
-        SMTP_HOST=${{ secrets.SMTP_HOST }}
-        SMTP_PORT=${{ secrets.SMTP_PORT }}
-        SMTP_USER=${{ secrets.SMTP_USER }}
-        SMTP_PASS=${{ secrets.SMTP_PASS }}
-        SMTP_FROM=${{ secrets.SMTP_FROM }}
-        SMTP_FROM_NAME=${{ secrets.SMTP_FROM_NAME }}
-        APP_URL=https://chiedzacheafrica.com/api
-        APP_ENV=production
-        EOF
-        
-    - name: Deploy Backend API (both branches)
+    
+    - name: Deploy Backend API
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USER }}
         password: ${{ secrets.SSH_PASSWORD }}
         port: ${{ secrets.SSH_PORT }}
-        source: "backend/*"
-        target: "/home/${{ secrets.SSH_USER }}/domains/chiedzacheafrica.com/public_html/api/"
-        strip_components: 1
+        source: "backend/"
+        target: "/home/${{ secrets.SSH_USER }}/domains/chiedzacheafrica.com/public_html/"
+        strip_components: 0
+        overwrite: true
         
-    - name: Setup backend
+    - name: Setup backend structure
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.SSH_HOST }}
@@ -115,7 +95,29 @@ jobs:
         password: ${{ secrets.SSH_PASSWORD }}
         port: ${{ secrets.SSH_PORT }}
         script: |
-          cd /home/${{ secrets.SSH_USER }}/domains/chiedzacheafrica.com/public_html/api
+          cd /home/${{ secrets.SSH_USER }}/domains/chiedzacheafrica.com/public_html/
+          
+          # Remove old api folder and rename backend to api
+          rm -rf api
+          mv backend api
+          
+          cd api
+          
+          # Set permissions
           chmod -R 755 .
           find . -type f -name "*.php" -exec chmod 644 {} \;
+          
+          # Verify .env exists and show first few lines (without sensitive data)
+          echo "Checking .env file..."
+          if [ -f .env ]; then
+            echo ".env file exists"
+            echo "Number of lines: $(wc -l < .env)"
+          else
+            echo "ERROR: .env file not found"
+            exit 1
+          fi
+          
+          # Run verification
           php setup.php
+          
+          echo "Backend deployed successfully"
