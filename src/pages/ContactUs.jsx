@@ -31,8 +31,8 @@ const ContactUs = () => {
       icon: Mail,
       title: "Email Us",
       description: "Send us an email anytime",
-      contact: "info@chiedzacheafrica.com",
-      link: "mailto:info@chiedzacheafrica.com"
+      contact: "hello@chiedzacheafrica.com",
+      link: "mailto:hello@chiedzacheafrica.com"
     },
     {
       icon: MessageCircle,
