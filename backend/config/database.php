@@ -22,8 +22,13 @@ class Database {
                 ]
             );
         } catch (PDOException $e) {
-            error_log("Database connection failed: " . $e->getMessage());
-            throw new Exception("Database connection failed");
+            $errorMessage = "Database connection failed: " . $e->getMessage() . 
+                           " | Host: " . ($host ?? 'NOT SET') . 
+                           " | Database: " . ($dbname ?? 'NOT SET') . 
+                           " | User: " . ($username ?? 'NOT SET');
+            
+            error_log($errorMessage);
+            throw new Exception($errorMessage);
         }
     }
 
@@ -39,6 +44,7 @@ class Database {
     }
 
     private function __clone() {}
+    
     public function __wakeup() {
         throw new Exception("Cannot unserialize singleton");
     }
