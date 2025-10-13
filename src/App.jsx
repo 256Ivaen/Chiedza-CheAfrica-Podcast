@@ -28,7 +28,7 @@ const seoConfig = {
     twitter_site: '@chiedzacheafrica',
     twitter_creator: '@chiedzacheafrica',
     locale: 'en_US',
-    email: 'info@chiedzacheafrica.com'
+    email: 'hello@chiedzacheafrica.com'
   },
   routes: {
     '/': {

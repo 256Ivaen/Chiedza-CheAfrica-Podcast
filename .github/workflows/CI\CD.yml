@@ -34,7 +34,7 @@ jobs:
         password: ${{ secrets.SSH_PASSWORD }}
         port: ${{ secrets.SSH_PORT }}
         source: "dist/*"
-        target: "/home/${{ secrets.SSH_USER }}/domains/ghostwhite-zebra-459578.hostingersite.com/public_html/staging/"
+        target: "/home/${{ secrets.SSH_USER }}/domains/chiedzacheafrica.com/public_html/staging/"
         strip_components: 1
 
     - name: Deploy to Production (main branch)
@@ -46,5 +46,5 @@ jobs:
         password: ${{ secrets.SSH_PASSWORD }}
         port: ${{ secrets.SSH_PORT }}
         source: "dist/*"
-        target: "/home/${{ secrets.SSH_USER }}/domains/ghostwhite-zebra-459578.hostingersite.com/public_html/"
+        target: "/home/${{ secrets.SSH_USER }}/domains/chiedzacheafrica.com/public_html/"
         strip_components: 1
