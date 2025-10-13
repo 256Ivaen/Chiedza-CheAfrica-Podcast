@@ -110,63 +110,77 @@ class Email {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Blog System</title>
+    <title>Welcome to Chiedza CheAfrica Podcast</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4; padding: 20px;">
+<body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #fafafa;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fafafa; padding: 40px 20px;">
         <tr>
             <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 0; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e8e8e8;">
                     <!-- Header -->
                     <tr>
-                        <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center;">
-                            <h1 style="color: #ffffff; margin: 0; font-size: 28px;">Welcome to Blog System</h1>
+                        <td style="background-color: #0a0a0a; padding: 40px 30px; text-align: center; border-bottom: 3px solid #edab12;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 300; letter-spacing: 1px;">CHIEDZA CHEAFRICA PODCAST</h1>
+                            <p style="color: #edab12; margin: 10px 0 0 0; font-size: 14px; font-weight: 300; letter-spacing: 0.5px;">Lighting paths. Inspiring minds. Amplifying African stories.</p>
                         </td>
                     </tr>
                     
                     <!-- Content -->
                     <tr>
-                        <td style="padding: 40px 30px;">
-                            <h2 style="color: #333333; margin: 0 0 20px 0; font-size: 22px;">Your Account Has Been Created</h2>
+                        <td style="padding: 50px 40px;">
+                            <h2 style="color: #0a0a0a; margin: 0 0 25px 0; font-size: 20px; font-weight: 400; letter-spacing: 0.5px;">Welcome to Our Platform</h2>
                             
-                            <p style="color: #666666; line-height: 1.6; margin: 0 0 20px 0;">
-                                You've been invited to join Blog System as a <strong>{$role}</strong>. Below are your login credentials:
+                            <p style="color: #666666; line-height: 1.7; margin: 0 0 25px 0; font-size: 15px;">
+                                You've been invited to join the Chiedza CheAfrica Podcast platform as a <strong style="color: #0a0a0a;">{$role}</strong>. We're excited to have you as part of our mission to amplify African stories of innovation, courage, and purpose.
                             </p>
                             
-                            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8f9fa; border-radius: 6px; padding: 20px; margin: 20px 0;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8f8f8; border-left: 4px solid #edab12; padding: 25px; margin: 30px 0;">
                                 <tr>
                                     <td>
-                                        <p style="margin: 0 0 10px 0; color: #666666;"><strong>Email:</strong></p>
-                                        <p style="margin: 0 0 20px 0; color: #333333; font-size: 16px;">{$email}</p>
+                                        <p style="margin: 0 0 12px 0; color: #666666; font-size: 14px; font-weight: 500;">EMAIL ADDRESS</p>
+                                        <p style="margin: 0 0 25px 0; color: #0a0a0a; font-size: 16px; font-weight: 400;">{$email}</p>
                                         
-                                        <p style="margin: 0 0 10px 0; color: #666666;"><strong>Temporary Password:</strong></p>
-                                        <p style="margin: 0; color: #333333; font-size: 16px; font-family: 'Courier New', monospace; background-color: #ffffff; padding: 10px; border-radius: 4px; border: 1px solid #dee2e6;">{$tempPassword}</p>
+                                        <p style="margin: 0 0 12px 0; color: #666666; font-size: 14px; font-weight: 500;">TEMPORARY PASSWORD</p>
+                                        <p style="margin: 0; color: #0a0a0a; font-size: 16px; font-weight: 400; font-family: 'Courier New', monospace; background-color: #ffffff; padding: 12px; border: 1px solid #e8e8e8;">{$tempPassword}</p>
                                     </td>
                                 </tr>
                             </table>
                             
-                            <p style="color: #666666; line-height: 1.6; margin: 20px 0;">
-                                <strong style="color: #dc3545;">Important:</strong> Please change your password after your first login for security purposes.
+                            <p style="color: #666666; line-height: 1.7; margin: 25px 0; font-size: 14px;">
+                                <strong style="color: #0a0a0a;">Security Note:</strong> For your account security, please change your password after your first login.
                             </p>
                             
-                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 40px 0 30px 0;">
                                 <tr>
                                     <td align="center">
-                                        <a href="{$appUrl}" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 6px; font-weight: bold; font-size: 16px;">Login Now</a>
+                                        <a href="https://chiedzacheafrica.com/login" style="display: inline-block; background-color: #0a0a0a; color: #ffffff; text-decoration: none; padding: 14px 45px; border: 1px solid #0a0a0a; font-weight: 400; font-size: 14px; letter-spacing: 0.5px; transition: all 0.3s ease;">ACCESS PLATFORM</a>
                                     </td>
                                 </tr>
                             </table>
+
+                            <div style="border-top: 1px solid #e8e8e8; padding-top: 30px; margin-top: 30px;">
+                                <p style="color: #666666; font-size: 13px; line-height: 1.6; margin: 0 0 15px 0;">
+                                    <strong>About Chiedza CheAfrica:</strong> A global podcast and movement celebrating Africa's ascent through stories of courage, innovation, and purpose. We spotlight changemakers across aviation, STEM, disability inclusion, mental health, and community empowerment.
+                                </p>
+                                <p style="color: #666666; font-size: 13px; line-height: 1.6; margin: 0;">
+                                    Explore our content: 
+                                    <a href="https://chiedzacheafrica.com" style="color: #edab12; text-decoration: none;">Website</a> • 
+                                    <a href="https://youtube.com/@chiedzacheafrica" style="color: #edab12; text-decoration: none;">YouTube</a> • 
+                                    <a href="https://open.spotify.com/show/5YBekTISDE8CawmkxGiesr" style="color: #edab12; text-decoration: none;">Spotify</a>
+                                </p>
+                            </div>
                         </td>
                     </tr>
                     
                     <!-- Footer -->
                     <tr>
-                        <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #dee2e6;">
-                            <p style="color: #999999; font-size: 14px; margin: 0 0 10px 0;">
-                                If you didn't expect this email, please ignore it.
+                        <td style="background-color: #f8f8f8; padding: 30px; text-align: center; border-top: 1px solid #e8e8e8;">
+                            <p style="color: #999999; font-size: 12px; margin: 0 0 8px 0; line-height: 1.4;">
+                                If you did not expect this invitation, please disregard this email.
                             </p>
-                            <p style="color: #999999; font-size: 12px; margin: 0;">
-                                &copy; 2025 Blog System. All rights reserved.
+                            <p style="color: #999999; font-size: 11px; margin: 0; line-height: 1.4;">
+                                &copy; 2024 Chiedza CheAfrica Podcast. All rights reserved.<br>
+                                Lighting Africa's Path Through Stories of Innovation & Impact
                             </p>
                         </td>
                     </tr>
