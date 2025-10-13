@@ -218,6 +218,8 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/contact" element={<ContactUs />} />
+
+            Episodes Pages comming soon
             <Route path="/episodes" element={<InsightsPage />} />
             <Route path="/episodes/:id" element={<InsightDetail />} />
             <Route path="/blog" element={<InsightsPage />} />
