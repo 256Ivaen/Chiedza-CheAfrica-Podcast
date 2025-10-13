@@ -52,7 +52,7 @@ const Footer = () => {
   ];
 
   const helpLinks = [
-    { name: "Email Us", href: "mailto:info@chiedzacheafrica.com" },
+    { name: "Email Us", href: "mailto:hello@chiedzacheafrica.com" },
     { name: "Collaborate", href: "/collaborate" },
     { name: "Share Your Story", href: "/share-story" },
     { name: "Volunteer", href: "/volunteer" }

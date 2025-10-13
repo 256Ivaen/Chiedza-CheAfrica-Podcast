@@ -30,7 +30,7 @@ const Home = () => {
     },
     "contactPoint": {
       "@type": "ContactPoint",
-      "email": "info@chiedzacheafrica.com",
+      "email": "hello@chiedzacheafrica.com",
       "contactType": "customer service",
       "availableLanguage": ["English"]
     },
