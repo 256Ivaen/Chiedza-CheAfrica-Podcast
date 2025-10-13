@@ -1,0 +1,417 @@
+{
+    "info": {
+      "name": "Blog System API",
+      "description": "Complete API collection for Blog System",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+      {
+        "key": "baseUrl",
+        "value": "http://localhost/backend",
+        "type": "string"
+      },
+      {
+        "key": "token",
+        "value": "",
+        "type": "string"
+      }
+    ],
+    "item": [
+      {
+        "name": "Authentication",
+        "item": [
+          {
+            "name": "Login",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"admin123\"\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/auth/login",
+                "host": ["{{baseUrl}}"],
+                "path": ["auth", "login"]
+              }
+            }
+          },
+          {
+            "name": "Register User",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{token}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"email\": \"newadmin@example.com\",\n  \"role\": \"admin\"\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/auth/register",
+                "host": ["{{baseUrl}}"],
+                "path": ["auth", "register"]
+              }
+            }
+          },
+          {
+            "name": "Change Password",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{token}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"current_password\": \"admin123\",\n  \"new_password\": \"newpassword123\"\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/auth/change-password",
+                "host": ["{{baseUrl}}"],
+                "path": ["auth", "change-password"]
+              }
+            }
+          },
+          {
+            "name": "Get Profile",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/auth/profile",
+                "host": ["{{baseUrl}}"],
+                "path": ["auth", "profile"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Blogs",
+        "item": [
+          {
+            "name": "Get All Blogs",
+            "request": {
+              "method": "GET",
+              "url": {
+                "raw": "{{baseUrl}}/blogs?page=1&limit=10",
+                "host": ["{{baseUrl}}"],
+                "path": ["blogs"],
+                "query": [
+                  {
+                    "key": "page",
+                    "value": "1"
+                  },
+                  {
+                    "key": "limit",
+                    "value": "10"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "Get Single Blog",
+            "request": {
+              "method": "GET",
+              "url": {
+                "raw": "{{baseUrl}}/blogs/1",
+                "host": ["{{baseUrl}}"],
+                "path": ["blogs", "1"]
+              }
+            }
+          },
+          {
+            "name": "Create Blog",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{token}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"title\": \"The Future of Remote Work: Building Global Tech Teams\",\n  \"category\": \"Remote Work\",\n  \"author\": \"Sarah Johnson\",\n  \"image\": \"https://images.pexels.com/photos/3568792/pexels-photo-3568792.jpeg\",\n  \"hero_image\": \"https://images.pexels.com/photos/3568792/pexels-photo-3568792.jpeg\",\n  \"excerpt\": \"Explore how companies are leveraging global talent to build diverse, cost-effective tech teams.\",\n  \"content\": \"The landscape of work has fundamentally changed. Companies worldwide are discovering the immense potential of building global tech teams...\",\n  \"featured\": true,\n  \"visible\": true,\n  \"tags\": [\"remote-work\", \"global-teams\", \"tech-talent\"],\n  \"read_time\": \"8 min read\",\n  \"hero_data\": {\n    \"words\": [\"Global\", \"Remote\", \"Distributed\", \"Connected\"],\n    \"subtitle\": \"Remote Work Revolution\",\n    \"title\": \"Building the future with\",\n    \"titleSuffix\": \"global teams\",\n    \"description\": \"Discover how remote work is reshaping the tech industry and creating opportunities for global collaboration.\"\n  }\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/blogs",
+                "host": ["{{baseUrl}}"],
+                "path": ["blogs"]
+              }
+            }
+          },
+          {
+            "name": "Update Blog",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{token}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"title\": \"Updated Title\",\n  \"content\": \"Updated content here...\"\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/blogs/1",
+                "host": ["{{baseUrl}}"],
+                "path": ["blogs", "1"]
+              }
+            }
+          },
+          {
+            "name": "Delete Blog",
+            "request": {
+              "method": "DELETE",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/blogs/1",
+                "host": ["{{baseUrl}}"],
+                "path": ["blogs", "1"]
+              }
+            }
+          },
+          {
+            "name": "Toggle Visibility",
+            "request": {
+              "method": "PATCH",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/blogs/1/visibility",
+                "host": ["{{baseUrl}}"],
+                "path": ["blogs", "1", "visibility"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Comments",
+        "item": [
+          {
+            "name": "Get Comments",
+            "request": {
+              "method": "GET",
+              "url": {
+                "raw": "{{baseUrl}}/blogs/1/comments",
+                "host": ["{{baseUrl}}"],
+                "path": ["blogs", "1", "comments"]
+              }
+            }
+          },
+          {
+            "name": "Add Comment",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"content\": \"Great article! Very insightful.\",\n  \"parent_id\": null\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/blogs/1/comments",
+                "host": ["{{baseUrl}}"],
+                "path": ["blogs", "1", "comments"]
+              }
+            }
+          },
+          {
+            "name": "Admin Reply",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{token}}"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"content\": \"Thank you for your feedback!\"\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/blogs/1/comments/1/reply",
+                "host": ["{{baseUrl}}"],
+                "path": ["blogs", "1", "comments", "1", "reply"]
+              }
+            }
+          },
+          {
+            "name": "Delete Comment",
+            "request": {
+              "method": "DELETE",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/comments/1",
+                "host": ["{{baseUrl}}"],
+                "path": ["comments", "1"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Reactions",
+        "item": [
+          {
+            "name": "Get Reactions",
+            "request": {
+              "method": "GET",
+              "url": {
+                "raw": "{{baseUrl}}/blogs/1/reactions?identifier=user123",
+                "host": ["{{baseUrl}}"],
+                "path": ["blogs", "1", "reactions"],
+                "query": [
+                  {
+                    "key": "identifier",
+                    "value": "user123"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "Add Reaction",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"type\": \"like\",\n  \"identifier\": \"user123\"\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/blogs/1/reactions",
+                "host": ["{{baseUrl}}"],
+                "path": ["blogs", "1", "reactions"]
+              }
+            }
+          },
+          {
+            "name": "Remove Reaction",
+            "request": {
+              "method": "DELETE",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"identifier\": \"user123\"\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/blogs/1/reactions",
+                "host": ["{{baseUrl}}"],
+                "path": ["blogs", "1", "reactions"]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Users",
+        "item": [
+          {
+            "name": "Get All Users",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/users",
+                "host": ["{{baseUrl}}"],
+                "path": ["users"]
+              }
+            }
+          },
+          {
+            "name": "Delete User",
+            "request": {
+              "method": "DELETE",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{token}}"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/users/2",
+                "host": ["{{baseUrl}}"],
+                "path": ["users", "2"]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }

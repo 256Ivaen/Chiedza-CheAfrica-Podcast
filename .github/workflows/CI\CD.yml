@@ -1,4 +1,5 @@
-name: Deploy React to Hostinger via SSH
+name: Deploy React Frontend and PHP Backend to Hostinger
+
 on:
   push:
     branches:
@@ -6,26 +7,26 @@ on:
       - dev
 
 jobs:
-  build-and-deploy:
+  deploy-frontend:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-
+      
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '18'
-
+        
     - name: Install dependencies
       run: |
         npm install
         npm install framer-motion --save
-
+        
     - name: Build React app
       run: npm run build
-
-    - name: Deploy to Staging (dev branch)
+      
+    - name: Deploy Frontend to dev (dev branch)
       if: github.ref == 'refs/heads/dev'
       uses: appleboy/scp-action@v0.1.7
       with:
@@ -34,10 +35,10 @@ jobs:
         password: ${{ secrets.SSH_PASSWORD }}
         port: ${{ secrets.SSH_PORT }}
         source: "dist/*"
-        target: "/home/${{ secrets.SSH_USER }}/domains/chiedzacheafrica.com/public_html/staging/"
+        target: "/home/${{ secrets.SSH_USER }}/domains/chiedzacheafrica.com/public_html/dev/"
         strip_components: 1
-
-    - name: Deploy to Production (main branch)
+        
+    - name: Deploy Frontend to Production (main branch)
       if: github.ref == 'refs/heads/main'
       uses: appleboy/scp-action@v0.1.7
       with:
@@ -48,3 +49,73 @@ jobs:
         source: "dist/*"
         target: "/home/${{ secrets.SSH_USER }}/domains/chiedzacheafrica.com/public_html/"
         strip_components: 1
+
+  deploy-backend:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Create backend .env for dev
+      if: github.ref == 'refs/heads/dev'
+      run: |
+        cat > backend/.env << EOF
+        DB_HOST=${{ secrets.DB_HOST }}
+        DB_NAME=${{ secrets.DB_NAME }}
+        DB_USER=${{ secrets.DB_USER }}
+        DB_PASS=${{ secrets.DB_PASS }}
+        JWT_SECRET=${{ secrets.JWT_SECRET }}
+        JWT_EXPIRY=86400
+        SMTP_HOST=${{ secrets.SMTP_HOST }}
+        SMTP_PORT=${{ secrets.SMTP_PORT }}
+        SMTP_USER=${{ secrets.SMTP_USER }}
+        SMTP_PASS=${{ secrets.SMTP_PASS }}
+        SMTP_FROM=${{ secrets.SMTP_FROM }}
+        SMTP_FROM_NAME=${{ secrets.SMTP_FROM_NAME }}
+        APP_URL=https://chiedzacheafrica.com/api
+        APP_ENV=development
+        EOF
+        
+    - name: Create backend .env for production
+      if: github.ref == 'refs/heads/main'
+      run: |
+        cat > backend/.env << EOF
+        DB_HOST=${{ secrets.DB_HOST }}
+        DB_NAME=${{ secrets.DB_NAME }}
+        DB_USER=${{ secrets.DB_USER }}
+        DB_PASS=${{ secrets.DB_PASS }}
+        JWT_SECRET=${{ secrets.JWT_SECRET }}
+        JWT_EXPIRY=86400
+        SMTP_HOST=${{ secrets.SMTP_HOST }}
+        SMTP_PORT=${{ secrets.SMTP_PORT }}
+        SMTP_USER=${{ secrets.SMTP_USER }}
+        SMTP_PASS=${{ secrets.SMTP_PASS }}
+        SMTP_FROM=${{ secrets.SMTP_FROM }}
+        SMTP_FROM_NAME=${{ secrets.SMTP_FROM_NAME }}
+        APP_URL=https://chiedzacheafrica.com/api
+        APP_ENV=production
+        EOF
+        
+    - name: Deploy Backend API (both branches)
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: ${{ secrets.SSH_PORT }}
+        source: "backend/*"
+        target: "/home/${{ secrets.SSH_USER }}/domains/chiedzacheafrica.com/public_html/api/"
+        strip_components: 1
+        
+    - name: Setup backend
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: ${{ secrets.SSH_PORT }}
+        script: |
+          cd /home/${{ secrets.SSH_USER }}/domains/chiedzacheafrica.com/public_html/api
+          chmod -R 755 .
+          find . -type f -name "*.php" -exec chmod 644 {} \;
+          php setup.php
