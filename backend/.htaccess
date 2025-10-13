@@ -1,10 +1,6 @@
 RewriteEngine On
 
-# Security - prevent direct access to PHP files
-RewriteCond %{THE_REQUEST} /public/([^\s?]*)\.php [NC]
-RewriteRule ^ %1 [R=301,L]
-
-# Handle clean URLs and API routes
+# Send everything to public/index.php
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ public/index.php [QSA,L]
+RewriteRule ^ public/index.php [L]
