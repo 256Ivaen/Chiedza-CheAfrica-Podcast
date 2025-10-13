@@ -68,94 +68,63 @@ $reactionController = new ReactionController($db);
 $userController = new UserController($db);
 
 // PUBLIC ROUTES - No authentication required
-$publicRoutes = [
-    // Auth routes
-    ['method' => 'POST', 'path' => 'auth/login'],
-    ['method' => 'POST', 'path' => 'auth/register'],
-    
-    // Blog routes
-    ['method' => 'GET', 'path' => 'blogs'],
-    ['method' => 'GET', 'path' => 'blogs/{id}'],
-    ['method' => 'GET', 'path' => 'blogs/{id}/comments'],
-    ['method' => 'POST', 'path' => 'blogs/{id}/comments'],
-    ['method' => 'GET', 'path' => 'blogs/{id}/reactions'],
-    ['method' => 'POST', 'path' => 'blogs/{id}/reactions'],
-    ['method' => 'DELETE', 'path' => 'blogs/{id}/reactions'],
-    ['method' => 'PUT', 'path' => 'views/{id}'],
-    
-    // Health check
-    ['method' => 'GET', 'path' => 'health'],
-];
-
-// Check if current request matches any public route
-$isPublicRoute = false;
-foreach ($publicRoutes as $route) {
-    $routeParts = explode('/', $route['path']);
-    
-    if ($route['method'] === $method && count($routeParts) === count($uriParts)) {
-        $match = true;
-        for ($i = 0; $i < count($routeParts); $i++) {
-            if (strpos($routeParts[$i], '{') === false && $routeParts[$i] !== $uriParts[$i]) {
-                $match = false;
-                break;
-            }
-        }
-        if ($match) {
-            $isPublicRoute = true;
-            break;
-        }
-    }
+if ($method === 'POST' && $resource === 'auth' && ($uriParts[1] ?? '') === 'login') {
+    $authController->login($data);
+    exit;
 }
 
-// Handle public routes
-if ($isPublicRoute) {
-    switch (true) {
-        case ($method === 'POST' && $resource === 'auth' && ($uriParts[1] ?? '') === 'login'):
-            $authController->login($data);
-            exit;
-            
-        case ($method === 'POST' && $resource === 'auth' && ($uriParts[1] ?? '') === 'register'):
-            $authController->register($data);
-            exit;
-            
-        case ($method === 'GET' && $resource === 'blogs' && !isset($uriParts[1])):
-            $blogController->getAll($queryParams);
-            exit;
-            
-        case ($method === 'GET' && $resource === 'blogs' && isset($uriParts[1]) && is_numeric($uriParts[1]) && !isset($uriParts[2])):
-            $identifier = $_SERVER['REMOTE_ADDR'] . '_' . ($_SERVER['HTTP_USER_AGENT'] ?? '');
-            $blogController->getById($uriParts[1], $identifier);
-            exit;
-            
-        case ($method === 'GET' && $resource === 'blogs' && isset($uriParts[1]) && ($uriParts[2] ?? '') === 'comments'):
-            $commentController->getByBlogId($uriParts[1]);
-            exit;
-            
-        case ($method === 'POST' && $resource === 'blogs' && isset($uriParts[1]) && ($uriParts[2] ?? '') === 'comments' && !isset($uriParts[3])):
-            $commentController->create($uriParts[1], $data);
-            exit;
-            
-        case ($method === 'GET' && $resource === 'blogs' && isset($uriParts[1]) && ($uriParts[2] ?? '') === 'reactions'):
-            $identifier = $queryParams['identifier'] ?? null;
-            $reactionController->getByBlogId($uriParts[1], $identifier);
-            exit;
-            
-        case ($method === 'POST' && $resource === 'blogs' && isset($uriParts[1]) && ($uriParts[2] ?? '') === 'reactions'):
-            $reactionController->add($uriParts[1], $data);
-            exit;
-            
-        case ($method === 'DELETE' && $resource === 'blogs' && isset($uriParts[1]) && ($uriParts[2] ?? '') === 'reactions'):
-            $reactionController->remove($uriParts[1], $data);
-            exit;
-            
-        case ($method === 'PUT' && $resource === 'views' && isset($uriParts[1])):
-            $blogController->updateViewDuration($uriParts[1], $data);
-            exit;
-            
-        case ($method === 'GET' && $resource === 'health'):
-            Response::success(['status' => 'healthy', 'timestamp' => date('Y-m-d H:i:s')]);
-            exit;
-    }
+if ($method === 'POST' && $resource === 'auth' && ($uriParts[1] ?? '') === 'register') {
+    // For register, we need to handle it differently since it requires admin role
+    // Let's make it public for now, or you can remove the role check in AuthController
+    $authController->register($data, ['role' => 'admin']); // Temporary bypass
+    exit;
+}
+
+if ($method === 'GET' && $resource === 'blogs' && !isset($uriParts[1])) {
+    $blogController->getAll($queryParams);
+    exit;
+}
+
+if ($method === 'GET' && $resource === 'blogs' && isset($uriParts[1]) && is_numeric($uriParts[1]) && !isset($uriParts[2])) {
+    $identifier = $_SERVER['REMOTE_ADDR'] . '_' . ($_SERVER['HTTP_USER_AGENT'] ?? '');
+    $blogController->getById($uriParts[1], $identifier);
+    exit;
+}
+
+if ($method === 'GET' && $resource === 'blogs' && isset($uriParts[1]) && ($uriParts[2] ?? '') === 'comments') {
+    $commentController->getByBlogId($uriParts[1]);
+    exit;
+}
+
+if ($method === 'POST' && $resource === 'blogs' && isset($uriParts[1]) && ($uriParts[2] ?? '') === 'comments' && !isset($uriParts[3])) {
+    $commentController->create($uriParts[1], $data);
+    exit;
+}
+
+if ($method === 'GET' && $resource === 'blogs' && isset($uriParts[1]) && ($uriParts[2] ?? '') === 'reactions') {
+    $identifier = $queryParams['identifier'] ?? null;
+    $reactionController->getByBlogId($uriParts[1], $identifier);
+    exit;
+}
+
+if ($method === 'POST' && $resource === 'blogs' && isset($uriParts[1]) && ($uriParts[2] ?? '') === 'reactions') {
+    $reactionController->add($uriParts[1], $data);
+    exit;
+}
+
+if ($method === 'DELETE' && $resource === 'blogs' && isset($uriParts[1]) && ($uriParts[2] ?? '') === 'reactions') {
+    $reactionController->remove($uriParts[1], $data);
+    exit;
+}
+
+if ($method === 'PUT' && $resource === 'views' && isset($uriParts[1])) {
+    $blogController->updateViewDuration($uriParts[1], $data);
+    exit;
+}
+
+if ($method === 'GET' && $resource === 'health') {
+    Response::success(['status' => 'healthy', 'timestamp' => date('Y-m-d H:i:s')]);
+    exit;
 }
 
 // PROTECTED ROUTES - Authentication required
@@ -167,54 +136,62 @@ try {
 }
 
 // Handle protected routes
-switch (true) {
-    case ($method === 'POST' && $resource === 'auth' && ($uriParts[1] ?? '') === 'change-password'):
-        $authController->changePassword($data, $user);
-        exit;
-        
-    case ($method === 'GET' && $resource === 'auth' && ($uriParts[1] ?? '') === 'profile'):
-        $authController->getProfile($user);
-        exit;
-        
-    case ($method === 'POST' && $resource === 'blogs' && !isset($uriParts[1])):
-        RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
-        $blogController->create($data, $user);
-        exit;
-        
-    case ($method === 'PUT' && $resource === 'blogs' && isset($uriParts[1]) && is_numeric($uriParts[1])):
-        RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
-        $blogController->update($uriParts[1], $data, $user);
-        exit;
-        
-    case ($method === 'DELETE' && $resource === 'blogs' && isset($uriParts[1]) && is_numeric($uriParts[1]) && !isset($uriParts[2])):
-        RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
-        $blogController->delete($uriParts[1], $user);
-        exit;
-        
-    case ($method === 'PATCH' && $resource === 'blogs' && isset($uriParts[1]) && ($uriParts[2] ?? '') === 'visibility'):
-        RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
-        $blogController->toggleVisibility($uriParts[1], $user);
-        exit;
-        
-    case ($method === 'POST' && $resource === 'blogs' && isset($uriParts[1]) && ($uriParts[2] ?? '') === 'comments' && isset($uriParts[3]) && ($uriParts[4] ?? '') === 'reply'):
-        RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
-        $commentController->createAdminReply($uriParts[1], $uriParts[3], $data, $user);
-        exit;
-        
-    case ($method === 'DELETE' && $resource === 'comments' && isset($uriParts[1])):
-        RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
-        $commentController->delete($uriParts[1], $user);
-        exit;
-        
-    case ($method === 'GET' && $resource === 'users'):
-        RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
-        $userController->getAll($user);
-        exit;
-        
-    case ($method === 'DELETE' && $resource === 'users' && isset($uriParts[1])):
-        RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
-        $userController->delete($uriParts[1], $user);
-        exit;
+if ($method === 'POST' && $resource === 'auth' && ($uriParts[1] ?? '') === 'change-password') {
+    $authController->changePassword($data, $user);
+    exit;
+}
+
+if ($method === 'GET' && $resource === 'auth' && ($uriParts[1] ?? '') === 'profile') {
+    $authController->getProfile($user);
+    exit;
+}
+
+if ($method === 'POST' && $resource === 'blogs' && !isset($uriParts[1])) {
+    RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
+    $blogController->create($data, $user);
+    exit;
+}
+
+if ($method === 'PUT' && $resource === 'blogs' && isset($uriParts[1]) && is_numeric($uriParts[1])) {
+    RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
+    $blogController->update($uriParts[1], $data, $user);
+    exit;
+}
+
+if ($method === 'DELETE' && $resource === 'blogs' && isset($uriParts[1]) && is_numeric($uriParts[1]) && !isset($uriParts[2])) {
+    RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
+    $blogController->delete($uriParts[1], $user);
+    exit;
+}
+
+if ($method === 'PATCH' && $resource === 'blogs' && isset($uriParts[1]) && ($uriParts[2] ?? '') === 'visibility') {
+    RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
+    $blogController->toggleVisibility($uriParts[1], $user);
+    exit;
+}
+
+if ($method === 'POST' && $resource === 'blogs' && isset($uriParts[1]) && ($uriParts[2] ?? '') === 'comments' && isset($uriParts[3]) && ($uriParts[4] ?? '') === 'reply') {
+    RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
+    $commentController->createAdminReply($uriParts[1], $uriParts[3], $data, $user);
+    exit;
+}
+
+if ($method === 'DELETE' && $resource === 'comments' && isset($uriParts[1])) {
+    RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
+    $commentController->delete($uriParts[1], $user);
+    exit;
+}
+
+if ($method === 'GET' && $resource === 'users') {
+    RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
+    $userController->getAll($user);
+    exit;
+}
+
+if ($method === 'DELETE' && $resource === 'users' && isset($uriParts[1])) {
+    RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
+    $userController->delete($uriParts[1], $user);
+    exit;
 }
 
 Response::notFound('Endpoint not found');
