@@ -1,0 +1,88 @@
+# robots.txt for https://chiedzacheafrica.com
+# Last updated: January 15, 2025
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /private/
+Disallow: /api/
+Disallow: /search?
+Disallow: /?search=
+Disallow: /?filter=
+Disallow: /?sort=
+
+# Allow access to important assets for SEO
+Allow: /assets/images/
+Allow: /assets/audio/
+Allow: /assets/videos/
+
+# Sitemap location
+Sitemap: https://chiedzacheafrica.com/sitemap.xml
+
+# Special instructions for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Yandex
+Allow: /
+Crawl-delay: 2
+
+# Social media crawlers - allow full access to improve link previews
+User-agent: facebookexternalhit
+Allow: /
+Crawl-delay: 1
+
+User-agent: Twitterbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: LinkedInBot
+Allow: /
+Crawl-delay: 1
+
+# Podcast-specific crawlers
+User-agent: Applebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Spotify
+Allow: /
+Crawl-delay: 1
+
+# Optimize media crawling
+User-agent: Googlebot-Image
+Allow: /
+Crawl-delay: 1
+
+User-agent: Googlebot-Video
+Allow: /
+Crawl-delay: 1
+
+# Prevent archive bots from archiving the site
+User-agent: ia_archiver
+Disallow: /
+
+# Block AI training bots
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+# Block scraping bots
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /

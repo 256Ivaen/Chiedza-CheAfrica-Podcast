@@ -1,0 +1,66 @@
+{
+  "name": "Chiedza CheAfrica Podcast",
+  "short_name": "Chiedza CheAfrica",
+  "description": "Lighting paths. Inspiring minds. Amplifying African stories of innovation, courage, and purpose.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#F6931B",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "categories": ["entertainment", "education", "music", "social"],
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "icons/ios/144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/ios/192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/android/android-launchericon-512-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/icons/screenshot-mobile.png",
+      "sizes": "375x667",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Chiedza CheAfrica Podcast Mobile App"
+    },
+    {
+      "src": "/icons/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Chiedza CheAfrica Podcast Desktop App"
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "web",
+      "url": "https://chiedzacheafrica.com"
+    },
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.chiedzacheafrica.podcast"
+    },
+    {
+      "platform": "itunes",
+      "url": "https://apps.apple.com/app/chiedza-cheafrica-podcast/id123456789"
+    }
+  ],
+  "prefer_related_applications": false,
+  "iarc_rating_id": "e58bcf2c-6ad8-4c4c-9e6a-2d8f5a8c8a8b"
+}
