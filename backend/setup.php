@@ -1,13 +1,12 @@
 <?php
 /**
- * Database Setup Script for Blog System
+ * Environment Setup Verification Script
  * 
- * This script creates all necessary database tables for the blog system.
- * The database must already exist before running this script.
+ * This script verifies that the backend is properly configured.
+ * Database tables should be created manually via Hostinger control panel.
  * 
  * Usage: php setup.php
  * 
- * @author Blog System
  * @version 1.0.0
  */
 
@@ -18,11 +17,11 @@ if (ob_get_level()) {
 
 echo "\n";
 echo "================================================================================\n";
-echo "                    BLOG SYSTEM DATABASE SETUP                                  \n";
+echo "                    BLOG SYSTEM SETUP VERIFICATION                              \n";
 echo "================================================================================\n";
 echo "\n";
 
-// Load environment variables
+// Check if .env file exists
 $envFile = __DIR__ . '/.env';
 
 if (!file_exists($envFile)) {
@@ -32,8 +31,13 @@ if (!file_exists($envFile)) {
     exit(1);
 }
 
-echo "[1/6] Loading environment variables...\n";
+echo "[1/5] Checking environment file...\n";
+echo "      .env file found.\n\n";
+
+// Load environment variables
+echo "[2/5] Loading environment variables...\n";
 $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+$envVars = [];
 
 foreach ($lines as $line) {
     $line = trim($line);
@@ -46,277 +50,167 @@ foreach ($lines as $line) {
     // Parse environment variable
     if (strpos($line, '=') !== false) {
         list($name, $value) = explode('=', $line, 2);
+        $envVars[trim($name)] = trim($value);
         $_ENV[trim($name)] = trim($value);
     }
 }
 
-echo "      Environment variables loaded successfully.\n\n";
+echo "      Loaded " . count($envVars) . " environment variables.\n\n";
 
 // Validate required environment variables
-$required = ['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS'];
-$missing = [];
+echo "[3/5] Validating configuration...\n";
 
-foreach ($required as $var) {
-    if (!isset($_ENV[$var]) || empty($_ENV[$var])) {
-        $missing[] = $var;
+$required = [
+    'DB_HOST' => 'Database host',
+    'DB_NAME' => 'Database name',
+    'DB_USER' => 'Database user',
+    'DB_PASS' => 'Database password',
+    'JWT_SECRET' => 'JWT secret key',
+    'JWT_EXPIRY' => 'JWT expiry time',
+    'SMTP_HOST' => 'SMTP host',
+    'SMTP_PORT' => 'SMTP port',
+    'SMTP_USER' => 'SMTP user',
+    'SMTP_PASS' => 'SMTP password',
+    'SMTP_FROM' => 'SMTP from address',
+    'SMTP_FROM_NAME' => 'SMTP from name',
+    'APP_URL' => 'Application URL',
+    'APP_ENV' => 'Application environment'
+];
+
+$missing = [];
+$configured = 0;
+
+foreach ($required as $var => $description) {
+    if (!isset($envVars[$var]) || empty($envVars[$var])) {
+        $missing[] = "  - $var ($description)";
+    } else {
+        $configured++;
     }
 }
 
 if (!empty($missing)) {
-    echo "ERROR: Missing required environment variables:\n";
-    foreach ($missing as $var) {
-        echo "  - $var\n";
+    echo "\n";
+    echo "WARNING: Missing or empty environment variables:\n";
+    foreach ($missing as $item) {
+        echo "$item\n";
     }
     echo "\n";
-    exit(1);
+} else {
+    echo "      All required environment variables are configured.\n";
 }
 
-// Database connection
-try {
-    $host = $_ENV['DB_HOST'];
-    $dbname = $_ENV['DB_NAME'];
-    $username = $_ENV['DB_USER'];
-    $password = $_ENV['DB_PASS'];
+echo "      Configured: $configured of " . count($required) . " variables.\n\n";
 
-    echo "[2/6] Connecting to database server...\n";
-    
-    $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
-    $options = [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        PDO::ATTR_EMULATE_PREPARES => false,
-    ];
-    
-    $pdo = new PDO($dsn, $username, $password, $options);
-    
-    echo "      Connected to database: $dbname\n\n";
+// Check file permissions
+echo "[4/5] Checking file permissions...\n";
 
-    // Create tables
-    echo "[3/6] Creating database tables...\n";
-    echo "--------------------------------------------------------------------------------\n";
+$dirsToCheck = ['config', 'src', 'public'];
+$permissionsOk = true;
 
-    // Users table
-    echo "      Creating 'users' table... ";
-    $pdo->exec("
-        CREATE TABLE IF NOT EXISTS users (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            email VARCHAR(255) NOT NULL UNIQUE,
-            password VARCHAR(255) NOT NULL,
-            role ENUM('super_admin', 'admin') NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            INDEX idx_email (email),
-            INDEX idx_role (role)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-    ");
-    echo "DONE\n";
-
-    // Blogs table
-    echo "      Creating 'blogs' table... ";
-    $pdo->exec("
-        CREATE TABLE IF NOT EXISTS blogs (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            title VARCHAR(500) NOT NULL,
-            category VARCHAR(100) NOT NULL,
-            author VARCHAR(255) NOT NULL,
-            image TEXT,
-            hero_image TEXT,
-            excerpt TEXT NOT NULL,
-            content LONGTEXT NOT NULL,
-            featured BOOLEAN DEFAULT FALSE,
-            visible BOOLEAN DEFAULT TRUE,
-            tags JSON,
-            hero_data JSON,
-            read_time VARCHAR(50) DEFAULT '5 min read',
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            INDEX idx_category (category),
-            INDEX idx_featured (featured),
-            INDEX idx_visible (visible),
-            INDEX idx_created_at (created_at),
-            FULLTEXT idx_search (title, excerpt, content)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-    ");
-    echo "DONE\n";
-
-    // Comments table
-    echo "      Creating 'comments' table... ";
-    $pdo->exec("
-        CREATE TABLE IF NOT EXISTS comments (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            blog_id INT NOT NULL,
-            user_id INT NULL,
-            name VARCHAR(255) NULL,
-            email VARCHAR(255) NULL,
-            content TEXT NOT NULL,
-            parent_id INT NULL,
-            is_admin_reply BOOLEAN DEFAULT FALSE,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (blog_id) REFERENCES blogs(id) ON DELETE CASCADE,
-            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
-            FOREIGN KEY (parent_id) REFERENCES comments(id) ON DELETE CASCADE,
-            INDEX idx_blog_id (blog_id),
-            INDEX idx_parent_id (parent_id),
-            INDEX idx_created_at (created_at)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-    ");
-    echo "DONE\n";
-
-    // Reactions table
-    echo "      Creating 'reactions' table... ";
-    $pdo->exec("
-        CREATE TABLE IF NOT EXISTS reactions (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            blog_id INT NOT NULL,
-            type ENUM('like', 'love', 'insightful', 'celebrate') NOT NULL,
-            identifier VARCHAR(255) NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (blog_id) REFERENCES blogs(id) ON DELETE CASCADE,
-            UNIQUE KEY unique_reaction (blog_id, identifier),
-            INDEX idx_blog_id (blog_id),
-            INDEX idx_type (type)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-    ");
-    echo "DONE\n";
-
-    // Blog views table
-    echo "      Creating 'blog_views' table... ";
-    $pdo->exec("
-        CREATE TABLE IF NOT EXISTS blog_views (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            blog_id INT NOT NULL,
-            identifier VARCHAR(255) NOT NULL,
-            duration INT DEFAULT 0,
-            viewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (blog_id) REFERENCES blogs(id) ON DELETE CASCADE,
-            INDEX idx_blog_id (blog_id),
-            INDEX idx_viewed_at (viewed_at)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-    ");
-    echo "DONE\n";
-
-    echo "--------------------------------------------------------------------------------\n";
-    echo "      All tables created successfully.\n\n";
-
-    // Check and create default admin user
-    echo "[4/6] Checking for default admin user...\n";
-    
-    $stmt = $pdo->query("SELECT COUNT(*) as count FROM users WHERE email = 'admin@example.com'");
-    $result = $stmt->fetch();
-
-    if ($result['count'] > 0) {
-        echo "      Default admin user already exists.\n\n";
-    } else {
-        echo "      Creating default admin user...\n";
-        
-        // Password: admin123 (hashed with bcrypt cost 12)
-        $defaultPassword = '$2y$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5lH4M3fHK7YqW';
-        
-        $stmt = $pdo->prepare(
-            "INSERT INTO users (email, password, role, created_at, updated_at) 
-             VALUES (?, ?, 'super_admin', NOW(), NOW())"
-        );
-        $stmt->execute(['admin@example.com', $defaultPassword]);
-        
-        echo "      Default admin user created successfully.\n\n";
-    }
-
-    // Verify tables
-    echo "[5/6] Verifying database structure...\n";
-    
-    $tables = ['users', 'blogs', 'comments', 'reactions', 'blog_views'];
-    $verified = 0;
-    
-    foreach ($tables as $table) {
-        $stmt = $pdo->query("SHOW TABLES LIKE '$table'");
-        if ($stmt->rowCount() > 0) {
-            $verified++;
+foreach ($dirsToCheck as $dir) {
+    $path = __DIR__ . '/' . $dir;
+    if (file_exists($path)) {
+        if (is_readable($path)) {
+            echo "      $dir/ - OK\n";
+        } else {
+            echo "      $dir/ - WARNING: Not readable\n";
+            $permissionsOk = false;
         }
+    } else {
+        echo "      $dir/ - WARNING: Directory not found\n";
+        $permissionsOk = false;
     }
-    
-    echo "      Verified $verified of " . count($tables) . " tables.\n\n";
+}
 
-    // Display summary
-    echo "[6/6] Setup complete.\n\n";
-    
-    echo "================================================================================\n";
-    echo "                         SETUP COMPLETED SUCCESSFULLY                           \n";
-    echo "================================================================================\n";
+if ($permissionsOk) {
+    echo "      All directories are accessible.\n";
+}
+echo "\n";
+
+// Verify critical files
+echo "[5/5] Verifying critical files...\n";
+
+$criticalFiles = [
+    'public/index.php' => 'Main entry point',
+    'config/database.php' => 'Database configuration',
+    'config/cors.php' => 'CORS configuration',
+    'src/Utils/JWT.php' => 'JWT utility',
+    'src/Utils/Response.php' => 'Response utility',
+    'src/Utils/Email.php' => 'Email utility'
+];
+
+$filesOk = 0;
+
+foreach ($criticalFiles as $file => $description) {
+    $path = __DIR__ . '/' . $file;
+    if (file_exists($path)) {
+        echo "      $file - OK\n";
+        $filesOk++;
+    } else {
+        echo "      $file - MISSING\n";
+    }
+}
+
+echo "      Found $filesOk of " . count($criticalFiles) . " critical files.\n\n";
+
+// Display summary
+echo "================================================================================\n";
+echo "                         SETUP VERIFICATION COMPLETE                            \n";
+echo "================================================================================\n";
+echo "\n";
+
+echo "Configuration Summary:\n";
+echo "  Environment:    " . ($envVars['APP_ENV'] ?? 'Not set') . "\n";
+echo "  API URL:        " . ($envVars['APP_URL'] ?? 'Not set') . "\n";
+echo "  Database:       " . ($envVars['DB_NAME'] ?? 'Not set') . "\n";
+echo "  JWT Configured: " . (isset($envVars['JWT_SECRET']) && !empty($envVars['JWT_SECRET']) ? 'Yes' : 'No') . "\n";
+echo "  SMTP Configured: " . (isset($envVars['SMTP_HOST']) && !empty($envVars['SMTP_HOST']) ? 'Yes' : 'No') . "\n";
+echo "\n";
+
+if (empty($missing) && $permissionsOk && $filesOk === count($criticalFiles)) {
+    echo "STATUS: All checks passed. Backend is ready for deployment.\n";
     echo "\n";
-    echo "Database Configuration:\n";
-    echo "  Host:     $host\n";
-    echo "  Database: $dbname\n";
-    echo "  Tables:   $verified tables created\n";
+    echo "IMPORTANT - Manual Database Setup Required:\n";
+    echo "  1. Login to Hostinger control panel\n";
+    echo "  2. Go to phpMyAdmin\n";
+    echo "  3. Select database: " . ($envVars['DB_NAME'] ?? 'your_database') . "\n";
+    echo "  4. Import the SQL schema from: src/Database/schema.sql\n";
     echo "\n";
-    echo "Tables Created:\n";
-    echo "  1. users         - User authentication and authorization\n";
-    echo "  2. blogs         - Blog posts and content\n";
-    echo "  3. comments      - Blog comments and admin replies\n";
-    echo "  4. reactions     - User reactions (like, love, etc.)\n";
-    echo "  5. blog_views    - View tracking and analytics\n";
+    echo "After importing the schema, your API will be accessible at:\n";
+    echo "  " . ($envVars['APP_URL'] ?? 'Not configured') . "\n";
     echo "\n";
-    echo "Default Admin Credentials:\n";
-    echo "  Email:    admin@example.com\n";
+    echo "Default Login Credentials (after schema import):\n";
+    echo "  Email:    iodekeivan@gmail.com\n";
     echo "  Password: admin123\n";
     echo "\n";
     echo "SECURITY NOTICE:\n";
-    echo "  Please change the default admin password immediately after first login.\n";
+    echo "  Change the default admin password immediately after first login.\n";
+    echo "\n";
+    exit(0);
+} else {
+    echo "STATUS: Some issues detected. Please review the warnings above.\n";
     echo "\n";
     
-    $appUrl = $_ENV['APP_URL'] ?? 'Not configured';
-    echo "API Endpoint:\n";
-    echo "  URL: $appUrl\n";
-    echo "\n";
-    echo "Next Steps:\n";
-    echo "  1. Test the API health endpoint: $appUrl/health\n";
-    echo "  2. Login with default credentials\n";
-    echo "  3. Change the default password\n";
-    echo "  4. Create additional admin users as needed\n";
-    echo "\n";
-    echo "================================================================================\n";
-    echo "\n";
-
-} catch (PDOException $e) {
-    echo "\n";
-    echo "================================================================================\n";
-    echo "                            DATABASE ERROR                                      \n";
-    echo "================================================================================\n";
-    echo "\n";
-    echo "Error Message:\n";
-    echo "  " . $e->getMessage() . "\n";
-    echo "\n";
-    echo "Troubleshooting:\n";
-    echo "  1. Verify database exists and is accessible\n";
-    echo "  2. Check database credentials in .env file\n";
-    echo "  3. Ensure MySQL/MariaDB service is running\n";
-    echo "  4. Verify database user has appropriate privileges:\n";
-    echo "     - SELECT, INSERT, UPDATE, DELETE\n";
-    echo "     - CREATE, ALTER, INDEX\n";
-    echo "     - REFERENCES (for foreign keys)\n";
-    echo "\n";
-    echo "Database Connection Details:\n";
-    echo "  Host:     " . ($host ?? 'Not set') . "\n";
-    echo "  Database: " . ($dbname ?? 'Not set') . "\n";
-    echo "  User:     " . ($username ?? 'Not set') . "\n";
-    echo "\n";
-    echo "================================================================================\n";
-    echo "\n";
-    exit(1);
+    if (!empty($missing)) {
+        echo "ACTION REQUIRED:\n";
+        echo "  Update .env file with missing configuration values.\n";
+        echo "\n";
+    }
     
-} catch (Exception $e) {
-    echo "\n";
-    echo "================================================================================\n";
-    echo "                              GENERAL ERROR                                     \n";
-    echo "================================================================================\n";
-    echo "\n";
-    echo "Error Message:\n";
-    echo "  " . $e->getMessage() . "\n";
-    echo "\n";
-    echo "Please check the error message above and try again.\n";
-    echo "\n";
-    echo "================================================================================\n";
-    echo "\n";
+    if (!$permissionsOk) {
+        echo "ACTION REQUIRED:\n";
+        echo "  Fix directory permissions. Run: chmod -R 755 .\n";
+        echo "\n";
+    }
+    
+    if ($filesOk !== count($criticalFiles)) {
+        echo "ACTION REQUIRED:\n";
+        echo "  Ensure all backend files are properly uploaded.\n";
+        echo "\n";
+    }
+    
     exit(1);
 }
 
-exit(0);
+echo "================================================================================\n";
+echo "\n";
