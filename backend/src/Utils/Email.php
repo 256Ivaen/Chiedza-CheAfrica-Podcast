@@ -153,7 +153,7 @@ class Email {
                             <table width="100%" cellpadding="0" cellspacing="0" style="margin: 40px 0 30px 0;">
                                 <tr>
                                     <td align="center">
-                                        <a href="https://chiedzacheafrica.com/login" style="display: inline-block; background-color: #0a0a0a; color: #ffffff; text-decoration: none; padding: 14px 45px; border: 1px solid #0a0a0a; font-weight: 400; font-size: 14px; letter-spacing: 0.5px; transition: all 0.3s ease;">ACCESS PLATFORM</a>
+                                        <a href="https://admin.chiedzacheafrica.com/login" style="display: inline-block; background-color: #0a0a0a; color: #ffffff; text-decoration: none; padding: 14px 45px; border: 1px solid #0a0a0a; font-weight: 400; font-size: 14px; letter-spacing: 0.5px; transition: all 0.3s ease;">ACCESS PLATFORM</a>
                                     </td>
                                 </tr>
                             </table>
