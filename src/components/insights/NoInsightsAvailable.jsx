@@ -40,8 +40,8 @@ const NoInsightsAvailable = () => {
           }}
           className="relative mb-8"
         >
-          <div className="w-32 h-32 mx-auto bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
-            <FaBlog className="w-16 h-16 text-primary/60" />
+          <div className="mx-auto flex items-center justify-center">
+            <FaBlog className="w-16 h-16 text-white" />
           </div>
         </motion.div>
         
