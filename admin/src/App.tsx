@@ -12,6 +12,11 @@ import Login from "@/pages/Login";
 import Settings from "./pages/Settings.jsx";
 import PlaceholderPage from "@/components/ui/PlaceHolderPage";
 import CreateBlog from './pages/CreateBlog.jsx'
+import Reactions from './pages/Reactions'
+import Comments from './pages/Comments'
+import BlogDetails from './pages/BlogDetail.jsx'
+import Users from './pages/Users.jsx'
+import EditBlog from './pages/EditBlog.jsx'
 
 import AllBlogsPage from './pages/AllBlogs.jsx'
 
@@ -106,7 +111,16 @@ function AppContent() {
             path="/blogs/:id"
             element={
               <ProtectedRoute activeSection="blogs">
-                <PlaceholderPage title="Blog Details" />
+                <BlogDetails title="Blog Details" />
+              </ProtectedRoute>
+            }
+          />
+
+<Route
+            path="/blogs/:id/edit"
+            element={
+              <ProtectedRoute activeSection="blogs">
+                <EditBlog title="Blog Details" />
               </ProtectedRoute>
             }
           />
@@ -115,7 +129,7 @@ function AppContent() {
             path="/comments"
             element={
               <ProtectedRoute activeSection="comments">
-                <PlaceholderPage title="Comments Management" />
+                <Comments title="Comments Management" />
               </ProtectedRoute>
             }
           />
@@ -124,7 +138,7 @@ function AppContent() {
             path="/reactions"
             element={
               <ProtectedRoute activeSection="reactions">
-                <PlaceholderPage title="Reactions Overview" />
+                <Reactions title="Reactions Overview" />
               </ProtectedRoute>
             }
           />
@@ -133,7 +147,7 @@ function AppContent() {
             path="/users"
             element={
               <ProtectedRoute activeSection="users">
-                <PlaceholderPage title="User Management" />
+                <Users title="User Management" />
               </ProtectedRoute>
             }
           />

@@ -8,9 +8,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#F9D769', 
-        secondary: '#734D20',  
-        
+        primary: '#edab12',
+        secondary: '#421907',
+        textlight: '#FFF8F0',
+        textdark: '#1a202c',
+        background: '#0a0a0a',
+        glass: {
+          light: 'rgba(255, 255, 255, 0.08)',
+          DEFAULT: 'rgba(255, 255, 255, 0.05)',
+          dark: 'rgba(0, 0, 0, 0.3)',
+          border: 'rgba(255, 255, 255, 0.1)',
+        },
         'primary-scale': {
           50: '#FEF7E6',
           100: '#FDECC0',
@@ -24,7 +32,6 @@ export default {
           900: '#734D20',
           950: '#5A3C19',
         },
-        
         'secondary-scale': {
           50: '#F7F3ED',
           100: '#EDE4D3',
@@ -38,11 +45,14 @@ export default {
           900: '#2D1A0F',
           950: '#1F110A',
         },
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
         skeleton: "hsl(var(--skeleton))",
-        border: "hsl(var(--btn-border))",
+        border: "hsl(var(--border))",
         input: "hsl(var(--input))",
+      },
+      fontFamily: {
+        'satoshi': ['Satoshi', 'sans-serif'],
+        'clash': ['Clash Display', 'sans-serif'],
+        'montserrat': ['Montserrat', 'sans-serif'],
       },
       backgroundImage: {
         'gradient-primary': 'linear-gradient(135deg, #F9D769 0%, #E8C547 50%, #734D20 100%)',
@@ -123,7 +133,7 @@ export default {
       },
     },
   },
-  plugins: [], // Removed @tailwindcss/forms
+  plugins: [],
   variants: {
     extend: {
       backgroundColor: ['checked', 'hover', 'checked:hover'],
