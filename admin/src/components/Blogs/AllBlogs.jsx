@@ -20,7 +20,7 @@ import {
   Tag,
   X,
 } from "lucide-react";
-import { get, del, post } from "../../utils/service";
+import { get, del, patch } from "../../utils/service";
 import { toast } from "sonner";
 
 const SkeletonBox = ({ className }) => (
@@ -193,6 +193,7 @@ export default function AllBlogs() {
   const [showFilters, setShowFilters] = useState(false);
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, blog: null });
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [visibilityLoading, setVisibilityLoading] = useState(null);
 
   // Fetch blogs
   const fetchBlogs = async () => {
@@ -255,17 +256,23 @@ export default function AllBlogs() {
 
   // Toggle visibility
   const handleToggleVisibility = async (blogId) => {
+    setVisibilityLoading(blogId);
     try {
-      const response = await post(`blogs/${blogId}/toggle-visibility`);
+      const response = await patch(`blogs/${blogId}/visibility`);
       if (response.success) {
-        toast.success("Blog visibility updated");
+        toast.success(response.message || "Blog visibility updated");
         fetchBlogs();
       } else {
-        toast.error("Failed to update visibility");
+        toast.error(response.message || "Failed to update visibility");
       }
     } catch (error) {
       console.error("Error toggling visibility:", error);
-      toast.error("Failed to update visibility");
+      const errorMessage = error.response?.data?.message || 
+                          error.message || 
+                          "Failed to update visibility";
+      toast.error(errorMessage);
+    } finally {
+      setVisibilityLoading(null);
     }
   };
 
@@ -542,6 +549,20 @@ export default function AllBlogs() {
                         onDelete={() => setDeleteModal({ isOpen: true, blog })}
                         onToggleVisibility={() => handleToggleVisibility(blog.id)}
                       />
+                      {visibilityLoading === blog.id && (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="text-xs text-gray-500 flex items-center gap-1"
+                        >
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full"
+                          />
+                          Updating...
+                        </motion.div>
+                      )}
                     </div>
                   </div>
                 </motion.div>

@@ -111,11 +111,15 @@ class BlogController {
         if (!$blog) {
             Response::notFound('Blog not found');
         }
-
-        $this->blogModel->toggleVisibility($id);
-
+    
+        $success = $this->blogModel->toggleVisibility($id);
+        
+        if (!$success) {
+            Response::error('Failed to update visibility', 500);
+        }
+    
         $blog = $this->blogModel->findById($id);
-
+    
         Response::success($blog, 'Blog visibility updated');
     }
 

@@ -19,12 +19,13 @@ import {
   Sparkles,
   EyeOff,
 } from "lucide-react";
-import { post } from "../../utils/service";
+import { post, upload } from "../../utils/service";
 import { toast } from "sonner";
 
 const CreateBlog = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const imageInputRef = useRef(null);
   const heroInputRef = useRef(null);
 
@@ -40,6 +41,11 @@ const CreateBlog = () => {
     visible: true,
     tags: [],
     read_time: "5 min read",
+  });
+
+  const [selectedFiles, setSelectedFiles] = useState({
+    cover: null,
+    hero: null
   });
 
   const [tagInput, setTagInput] = useState("");
@@ -95,24 +101,32 @@ const CreateBlog = () => {
     }));
   };
 
-  // Handle image selection - FIXED: No upload, just store image URLs manually
+  // Handle image selection - Store files for later upload
   const handleImageSelect = (e, type) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      toast.error("Please upload an image file");
+      toast.error("Please upload an image file (JPG, PNG, GIF, WebP, SVG)");
+      return;
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be less than 5MB");
       return;
     }
 
     // Create object URL for preview
     const imageUrl = URL.createObjectURL(file);
     
-    // FIXED: Since you don't have upload endpoint, we'll just store the file object
-    // In a real scenario, you'd need to implement base64 conversion or file upload
-    // For now, we'll just use the object URL and let the user provide actual URLs
-    toast.info("Image selected for preview. Please ensure image URLs are properly hosted elsewhere.");
-    
+    // Store the file for later upload
+    setSelectedFiles(prev => ({
+      ...prev,
+      [type]: file
+    }));
+
+    // Update form data with preview URL
     setFormData((prev) => ({
       ...prev,
       [type === "hero" ? "hero_image" : "image"]: imageUrl,
@@ -120,6 +134,44 @@ const CreateBlog = () => {
 
     // Reset file input
     e.target.value = "";
+  };
+
+  // Upload images to server using the same service as dashboard
+  const uploadImages = async (blogTitle) => {
+    const formData = new FormData();
+    let hasFiles = false;
+
+    // Append files if they exist
+    if (selectedFiles.cover) {
+      formData.append('cover_image', selectedFiles.cover);
+      hasFiles = true;
+    }
+    if (selectedFiles.hero) {
+      formData.append('hero_image', selectedFiles.hero);
+      hasFiles = true;
+    }
+
+    // If no files to upload, return empty object
+    if (!hasFiles) {
+      return {};
+    }
+
+    formData.append('blog_title', blogTitle);
+
+    try {
+      // Use the same upload function from your service
+      const result = await upload("upload/blog-images", formData);
+      
+      if (result.success) {
+        toast.success('Images uploaded successfully!');
+        return result.data.images;
+      } else {
+        throw new Error(result.message || 'Image upload failed');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      throw new Error(`Failed to upload images: ${error.message}`);
+    }
   };
 
   // Validate form
@@ -146,7 +198,7 @@ const CreateBlog = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle submit - FIXED: Proper data structure for your backend
+  // Handle submit - Upload images first, then create blog
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -156,14 +208,24 @@ const CreateBlog = () => {
     }
 
     setLoading(true);
+    setUploading(true);
+
     try {
-      // FIXED: Prepare data exactly as your backend expects
-      const submitData = {
+      let uploadedImages = {};
+
+      // Step 1: Upload images if any were selected
+      if (selectedFiles.cover || selectedFiles.hero) {
+        toast.info('Uploading images...');
+        uploadedImages = await uploadImages(formData.title);
+      }
+
+      // Step 2: Prepare blog data with uploaded image URLs or existing URLs
+      const blogData = {
         title: formData.title.trim(),
         category: formData.category,
         author: formData.author.trim(),
-        image: formData.image, // This should be a proper image URL
-        hero_image: formData.hero_image, // This should be a proper image URL
+        image: uploadedImages.cover_image || formData.image, // Use uploaded URL or existing URL
+        hero_image: uploadedImages.hero_image || formData.hero_image, // Use uploaded URL or existing URL
         excerpt: formData.excerpt.trim(),
         content: formData.content.trim(),
         featured: Boolean(formData.featured),
@@ -173,12 +235,22 @@ const CreateBlog = () => {
         read_time: formData.read_time || "5 min read",
       };
 
-      console.log("Submitting blog data:", submitData);
+      console.log("Submitting blog data:", blogData);
 
-      const response = await post("blogs", submitData);
+      // Step 3: Create the blog post using the same post function as dashboard
+      const response = await post("blogs", blogData);
 
       if (response.success) {
         toast.success(response.message || "Blog created successfully!");
+        
+        // Clean up object URLs
+        if (selectedFiles.cover) {
+          URL.revokeObjectURL(formData.image);
+        }
+        if (selectedFiles.hero) {
+          URL.revokeObjectURL(formData.hero_image);
+        }
+        
         navigate("/blogs");
       } else {
         toast.error(response.message || "Failed to create blog");
@@ -186,13 +258,13 @@ const CreateBlog = () => {
     } catch (error) {
       console.error("Error creating blog:", error);
       
-      // FIXED: Better error handling
       const errorMessage = error.response?.data?.message || 
                           error.message || 
                           "Failed to create blog. Check console for details.";
       toast.error(errorMessage);
     } finally {
       setLoading(false);
+      setUploading(false);
     }
   };
 
@@ -207,10 +279,29 @@ const CreateBlog = () => {
 
   // Clear image
   const clearImage = (type) => {
+    const fieldName = type === "hero" ? "hero_image" : "image";
+    
+    // Revoke object URL if it's a local preview
+    if (formData[fieldName] && formData[fieldName].startsWith('blob:')) {
+      URL.revokeObjectURL(formData[fieldName]);
+    }
+    
     setFormData((prev) => ({
       ...prev,
-      [type === "hero" ? "hero_image" : "image"]: "",
+      [fieldName]: "",
     }));
+
+    setSelectedFiles(prev => ({
+      ...prev,
+      [type]: null
+    }));
+  };
+
+  // Get upload status text
+  const getUploadStatus = () => {
+    if (uploading) return "Uploading images...";
+    if (loading) return "Creating blog...";
+    return "Create Blog";
   };
 
   return (
@@ -251,17 +342,17 @@ const CreateBlog = () => {
                 <button
                   type="submit"
                   form="blog-form"
-                  disabled={loading}
+                  disabled={loading || uploading}
                   className="px-3 py-1.5 bg-primary text-secondary rounded-sm hover:bg-primary/90 disabled:opacity-50 transition-colors text-xs font-medium uppercase inline-flex items-center gap-2"
                 >
-                  {loading ? (
+                  {(loading || uploading) ? (
                     <>
                       <motion.div
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                         className="w-4 h-4 border-2 border-secondary border-t-transparent rounded-full"
                       />
-                      Creating...
+                      {getUploadStatus()}
                     </>
                   ) : (
                     <>
@@ -419,22 +510,17 @@ const CreateBlog = () => {
                 {/* Cover Image */}
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-2">
-                    Cover Image URL
+                    Cover Image
+                    {selectedFiles.cover && (
+                      <span className="text-green-600 ml-1">(Ready to upload)</span>
+                    )}
                   </label>
-                  <input
-                    type="text"
-                    name="image"
-                    value={formData.image}
-                    onChange={handleChange}
-                    placeholder="https://example.com/image.jpg"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-xs mb-2"
-                  />
                   <div className="relative">
                     {formData.image ? (
                       <div className="relative">
                         <img
                           src={formData.image}
-                          alt="Cover"
+                          alt="Cover preview"
                           className="w-full h-40 object-cover rounded-lg border border-gray-200"
                           onError={(e) => {
                             e.target.style.display = 'none';
@@ -473,22 +559,17 @@ const CreateBlog = () => {
                 {/* Hero Image */}
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-2">
-                    Hero Image URL
+                    Hero Image
+                    {selectedFiles.hero && (
+                      <span className="text-green-600 ml-1">(Ready to upload)</span>
+                    )}
                   </label>
-                  <input
-                    type="text"
-                    name="hero_image"
-                    value={formData.hero_image}
-                    onChange={handleChange}
-                    placeholder="https://example.com/hero-image.jpg"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-xs mb-2"
-                  />
                   <div className="relative">
                     {formData.hero_image ? (
                       <div className="relative">
                         <img
                           src={formData.hero_image}
-                          alt="Hero"
+                          alt="Hero preview"
                           className="w-full h-40 object-cover rounded-lg border border-gray-200"
                           onError={(e) => {
                             e.target.style.display = 'none';
@@ -525,7 +606,7 @@ const CreateBlog = () => {
                 </div>
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                Note: Provide full image URLs or use the file selector for local preview. Images need to be hosted elsewhere.
+                Note: Images will be uploaded when you click "Create Blog". Supported formats: JPG, PNG, GIF, WebP, SVG (max 5MB each).
               </p>
             </div>
 
@@ -653,17 +734,17 @@ const CreateBlog = () => {
               </button>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || uploading}
                 className="w-full px-4 py-2.5 bg-primary text-secondary rounded-sm hover:bg-primary/90 disabled:opacity-50 transition-colors text-xs font-medium uppercase inline-flex items-center justify-center gap-2"
               >
-                {loading ? (
+                {(loading || uploading) ? (
                   <>
                     <motion.div
                       animate={{ rotate: 360 }}
                       transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                       className="w-4 h-4 border-2 border-secondary border-t-transparent rounded-full"
                     />
-                    Creating...
+                    {getUploadStatus()}
                   </>
                 ) : (
                   <>

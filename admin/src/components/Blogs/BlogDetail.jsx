@@ -24,7 +24,7 @@ import {
   MoreVertical,
   Share2,
 } from "lucide-react";
-import { get, del, post } from "../../utils/service";
+import { get, del, patch } from "../../utils/service"; // Changed from post to patch
 import { toast } from "sonner";
 
 const SkeletonBox = ({ className }) => (
@@ -200,6 +200,7 @@ export default function BlogDetail() {
   const [loading, setLoading] = useState(true);
   const [deleteModal, setDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [visibilityLoading, setVisibilityLoading] = useState(false);
 
   // Fetch blog details
   const fetchBlogDetails = async () => {
@@ -265,19 +266,25 @@ export default function BlogDetail() {
     }
   }, [id]);
 
-  // Toggle visibility
+  // Toggle visibility - FIXED: Changed from post to patch
   const handleToggleVisibility = async () => {
+    setVisibilityLoading(true);
     try {
-      const response = await post(`blogs/${id}/toggle-visibility`);
+      const response = await patch(`blogs/${id}/visibility`);
       if (response.success) {
-        toast.success("Blog visibility updated");
+        toast.success(response.message || "Blog visibility updated");
         fetchBlogDetails();
       } else {
-        toast.error("Failed to update visibility");
+        toast.error(response.message || "Failed to update visibility");
       }
     } catch (error) {
       console.error("Error toggling visibility:", error);
-      toast.error("Failed to update visibility");
+      const errorMessage = error.response?.data?.message || 
+                          error.message || 
+                          "Failed to update visibility";
+      toast.error(errorMessage);
+    } finally {
+      setVisibilityLoading(false);
     }
   };
 
@@ -364,6 +371,20 @@ export default function BlogDetail() {
                       </Badge>
                       {blog.featured && (
                         <Badge variant="primary">Featured</Badge>
+                      )}
+                      {visibilityLoading && (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="text-xs text-gray-500 flex items-center gap-1"
+                        >
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full"
+                          />
+                          Updating...
+                        </motion.div>
                       )}
                     </div>
                     <h1 className="text-2xl font-bold text-gray-900 mb-3">
@@ -714,10 +735,24 @@ export default function BlogDetail() {
                   </button>
                   <button
                     onClick={handleToggleVisibility}
-                    className="w-full px-3 py-2 border border-gray-300 text-gray-700 rounded-sm hover:bg-gray-50 transition-colors text-xs font-medium uppercase flex items-center justify-center gap-2"
+                    disabled={visibilityLoading}
+                    className="w-full px-3 py-2 border border-gray-300 text-gray-700 rounded-sm hover:bg-gray-50 disabled:opacity-50 transition-colors text-xs font-medium uppercase flex items-center justify-center gap-2"
                   >
-                    {blog.visible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    {blog.visible ? "Hide Blog" : "Show Blog"}
+                    {visibilityLoading ? (
+                      <>
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full"
+                        />
+                        Updating...
+                      </>
+                    ) : (
+                      <>
+                        {blog.visible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        {blog.visible ? "Hide Blog" : "Show Blog"}
+                      </>
+                    )}
                   </button>
                 </div>
               </motion.div>
