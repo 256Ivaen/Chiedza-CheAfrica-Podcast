@@ -1,4 +1,4 @@
-name: Deploy React Frontend and PHP Backend to Hostinger
+name: Deploy React Frontend, Admin, and PHP Backend to Hostinger
 
 on:
   push:
@@ -66,6 +66,55 @@ jobs:
         target: "/home/${{ secrets.SSH_USER }}/domains/chiedzacheafrica.com/public_html/"
         strip_components: 1
 
+  deploy-admin:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 2
+    
+    - name: Check for admin changes
+      id: admin-changes
+      run: |
+        if git diff --name-only HEAD^ HEAD | grep -qE '^admin/'; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+          echo "Admin files changed, will deploy"
+        else
+          echo "changed=false" >> $GITHUB_OUTPUT
+          echo "No admin changes detected, skipping deployment"
+        fi
+      
+    - name: Setup Node.js
+      if: steps.admin-changes.outputs.changed == 'true'
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Install admin dependencies
+      if: steps.admin-changes.outputs.changed == 'true'
+      run: |
+        cd admin
+        npm install
+        
+    - name: Build Admin app
+      if: steps.admin-changes.outputs.changed == 'true'
+      run: |
+        cd admin
+        npm run build
+      
+    - name: Deploy Admin (both branches to same location)
+      if: steps.admin-changes.outputs.changed == 'true'
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: ${{ secrets.SSH_PORT }}
+        source: "admin/dist/*"
+        target: "/home/${{ secrets.SSH_USER }}/domains/chiedzacheafrica.com/public_html/admin/"
+        strip_components: 2
+
   deploy-backend:
     runs-on: ubuntu-latest
     steps:
@@ -129,17 +178,14 @@ jobs:
         script: |
           cd /home/${{ secrets.SSH_USER }}/domains/chiedzacheafrica.com/public_html/
           
-          # Remove old api folder and rename backend to api
           rm -rf api
           mv backend api
           
           cd api
           
-          # Set permissions
           chmod -R 755 .
           find . -type f -name "*.php" -exec chmod 644 {} \;
           
-          # Verify .env exists and show first few lines (without sensitive data)
           echo "Checking .env file..."
           if [ -f .env ]; then
             echo ".env file exists"
@@ -149,8 +195,6 @@ jobs:
             exit 1
           fi
           
-          # Run verification
           php setup.php
-          
           
           echo "Backend deployed successfully"
