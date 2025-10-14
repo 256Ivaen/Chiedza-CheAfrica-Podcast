@@ -16,7 +16,7 @@ import Login from "@/pages/Login";
 import Settings from "./pages/Settings.jsx";
 import CampaignsPage from "./pages/Campaigns.jsx";
 import CampaignDetails from "./pages/CampaignDetails.jsx";
-import Wallet from './pages/wallet.jsx'
+import Wallet from './pages/Wallet.jsx'
 
 // Create QueryClient instance
 const queryClient = new QueryClient({

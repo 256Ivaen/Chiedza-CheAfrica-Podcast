@@ -103,7 +103,7 @@ jobs:
         cd admin
         npm run build
       
-    - name: Deploy Admin (both branches to same location)
+    - name: Deploy Admin
       if: steps.admin-changes.outputs.changed == 'true'
       uses: appleboy/scp-action@v0.1.7
       with:
