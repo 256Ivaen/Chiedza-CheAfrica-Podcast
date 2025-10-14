@@ -6,7 +6,7 @@ import InsightCard from './EpisodeCard';
 import EnhancedPagination from './EnhancedPagination';
 import SectionHeader from '../ui/Shared/SectionHeader';
 import NoInsightsAvailable from './NoEpisodeAvailable';
-import { youtubeService } from '../../services/youtubeService';
+import { youtubeService } from '../../Services/youtubeService';
 
 const AllEpisodes = ({ episodes = [], categories = [], loading: propLoading = false }) => {
   const [localEpisodes, setLocalEpisodes] = useState(episodes);
