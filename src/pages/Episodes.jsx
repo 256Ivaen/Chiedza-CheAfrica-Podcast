@@ -3,8 +3,8 @@ import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 
 // Import all components
-import EpisodesDynamicHero from '../components/episodes/EpisodeDynamicHero';
-import AllEpisodes from '../components/episodes/AllEpisodes';
+import EpisodesDynamicHero from '../components/Episodes/EpisodeDynamicHero';
+import AllEpisodes from '../components/Episodes/AllEpisodes';
 import { youtubeService } from '../services/youtubeService';
 
 const EpisodesPage = () => {

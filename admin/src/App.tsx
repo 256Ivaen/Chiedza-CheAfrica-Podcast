@@ -10,7 +10,7 @@ import MainLayout from "@/components/layout/MainLayout";
 import DashboardPage from "@/pages/DashboardPage";
 import Login from "@/pages/Login";
 import Settings from "./pages/Settings.jsx";
-import PlaceholderPage from "@/components/ui/PlaceholderPage";
+import PlaceholderPage from "@/components/ui/PlaceHolderPage";
 import CreateBlog from './pages/CreateBlog.jsx'
 
 import AllBlogsPage from './pages/AllBlogs.jsx'
