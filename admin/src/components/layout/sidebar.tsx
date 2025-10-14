@@ -5,16 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { 
   FiChevronRight,
-  FiPlus,
   FiUsers,
   FiSettings,
 } from 'react-icons/fi'
 import { ChevronLeft, X } from 'react-feather'
-import { Building2, BarChart3, Target, Megaphone } from "lucide-react"
-
-import { LuLayoutDashboard } from "react-icons/lu";
-import { HiOutlineSpeakerphone } from "react-icons/hi";
-import { GiWallet } from "react-icons/gi";
+import { FileText, MessageSquare, Heart } from "lucide-react"
+import { LuLayoutDashboard } from "react-icons/lu"
 
 const Sidebar = ({ 
   isOpen, 
@@ -27,8 +23,7 @@ const Sidebar = ({
   const navigate = useNavigate()
   const location = useLocation()
   const [expandedItems, setExpandedItems] = useState({ 
-    businesses: true, 
-    campaigns: true 
+    blogs: true
   })
 
   const navData = useMemo(() => {
@@ -40,47 +35,37 @@ const Sidebar = ({
         icon: <LuLayoutDashboard className="h-4 w-4" />,
       },
       {
-        title: 'Wallet',
-        path: '/wallet',
-        section: 'wallet',
-        icon: <GiWallet className="h-4 w-4" />,
-      },
-      {
-        title: 'Businesses',
-        icon: <Building2 className="h-4 w-4" />,
+        title: 'Blogs',
+        icon: <FileText className="h-4 w-4" />,
         children: [
           {
-            title: 'Assigned Businesses',
-            path: '/business',
-            section: 'businesses',
-          },
-          // {
-          //   title: 'Add New',
-          //   path: '/business?action=add',
-          //   section: 'businesses-add',
-          // }
-        ]
-      },
-      {
-        title: 'Campaigns',
-        icon: <HiOutlineSpeakerphone className="h-4 w-4" />,
-        children: [
-          {
-            title: 'My Campaigns',
-            path: '/campaigns',
-            section: 'campaigns',
+            title: 'All Blogs',
+            path: '/blogs',
+            section: 'blogs',
           },
           {
-            title: 'Create Campaign',
-            path: '/campaignform',
-            section: 'campaigns-create',
+            title: 'Create Blog',
+            path: '/blogs/create',
+            section: 'blogs-create',
           }
         ]
       },
       {
-        title: 'Groups',
-        path: '/groups',
-        section: 'groups',
+        title: 'Comments',
+        path: '/comments',
+        section: 'comments',
+        icon: <MessageSquare className="h-4 w-4" />,
+      },
+      {
+        title: 'Reactions',
+        path: '/reactions',
+        section: 'reactions',
+        icon: <Heart className="h-4 w-4" />,
+      },
+      {
+        title: 'Users',
+        path: '/users',
+        section: 'users',
         icon: <FiUsers className="h-4 w-4" />,
       },
       {
@@ -113,37 +98,31 @@ const Sidebar = ({
     }
   }
 
-  const isActiveRoute = (path, section) => {
-    // Exact match for root
+  const isActiveRoute = (path) => {
     if (path === '/' && location.pathname === '/') {
       return true
     }
     
-    // Match for wallet
-    if (path === '/wallet' && location.pathname === '/wallet') {
+    if (path === '/blogs' && location.pathname === '/blogs') {
       return true
     }
     
-    // Match for business routes
-    if (path === '/business' && location.pathname === '/business') {
+    if (path === '/blogs/create' && location.pathname === '/blogs/create') {
       return true
     }
     
-    // Match for campaign routes
-    if (path === '/campaigns' && location.pathname === '/campaigns') {
+    if (path === '/comments' && location.pathname === '/comments') {
       return true
     }
     
-    if (path === '/campaignform' && location.pathname === '/campaignform') {
+    if (path === '/reactions' && location.pathname === '/reactions') {
       return true
     }
     
-    // Match for groups
-    if (path === '/groups' && location.pathname === '/groups') {
+    if (path === '/users' && location.pathname === '/users') {
       return true
     }
     
-    // Match for settings
     if (path === '/settings' && location.pathname === '/settings') {
       return true
     }
@@ -169,9 +148,9 @@ const Sidebar = ({
               className="flex items-center gap-3"
             >
               <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center">
-                <Megaphone className="h-4 w-4 text-secondary" />
+                <FileText className="h-4 w-4 text-secondary" />
               </div>
-              <h1 className="text-lg font-bold text-gray-900">SG Agent</h1>
+              <h1 className="text-lg font-bold text-gray-900">Blog Admin</h1>
             </motion.div>
           ) : (
             <motion.div
@@ -181,7 +160,7 @@ const Sidebar = ({
               exit={{ opacity: 0, scale: 0.8 }}
               className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center mx-auto"
             >
-              <Megaphone className="h-4 w-4 text-secondary" />
+              <FileText className="h-4 w-4 text-secondary" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -197,14 +176,13 @@ const Sidebar = ({
       </div>
 
       <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
-        {navData.map((item, index) => (
+        {navData.map((item) => (
           <div key={item.title} className="space-y-1">
             <div className="relative group">
               <button
                 onClick={() => handleNavClick(item)}
                 className={`w-full flex items-center ${isOpen ? 'px-3' : 'justify-center px-2'} py-2.5 rounded-lg transition-all text-xs ${
-                  // Only show active state for items without children
-                  !item.children && isActiveRoute(item.path, item.section)
+                  !item.children && isActiveRoute(item.path)
                     ? 'bg-primary text-secondary font-medium'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
@@ -231,10 +209,8 @@ const Sidebar = ({
               )}
             </div>
 
-            {/* Children with vertical line aligned to icon */}
             {item.children && isOpen && expandedItems[item.title.toLowerCase()] && (
               <div className="ml-3 relative space-y-1 pl-3">
-                {/* Vertical line positioned at icon end (left: 8px accounts for icon width ~16px / 2) */}
                 <div className="absolute left-2 top-0 bottom-0 w-px bg-gray-300"></div>
                 
                 {item.children.map((child) => (
@@ -242,7 +218,7 @@ const Sidebar = ({
                     key={child.title}
                     onClick={() => handleNavClick(child)}
                     className={`w-full flex items-center pl-4 pr-3 py-2 rounded-lg transition-all text-xs relative ${
-                      isActiveRoute(child.path, child.section)
+                      isActiveRoute(child.path)
                         ? 'bg-primary text-secondary font-medium'
                         : 'text-gray-600 hover:bg-gray-50'
                     }`}

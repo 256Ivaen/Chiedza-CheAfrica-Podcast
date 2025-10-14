@@ -32,6 +32,14 @@ jobs:
       with:
         node-version: '18'
         
+    - name: Create frontend .env
+      if: steps.frontend-changes.outputs.changed == 'true'
+      run: |
+        cat > .env << EOF
+        VITE_YOUTUBE_API_KEY=${{ secrets.VITE_YOUTUBE_API_KEY }}
+        VITE_YOUTUBE_CHANNEL_ID=${{ secrets.VITE_YOUTUBE_CHANNEL_ID }}
+        EOF
+        
     - name: Install dependencies
       if: steps.frontend-changes.outputs.changed == 'true'
       run: |

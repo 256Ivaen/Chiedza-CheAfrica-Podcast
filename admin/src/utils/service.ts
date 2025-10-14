@@ -1,9 +1,6 @@
 import axios from 'axios';
 
-export const BASE_URL = window.location.hostname.includes('socialgems.me') 
-  // ? 'https://api.socialgems.me/'
-  ? 'https://api-v2.socialgems.me/'
-  : 'https://gems.tekjuice.xyz/';
+export const BASE_URL = 'https://api.chiedzacheafrica.com/';
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -14,19 +11,17 @@ const axiosInstance = axios.create({
 
 const logout = () => {
   localStorage.removeItem('jwt');
+  localStorage.removeItem('userId');
   localStorage.removeItem('email');
+  localStorage.removeItem('role');
   localStorage.removeItem('isLoggedIn');
-  localStorage.removeItem('user');
-  localStorage.removeItem('userProfile');
-  
-  localStorage.removeItem('social_gems_open_tabs');
   
   window.location.href = '/login';
   
   if ('Notification' in window && Notification.permission === 'granted') {
     new Notification('Session Expired', {
       body: 'You have been logged out. Please log in again.',
-      icon: '/favicon.ico'
+      icon: '/favicon.svg'
     });
   }
 };
@@ -47,7 +42,6 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Handle unauthorized responses (401, 403)
     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
       console.warn('Session expired or unauthorized access detected');
       logout();
