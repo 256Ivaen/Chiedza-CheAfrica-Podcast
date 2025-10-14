@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { MdOutlineContentPasteGo } from "react-icons/md";
 import { CiSettings } from "react-icons/ci";
-import { get, put } from "../../utils/service";
+import { get, put, upload } from "../../utils/service";
 import { toast } from "sonner";
 
 const SkeletonBox = ({ className }) => (
@@ -32,6 +32,7 @@ const EditBlog = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
   const imageInputRef = useRef(null);
   const heroInputRef = useRef(null);
@@ -48,6 +49,11 @@ const EditBlog = () => {
     visible: true,
     tags: [],
     read_time: "5 min read",
+  });
+
+  const [selectedFiles, setSelectedFiles] = useState({
+    cover: null,
+    hero: null
   });
 
   const [tagInput, setTagInput] = useState("");
@@ -143,25 +149,77 @@ const EditBlog = () => {
     }));
   };
 
-  // Handle image selection
+  // Handle image selection - Store files for later upload
   const handleImageSelect = (e, type) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      toast.error("Please upload an image file");
+      toast.error("Please upload an image file (JPG, PNG, GIF, WebP, SVG)");
       return;
     }
 
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be less than 5MB");
+      return;
+    }
+
+    // Create object URL for preview
     const imageUrl = URL.createObjectURL(file);
-    toast.info("Image selected for preview. Please ensure image URLs are properly hosted elsewhere.");
     
+    // Store the file for later upload
+    setSelectedFiles(prev => ({
+      ...prev,
+      [type]: file
+    }));
+
+    // Update form data with preview URL
     setFormData((prev) => ({
       ...prev,
       [type === "hero" ? "hero_image" : "image"]: imageUrl,
     }));
 
+    // Reset file input
     e.target.value = "";
+  };
+
+  // Upload images to server using the same service as dashboard
+  const uploadImages = async (blogTitle) => {
+    const formData = new FormData();
+    let hasFiles = false;
+
+    // Append files if they exist
+    if (selectedFiles.cover) {
+      formData.append('cover_image', selectedFiles.cover);
+      hasFiles = true;
+    }
+    if (selectedFiles.hero) {
+      formData.append('hero_image', selectedFiles.hero);
+      hasFiles = true;
+    }
+
+    // If no files to upload, return empty object
+    if (!hasFiles) {
+      return {};
+    }
+
+    formData.append('blog_title', blogTitle);
+
+    try {
+      // Use the same upload function from your service
+      const result = await upload("upload/blog-images", formData);
+      
+      if (result.success) {
+        toast.success('Images uploaded successfully!');
+        return result.data.images;
+      } else {
+        throw new Error(result.message || 'Image upload failed');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      throw new Error(`Failed to upload images: ${error.message}`);
+    }
   };
 
   // Validate form
@@ -188,7 +246,7 @@ const EditBlog = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle submit
+  // Handle submit - Upload images first, then update blog
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -198,28 +256,49 @@ const EditBlog = () => {
     }
 
     setLoading(true);
+    setUploading(true);
+
     try {
-      const submitData = {
+      let uploadedImages = {};
+
+      // Step 1: Upload images if any were selected
+      if (selectedFiles.cover || selectedFiles.hero) {
+        toast.info('Uploading images...');
+        uploadedImages = await uploadImages(formData.title);
+      }
+
+      // Step 2: Prepare blog data with uploaded image URLs or existing URLs
+      const blogData = {
         title: formData.title.trim(),
         category: formData.category,
         author: formData.author.trim(),
-        image: formData.image,
-        hero_image: formData.hero_image,
+        image: uploadedImages.cover_image || formData.image, // Use uploaded URL or existing URL
+        hero_image: uploadedImages.hero_image || formData.hero_image, // Use uploaded URL or existing URL
         excerpt: formData.excerpt.trim(),
         content: formData.content.trim(),
         featured: Boolean(formData.featured),
         visible: Boolean(formData.visible),
         tags: Array.isArray(formData.tags) ? formData.tags : [],
-        hero_data: {},
+        hero_data: {}, // Empty object as per your backend
         read_time: formData.read_time || "5 min read",
       };
 
-      console.log("Updating blog data:", submitData);
+      console.log("Updating blog data:", blogData);
 
-      const response = await put(`blogs/${id}`, submitData);
+      // Step 3: Update the blog post using the same put function
+      const response = await put(`blogs/${id}`, blogData);
 
       if (response.success) {
         toast.success(response.message || "Blog updated successfully!");
+        
+        // Clean up object URLs
+        if (selectedFiles.cover) {
+          URL.revokeObjectURL(formData.image);
+        }
+        if (selectedFiles.hero) {
+          URL.revokeObjectURL(formData.hero_image);
+        }
+        
         navigate(`/blogs/${id}`);
       } else {
         toast.error(response.message || "Failed to update blog");
@@ -233,6 +312,7 @@ const EditBlog = () => {
       toast.error(errorMessage);
     } finally {
       setLoading(false);
+      setUploading(false);
     }
   };
 
@@ -247,10 +327,29 @@ const EditBlog = () => {
 
   // Clear image
   const clearImage = (type) => {
+    const fieldName = type === "hero" ? "hero_image" : "image";
+    
+    // Revoke object URL if it's a local preview
+    if (formData[fieldName] && formData[fieldName].startsWith('blob:')) {
+      URL.revokeObjectURL(formData[fieldName]);
+    }
+    
     setFormData((prev) => ({
       ...prev,
-      [type === "hero" ? "hero_image" : "image"]: "",
+      [fieldName]: "",
     }));
+
+    setSelectedFiles(prev => ({
+      ...prev,
+      [type]: null
+    }));
+  };
+
+  // Get upload status text
+  const getUploadStatus = () => {
+    if (uploading) return "Uploading images...";
+    if (loading) return "Updating blog...";
+    return "Update Blog";
   };
 
   // Loading state
@@ -318,17 +417,17 @@ const EditBlog = () => {
                 <button
                   type="submit"
                   form="blog-form"
-                  disabled={loading}
+                  disabled={loading || uploading}
                   className="px-3 py-1.5 bg-primary text-secondary rounded-sm hover:bg-primary/90 disabled:opacity-50 transition-colors text-xs font-medium uppercase inline-flex items-center gap-2"
                 >
-                  {loading ? (
+                  {(loading || uploading) ? (
                     <>
                       <motion.div
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                         className="w-4 h-4 border-2 border-secondary border-t-transparent rounded-full"
                       />
-                      Updating...
+                      {getUploadStatus()}
                     </>
                   ) : (
                     <>
@@ -486,22 +585,17 @@ const EditBlog = () => {
                 {/* Cover Image */}
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-2">
-                    Cover Image URL
+                    Cover Image
+                    {selectedFiles.cover && (
+                      <span className="text-green-600 ml-1">(Ready to upload)</span>
+                    )}
                   </label>
-                  <input
-                    type="text"
-                    name="image"
-                    value={formData.image}
-                    onChange={handleChange}
-                    placeholder="https://example.com/image.jpg"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-xs mb-2"
-                  />
                   <div className="relative">
                     {formData.image ? (
                       <div className="relative">
                         <img
                           src={formData.image}
-                          alt="Cover"
+                          alt="Cover preview"
                           className="w-full h-40 object-cover rounded-lg border border-gray-200"
                           onError={(e) => {
                             e.target.style.display = 'none';
@@ -540,22 +634,17 @@ const EditBlog = () => {
                 {/* Hero Image */}
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-2">
-                    Hero Image URL
+                    Hero Image
+                    {selectedFiles.hero && (
+                      <span className="text-green-600 ml-1">(Ready to upload)</span>
+                    )}
                   </label>
-                  <input
-                    type="text"
-                    name="hero_image"
-                    value={formData.hero_image}
-                    onChange={handleChange}
-                    placeholder="https://example.com/hero-image.jpg"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-xs mb-2"
-                  />
                   <div className="relative">
                     {formData.hero_image ? (
                       <div className="relative">
                         <img
                           src={formData.hero_image}
-                          alt="Hero"
+                          alt="Hero preview"
                           className="w-full h-40 object-cover rounded-lg border border-gray-200"
                           onError={(e) => {
                             e.target.style.display = 'none';
@@ -592,7 +681,7 @@ const EditBlog = () => {
                 </div>
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                Note: Provide full image URLs or use the file selector for local preview. Images need to be hosted elsewhere.
+                Note: Images will be uploaded when you click "Update Blog". Supported formats: JPG, PNG, GIF, WebP, SVG (max 5MB each).
               </p>
             </div>
 
@@ -720,17 +809,17 @@ const EditBlog = () => {
               </button>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || uploading}
                 className="w-full px-4 py-2.5 bg-primary text-secondary rounded-sm hover:bg-primary/90 disabled:opacity-50 transition-colors text-xs font-medium uppercase inline-flex items-center justify-center gap-2"
               >
-                {loading ? (
+                {(loading || uploading) ? (
                   <>
                     <motion.div
                       animate={{ rotate: 360 }}
                       transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                       className="w-4 h-4 border-2 border-secondary border-t-transparent rounded-full"
                     />
-                    Updating...
+                    {getUploadStatus()}
                   </>
                 ) : (
                   <>
