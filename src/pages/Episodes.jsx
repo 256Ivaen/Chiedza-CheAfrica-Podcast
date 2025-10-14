@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
 // Import all components
 import EpisodesDynamicHero from '../components/Episodes/EpisodeDynamicHero';
 import AllEpisodes from '../components/Episodes/AllEpisodes';
-import { youtubeService } from '../services/youtubeService';
+import { youtubeService } from '../Services/youtubeService';
 
 const EpisodesPage = () => {
   const location = useLocation();
