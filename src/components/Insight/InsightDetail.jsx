@@ -497,7 +497,7 @@ const InsightDetail = () => {
           <h1 className="text-2xl font-light text-white mb-4">Insight not found</h1>
           <p className="text-gray-300 text-sm mb-6">{error || 'The insight you\'re looking for doesn\'t exist.'}</p>
           <button 
-            onClick={() => navigate('/insights')}
+            onClick={() => navigate('/blog')}
             className="px-6 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors text-sm font-light"
           >
             Back to Insights
@@ -957,7 +957,7 @@ const InsightDetail = () => {
                     className="group cursor-pointer"
                     variants={fadeInUp}
                     whileHover={{ y: -5 }}
-                    onClick={() => navigate(`/insights/${relatedInsight.id}`)}
+                    onClick={() => navigate(`/blog/${relatedInsight.id}`)}
                   >
                     <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg hover:bg-white/10 transition-all duration-300 overflow-hidden h-full">
                       <div className="relative overflow-hidden">
@@ -1010,7 +1010,7 @@ const InsightDetail = () => {
                 variants={fadeInUp}
               >
                 <button
-                  onClick={() => navigate('/insights')}
+                  onClick={() => navigate('/blog')}
                   className="px-6 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors font-light text-sm"
                 >
                   View All Insights

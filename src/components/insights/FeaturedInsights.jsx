@@ -151,7 +151,7 @@ const FeaturedInsights = ({ insights = [] }) => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
-              onClick={() => navigate(`/insights/${insight?.id}`)}
+              onClick={() => navigate(`/blog/${insight?.id}`)}
             >
               <div className="relative mb-4 flex-shrink-0">
                 <img
