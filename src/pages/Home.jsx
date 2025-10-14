@@ -1,14 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 
 import Hero from '../components/Home/Hero';
-import { About } from '../components/Home/About';
-import Products from '../components/Home/Products';
-import LatestCollection from '../components/Home/LatestCollection';
+import FeaturedEpisodes from '../components/Home/FeaturedEpisodes';
+import { youtubeService } from '../Services/youtubeService';
+import WhoWeAre from '../components/Home/WhoWeAre';
+import SupportUs from '../components/Home/SupportUs';
+import CTA from '../components/ui/Shared/CTA';
+import BlogsSection from '../components/Home/Blogs';
 
 const Home = () => {
   const location = useLocation();
+  const [episodes, setEpisodes] = useState([]);
+  const [loadingEpisodes, setLoadingEpisodes] = useState(true);
+
+  // Fetch episodes from YouTube
+  useEffect(() => {
+    const fetchEpisodes = async () => {
+      try {
+        setLoadingEpisodes(true);
+        const response = await youtubeService.getChannelVideos(50);
+        setEpisodes(response.videos || []);
+      } catch (error) {
+        console.error('Error fetching episodes:', error);
+        setEpisodes([]);
+      } finally {
+        setLoadingEpisodes(false);
+      }
+    };
+
+    fetchEpisodes();
+  }, []);
   
   const getCanonicalUrl = () => {
     const baseUrl = "https://chiedzacheafrica.com";
@@ -161,19 +184,37 @@ const Home = () => {
           <Hero />
         </section>
 
-        {/* Other sections can be uncommented as needed */}
-        {/* <section id="about" aria-label="About Chiedza CheAfrica Podcast">
-          <About />
+        <section aria-label="Welcome to Chiedza CheAfrica Podcast">
+          <WhoWeAre />
         </section>
 
-        <section id="products" aria-label="Featured Episodes">
-          <Products />
+        {/* Featured Episodes Section */}
+        {!loadingEpisodes && episodes.length > 0 && (
+          <section id="featured-episodes" aria-label="Featured Podcast Episodes">
+            <FeaturedEpisodes episodes={episodes} loading={loadingEpisodes} />
+          </section>
+        )}
+
+        <section aria-label="Welcome to Chiedza CheAfrica Podcast">
+          <BlogsSection />
         </section>
 
-        <section id="latest-collection" aria-label="Latest Episodes">
-          <LatestCollection />
-        </section> */}
+        <section aria-label="Welcome to Chiedza CheAfrica Podcast">
+          <SupportUs />
+        </section>
 
+        <CTA
+  title="Ready to Be Part of the Movement?"
+  subtitle="Whether you want to share your story, collaborate, or support our mission, we'd love to connect with you and continue lighting Africa's path together."
+  primaryButton={{
+    text: "Share Your Story",
+    onClick: () => window.location.href = "/contact"
+  }}
+  secondaryButton={{
+    text: "Support Our Mission", 
+    onClick: () => window.location.href = "/support"
+  }}
+/>
       </main>
     </>
   );
