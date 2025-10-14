@@ -7,7 +7,7 @@
     "variable": [
       {
         "key": "baseUrl",
-        "value": "http://localhost/backend",
+        "value": "https://api.chiedzacheafrica.com",
         "type": "string"
       },
       {

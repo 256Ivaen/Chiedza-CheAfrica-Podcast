@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -19,12 +19,20 @@ import {
   Sparkles,
   EyeOff,
 } from "lucide-react";
-import { post } from "../../utils/service";
+import { MdOutlineContentPasteGo } from "react-icons/md";
+import { CiSettings } from "react-icons/ci";
+import { get, put } from "../../utils/service";
 import { toast } from "sonner";
 
-const CreateBlog = () => {
+const SkeletonBox = ({ className }) => (
+  <div className={`animate-pulse bg-gray-200 rounded-lg ${className}`}></div>
+);
+
+const EditBlog = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [loading, setLoading] = useState(false);
+  const [fetchLoading, setFetchLoading] = useState(true);
   const imageInputRef = useRef(null);
   const heroInputRef = useRef(null);
 
@@ -61,6 +69,46 @@ const CreateBlog = () => {
     "Other",
   ];
 
+  // Fetch blog data
+  useEffect(() => {
+    const fetchBlog = async () => {
+      try {
+        setFetchLoading(true);
+        const response = await get(`blogs/${id}`);
+
+        if (response?.success && response?.data) {
+          const blog = response.data;
+          setFormData({
+            title: blog.title || "",
+            category: blog.category || "",
+            author: blog.author || "",
+            image: blog.image || "",
+            hero_image: blog.hero_image || "",
+            excerpt: blog.excerpt || "",
+            content: blog.content || "",
+            featured: Boolean(blog.featured),
+            visible: Boolean(blog.visible),
+            tags: Array.isArray(blog.tags) ? blog.tags : [],
+            read_time: blog.read_time || "5 min read",
+          });
+        } else {
+          toast.error("Blog not found");
+          navigate("/blogs");
+        }
+      } catch (error) {
+        console.error("Error fetching blog:", error);
+        toast.error("Failed to load blog");
+        navigate("/blogs");
+      } finally {
+        setFetchLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchBlog();
+    }
+  }, [id, navigate]);
+
   // Handle input changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -95,7 +143,7 @@ const CreateBlog = () => {
     }));
   };
 
-  // Handle image selection - FIXED: No upload, just store image URLs manually
+  // Handle image selection
   const handleImageSelect = (e, type) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -105,12 +153,7 @@ const CreateBlog = () => {
       return;
     }
 
-    // Create object URL for preview
     const imageUrl = URL.createObjectURL(file);
-    
-    // FIXED: Since you don't have upload endpoint, we'll just store the file object
-    // In a real scenario, you'd need to implement base64 conversion or file upload
-    // For now, we'll just use the object URL and let the user provide actual URLs
     toast.info("Image selected for preview. Please ensure image URLs are properly hosted elsewhere.");
     
     setFormData((prev) => ({
@@ -118,7 +161,6 @@ const CreateBlog = () => {
       [type === "hero" ? "hero_image" : "image"]: imageUrl,
     }));
 
-    // Reset file input
     e.target.value = "";
   };
 
@@ -146,7 +188,7 @@ const CreateBlog = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle submit - FIXED: Proper data structure for your backend
+  // Handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -157,39 +199,37 @@ const CreateBlog = () => {
 
     setLoading(true);
     try {
-      // FIXED: Prepare data exactly as your backend expects
       const submitData = {
         title: formData.title.trim(),
         category: formData.category,
         author: formData.author.trim(),
-        image: formData.image, // This should be a proper image URL
-        hero_image: formData.hero_image, // This should be a proper image URL
+        image: formData.image,
+        hero_image: formData.hero_image,
         excerpt: formData.excerpt.trim(),
         content: formData.content.trim(),
         featured: Boolean(formData.featured),
         visible: Boolean(formData.visible),
         tags: Array.isArray(formData.tags) ? formData.tags : [],
-        hero_data: {}, // Empty object as per your backend
+        hero_data: {},
         read_time: formData.read_time || "5 min read",
       };
 
-      console.log("Submitting blog data:", submitData);
+      console.log("Updating blog data:", submitData);
 
-      const response = await post("blogs", submitData);
+      const response = await put(`blogs/${id}`, submitData);
 
       if (response.success) {
-        toast.success(response.message || "Blog created successfully!");
-        navigate("/blogs");
+        toast.success(response.message || "Blog updated successfully!");
+        navigate(`/blogs/${id}`);
       } else {
-        toast.error(response.message || "Failed to create blog");
+        toast.error(response.message || "Failed to update blog");
       }
     } catch (error) {
-      console.error("Error creating blog:", error);
+      console.error("Error updating blog:", error);
       
-      // FIXED: Better error handling
       const errorMessage = error.response?.data?.message || 
                           error.message || 
-                          "Failed to create blog. Check console for details.";
+                          "Failed to update blog. Check console for details.";
       toast.error(errorMessage);
     } finally {
       setLoading(false);
@@ -202,7 +242,7 @@ const CreateBlog = () => {
       toast.error("Please fill in all required fields to preview");
       return;
     }
-    toast.info("Preview feature coming soon!");
+    navigate(`/blogs/${id}`);
   };
 
   // Clear image
@@ -212,6 +252,33 @@ const CreateBlog = () => {
       [type === "hero" ? "hero_image" : "image"]: "",
     }));
   };
+
+  // Loading state
+  if (fetchLoading) {
+    return (
+      <div className="bg-gray-50 min-h-screen">
+        <div className="p-4 sm:p-6 lg:p-8">
+          <div className="max-w-7xl mx-auto">
+            <SkeletonBox className="h-8 w-32 mb-6" />
+            <div className="space-y-4">
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <SkeletonBox className="h-6 w-48 mb-4" />
+                <SkeletonBox className="h-10 w-full mb-4" />
+                <div className="grid grid-cols-2 gap-4">
+                  <SkeletonBox className="h-10 w-full" />
+                  <SkeletonBox className="h-10 w-full" />
+                </div>
+              </div>
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <SkeletonBox className="h-6 w-32 mb-4" />
+                <SkeletonBox className="h-40 w-full" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -224,18 +291,18 @@ const CreateBlog = () => {
             className="mb-6"
           >
             <button
-              onClick={() => navigate("/blogs")}
+              onClick={() => navigate(`/blogs/${id}`)}
               className="inline-flex items-center gap-2 text-xs text-gray-600 hover:text-gray-900 mb-4 font-medium"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to Blogs
+              Back to Blog
             </button>
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
-                <h1 className="text-base font-bold text-gray-900 mb-0.5">Create New Blog</h1>
+                <h1 className="text-base font-bold text-gray-900 mb-0.5">Edit Blog</h1>
                 <p className="text-xs text-gray-500">
-                  Fill in the details to create a new blog post
+                  Update your blog post details
                 </p>
               </div>
 
@@ -261,12 +328,12 @@ const CreateBlog = () => {
                         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                         className="w-4 h-4 border-2 border-secondary border-t-transparent rounded-full"
                       />
-                      Creating...
+                      Updating...
                     </>
                   ) : (
                     <>
                       <Save className="w-4 h-4" />
-                      Create Blog
+                      Update Blog
                     </>
                   )}
                 </button>
@@ -286,7 +353,7 @@ const CreateBlog = () => {
             {/* Basic Information Card */}
             <div className="bg-white rounded-lg border border-gray-200 p-4">
               <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <FileText className="w-4 h-4 text-primary" />
+                <FileText className="w-4 h-4 text-secondary" />
                 Basic Information
               </h2>
 
@@ -411,7 +478,7 @@ const CreateBlog = () => {
             {/* Images Card */}
             <div className="bg-white rounded-lg border border-gray-200 p-4">
               <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <ImageIcon className="w-4 h-4 text-primary" />
+                <ImageIcon className="w-4 h-4 text-secondary" />
                 Images
               </h2>
 
@@ -532,7 +599,7 @@ const CreateBlog = () => {
             {/* Content Card */}
             <div className="bg-white rounded-lg border border-gray-200 p-4">
               <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <AlignLeft className="w-4 h-4 text-primary" />
+                <MdOutlineContentPasteGo className="w-4 h-4 text-secondary" />
                 Content
               </h2>
 
@@ -540,7 +607,7 @@ const CreateBlog = () => {
                 {/* Excerpt */}
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-2">
-                    Excerpt <span className="text-red-500">*</span>
+                    Subtitle <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     name="excerpt"
@@ -582,7 +649,7 @@ const CreateBlog = () => {
             {/* Settings Card */}
             <div className="bg-white rounded-lg border border-gray-200 p-4">
               <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-primary" />
+                <CiSettings className="w-4 h-4 text-secondary" />
                 Settings
               </h2>
 
@@ -663,12 +730,12 @@ const CreateBlog = () => {
                       transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                       className="w-4 h-4 border-2 border-secondary border-t-transparent rounded-full"
                     />
-                    Creating...
+                    Updating...
                   </>
                 ) : (
                   <>
                     <Save className="w-4 h-4" />
-                    Create Blog
+                    Update Blog
                   </>
                 )}
               </button>
@@ -680,4 +747,4 @@ const CreateBlog = () => {
   );
 };
 
-export default CreateBlog;
+export default EditBlog;

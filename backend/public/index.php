@@ -41,6 +41,7 @@ use App\Controllers\BlogController;
 use App\Controllers\CommentController;
 use App\Controllers\ReactionController;
 use App\Controllers\UserController;
+use App\Controllers\UploadController;
 
 try {
     $db = Database::getInstance()->getConnection();
@@ -57,16 +58,24 @@ if (empty($uri)) {
     $uri = '/';
 }
 
+// Handle form data for file uploads
 $input = file_get_contents('php://input');
 $data = json_decode($input, true) ?? [];
 $queryParams = $_GET;
+
+// For file uploads, merge POST data
+if ($method === 'POST' && !empty($_POST)) {
+    $data = array_merge($data, $_POST);
+}
 
 $authController = new AuthController($db);
 $blogController = new BlogController($db);
 $commentController = new CommentController($db);
 $reactionController = new ReactionController($db);
 $userController = new UserController($db);
+$uploadController = new UploadController();
 
+// Public routes
 if ($method === 'GET' && $uri === '/health') {
     Response::success(['status' => 'healthy', 'timestamp' => date('Y-m-d H:i:s')]);
 }
@@ -109,6 +118,7 @@ if ($method === 'PUT' && preg_match('#^/views/(\d+)$#', $uri, $matches)) {
     $blogController->updateViewDuration($matches[1], $data);
 }
 
+// Authenticated routes
 $user = AuthMiddleware::authenticate();
 
 if ($method === 'POST' && $uri === '/auth/register') {
@@ -162,6 +172,22 @@ if ($method === 'GET' && $uri === '/users') {
 if ($method === 'DELETE' && preg_match('#^/users/(\d+)$#', $uri, $matches)) {
     RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
     $userController->delete($matches[1], $user);
+}
+
+// Upload routes
+if ($method === 'POST' && $uri === '/upload/image') {
+    RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
+    $uploadController->uploadImage($data);
+}
+
+if ($method === 'POST' && $uri === '/upload/blog-images') {
+    RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
+    $uploadController->uploadBlogImages($data);
+}
+
+if ($method === 'POST' && $uri === '/upload/cleanup') {
+    RoleMiddleware::checkRole($user, ['super_admin']);
+    $uploadController->cleanupEmptyFolders();
 }
 
 Response::notFound('Endpoint not found');

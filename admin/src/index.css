@@ -1,3 +1,6 @@
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,600,700&f[]=clash-display@400,500,600,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -29,7 +32,6 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    /* Sidebar variables */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 221 83% 53%;
@@ -65,7 +67,6 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    /* Dark mode sidebar */
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 221 83% 53%;
@@ -75,14 +76,15 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 221 83% 53%;
   }
-}
 
-@layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
+  
   body {
-    @apply bg-background text-foreground;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'Satoshi', sans-serif;
   }
 }
 
@@ -108,15 +110,24 @@
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-transparent;
+  background-color: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+  background-color: #d1d5db;
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-400 dark:bg-gray-500;
+  background-color: #9ca3af;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background-color: #4b5563;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: #6b7280;
 }
 
 /* Custom scrollbar for sidebar projects */
