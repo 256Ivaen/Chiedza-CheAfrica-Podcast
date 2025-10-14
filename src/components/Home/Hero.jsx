@@ -253,7 +253,7 @@ const Hero = () => {
             variants={containerVariants}
           >
             <motion.p 
-              className="text-primary text-xs font-semibold uppercase tracking-wider mb-3 md:mb-4"
+              className="text-primary text-sm font-semibold uppercase tracking-wider mb-3 md:mb-4"
               variants={fadeVariants}
             >
               {heroData.subtitle}
@@ -287,7 +287,7 @@ const Hero = () => {
               variants={buttonVariants}
             >
               <motion.button 
-                className="bg-primary text-white px-6 py-2 rounded-full font-light hover:bg-primary/90 transition-all duration-300 flex items-center justify-center gap-2 text-xs md:text-sm w-full sm:w-auto"
+                className="bg-primary text-white px-6 py-2 rounded-full font-light hover:bg-primary/90 transition-all duration-300 flex items-center justify-center gap-2 text-sm md:text-sm w-full sm:w-auto"
                 whileHover={{ 
                   scale: 1.05, 
                   y: -2,
@@ -300,7 +300,7 @@ const Hero = () => {
               </motion.button>
               
               <motion.button 
-                className="backdrop-blur-md bg-white/10 border border-white/20 text-white px-6 py-2 rounded-full font-light hover:bg-white/20 transition-all duration-300 flex items-center justify-center gap-2 text-xs md:text-sm w-full sm:w-auto"
+                className="backdrop-blur-md bg-white/10 border border-white/20 text-white px-6 py-2 rounded-full font-light hover:bg-white/20 transition-all duration-300 flex items-center justify-center gap-2 text-sm md:text-sm w-full sm:w-auto"
                 whileHover={{ 
                   scale: 1.05, 
                   y: -2,

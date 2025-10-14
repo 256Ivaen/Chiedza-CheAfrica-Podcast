@@ -71,7 +71,7 @@ const AdvancedFilterSearch = ({
               placeholder="Search insights..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-10 py-3 bg-white/5 border border-white/10 rounded-full focus:outline-none focus:border-primary transition-colors duration-200 text-xs text-white placeholder-gray-400"
+              className="w-full pl-11 pr-10 py-3 bg-white/5 border border-white/10 rounded-full focus:outline-none focus:border-primary transition-colors duration-200 text-sm text-white placeholder-gray-400"
             />
             {searchTerm && (
               <button
@@ -85,7 +85,7 @@ const AdvancedFilterSearch = ({
 
           {/* Controls */}
           <div className="flex items-center gap-3 flex-shrink-0">
-            <span className="text-xs text-gray-300 bg-white/10 px-3 py-2 rounded-full font-light">
+            <span className="text-sm text-gray-300 bg-white/10 px-3 py-2 rounded-full font-light">
               {filteredCount} results
             </span>
 
@@ -116,7 +116,7 @@ const AdvancedFilterSearch = ({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-primary text-xs text-white font-light"
+              className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-primary text-sm text-white font-light"
             >
               {sortOptions.map(option => (
                 <option key={option.value} value={option.value} className="bg-gray-800">
@@ -127,7 +127,7 @@ const AdvancedFilterSearch = ({
 
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-light transition-colors duration-200 ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-light transition-colors duration-200 ${
                 isFilterOpen 
                   ? 'bg-primary text-white' 
                   : 'bg-white/10 text-gray-300 hover:bg-white/20 hover:text-white'
@@ -142,20 +142,20 @@ const AdvancedFilterSearch = ({
         {/* Active Filters */}
         {(!isAllSelected || searchTerm) && (
           <div className="flex items-center gap-2 mt-4 pt-4 border-t border-white/10">
-            <span className="text-xs text-gray-300 font-light">Active:</span>
+            <span className="text-sm text-gray-300 font-light">Active:</span>
             {!isAllSelected && selectedCategories.map(category => (
-              <span key={category} className="px-3 py-1 bg-primary/20 text-primary rounded-full text-xs font-light">
+              <span key={category} className="px-3 py-1 bg-primary/20 text-primary rounded-full text-sm font-light">
                 {category}
               </span>
             ))}
             {searchTerm && (
-              <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-light">
+              <span className="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm font-light">
                 "{searchTerm}"
               </span>
             )}
             <button
               onClick={clearFilters}
-              className="px-3 py-1 bg-white/10 text-gray-300 rounded-full text-xs font-light hover:bg-white/20 hover:text-white transition-colors"
+              className="px-3 py-1 bg-white/10 text-gray-300 rounded-full text-sm font-light hover:bg-white/20 hover:text-white transition-colors"
             >
               Clear
             </button>
@@ -174,13 +174,13 @@ const AdvancedFilterSearch = ({
             className="border-t border-white/10"
           >
             <div className="p-6">
-              <h4 className="text-xs font-light text-white mb-3">Categories</h4>
+              <h4 className="text-sm font-light text-white mb-3">Categories</h4>
               <div className="flex flex-wrap gap-2">
                 {categoryList.map((category) => (
                   <button
                     key={category}
                     onClick={() => handleCategoryToggle(category)}
-                    className={`px-3 py-2 rounded-full text-xs font-light transition-colors duration-200 ${
+                    className={`px-3 py-2 rounded-full text-sm font-light transition-colors duration-200 ${
                       selectedCategories.includes(category)
                         ? 'bg-primary text-white'
                         : 'bg-white/10 text-gray-300 hover:bg-white/20 hover:text-white'

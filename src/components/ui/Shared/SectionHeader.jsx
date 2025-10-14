@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 const SectionHeader = ({ subtitle, title, icon: Icon, className = "" }) => (
   <div className={`text-center mb-12 ${className}`}>
     <motion.p 
-      className="text-primary text-xs font-semibold uppercase tracking-wider mb-3"
+      className="text-primary text-sm font-semibold uppercase tracking-wider mb-3"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}

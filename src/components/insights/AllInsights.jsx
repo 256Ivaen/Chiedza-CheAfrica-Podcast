@@ -145,7 +145,7 @@ const AllInsights = ({ insights = [], categories = [] }) => {
                 setSearchTerm('');
                 setSelectedCategory(['All']);
               }}
-              className="px-6 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors text-xs font-light"
+              className="px-6 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors text-sm font-light"
             >
               Clear Filters
             </button>

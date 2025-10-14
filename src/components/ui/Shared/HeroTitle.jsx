@@ -29,7 +29,7 @@ const HeroTitle = ({ title, subtitle }) => {
         {title}
       </motion.h1>
       <motion.p 
-        className="text-primary text-xs font-semibold uppercase tracking-wider"
+        className="text-primary text-sm font-semibold uppercase tracking-wider"
         variants={{
           hidden: { opacity: 0, y: 20 },
           visible: { opacity: 1, y: 0, transition: { duration: 0.8, delay: 0.2 } }

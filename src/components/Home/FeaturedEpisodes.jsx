@@ -134,7 +134,7 @@ const FeaturedEpisodes = ({ episodes = [], loading = false }) => {
                     className="w-full h-48 md:h-full object-cover rounded-xl"
                   />
                   <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 backdrop-blur-xl bg-white/10 border border-primary/20 text-white text-xs font-light rounded-full shadow-2xl ring-1 ring-primary/10">
+                    <span className="px-3 py-1 backdrop-blur-xl bg-white/10 border border-primary/20 text-white text-sm font-light rounded-full shadow-2xl ring-1 ring-primary/10">
                       Featured
                     </span>
                   </div>
@@ -147,7 +147,7 @@ const FeaturedEpisodes = ({ episodes = [], loading = false }) => {
                 </div>
                 
                 <div className="md:w-1/2 flex flex-col justify-center min-h-0">
-                  <div className="flex items-center text-xs text-gray-400 mb-3 font-light">
+                  <div className="flex items-center text-sm text-gray-400 mb-3 font-light">
                     <div className="flex items-center space-x-1">
                       <Calendar className="w-3 h-3" />
                       <span>{displayEpisodes[0]?.date}</span>
@@ -158,11 +158,11 @@ const FeaturedEpisodes = ({ episodes = [], loading = false }) => {
                     {displayEpisodes[0]?.title}
                   </h3>
                   
-                  <p className="text-xs text-gray-300 mb-4 line-clamp-3 flex-1">
+                  <p className="text-sm text-gray-300 mb-4 line-clamp-3 flex-1">
                     {displayEpisodes[0]?.excerpt || displayEpisodes[0]?.description || "From Masai Mara to the Skies — A young pilot's inspiring story of hope and community."}
                   </p>
                   
-                  <button className="self-start flex items-center px-4 py-2 bg-primary text-white text-xs font-light rounded-lg transition-all duration-300 mt-auto hover:bg-primary/90">
+                  <button className="self-start flex items-center px-4 py-2 bg-primary text-white text-sm font-light rounded-lg transition-all duration-300 mt-auto hover:bg-primary/90">
                     <span className="mr-2">Watch Episode</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
@@ -188,7 +188,7 @@ const FeaturedEpisodes = ({ episodes = [], loading = false }) => {
                   className="w-full h-40 object-cover rounded-xl"
                 />
                 <div className="absolute top-3 left-3">
-                  <span className="px-2 py-1 backdrop-blur-xl bg-white/10 border border-primary/20 text-white text-xs font-light rounded-full shadow-2xl ring-1 ring-primary/10">
+                  <span className="px-2 py-1 backdrop-blur-xl bg-white/10 border border-primary/20 text-white text-sm font-light rounded-full shadow-2xl ring-1 ring-primary/10">
                     Featured
                   </span>
                 </div>
@@ -200,7 +200,7 @@ const FeaturedEpisodes = ({ episodes = [], loading = false }) => {
                 </div>
               </div>
               
-              <div className="flex items-center text-xs text-gray-400 mb-2 font-light">
+              <div className="flex items-center text-sm text-gray-400 mb-2 font-light">
                 <div className="flex items-center space-x-1">
                   <Calendar className="w-3 h-3" />
                   <span>{displayEpisodes[1]?.date}</span>
@@ -211,7 +211,7 @@ const FeaturedEpisodes = ({ episodes = [], loading = false }) => {
                 {displayEpisodes[1]?.title}
               </h4>
 
-              <p className="text-xs text-gray-300 line-clamp-3 flex-1">
+              <p className="text-sm text-gray-300 line-clamp-3 flex-1">
                 {displayEpisodes[1]?.excerpt || displayEpisodes[1]?.description || "From Physics to Space Systems — How Africa's new generation is reaching for the stars."}
               </p>
             </motion.div>
@@ -245,7 +245,7 @@ const FeaturedEpisodes = ({ episodes = [], loading = false }) => {
                       className="w-full h-40 object-cover rounded-xl"
                     />
                     <div className="absolute top-3 left-3">
-                      <span className="px-2 py-1 backdrop-blur-xl bg-white/10 border border-primary/20 text-white text-xs font-light rounded-full shadow-2xl ring-1 ring-primary/10">
+                      <span className="px-2 py-1 backdrop-blur-xl bg-white/10 border border-primary/20 text-white text-sm font-light rounded-full shadow-2xl ring-1 ring-primary/10">
                         Featured
                       </span>
                     </div>
@@ -257,7 +257,7 @@ const FeaturedEpisodes = ({ episodes = [], loading = false }) => {
                     </div>
                   </div>
                   
-                  <div className="flex items-center text-xs text-gray-400 mb-2 font-light">
+                  <div className="flex items-center text-sm text-gray-400 mb-2 font-light">
                     <div className="flex items-center space-x-1">
                       <Calendar className="w-3 h-3" />
                       <span>{episode?.date}</span>
@@ -268,7 +268,7 @@ const FeaturedEpisodes = ({ episodes = [], loading = false }) => {
                     {episode?.title}
                   </h4>
 
-                  <p className="text-xs text-gray-300 line-clamp-3 flex-1">
+                  <p className="text-sm text-gray-300 line-clamp-3 flex-1">
                     {episode?.excerpt || episode?.description || descriptions[index]}
                   </p>
                 </motion.div>

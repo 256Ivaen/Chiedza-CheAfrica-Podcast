@@ -101,12 +101,12 @@ const AboutUs = () => {
               </p>
               
               <div className="space-y-4">
-                <p className="text-gray-300 text-xs leading-relaxed">
+                <p className="text-gray-300 text-sm leading-relaxed">
                   We are storytellers, dreamers, and changemakers passionate about showcasing the brilliance 
                   of Africa and its people to the world. Our mission is to educate, empower, and connect — 
                   through conversations that spark curiosity, hope, and action.
                 </p>
-                <p className="text-gray-300 text-xs leading-relaxed">
+                <p className="text-gray-300 text-sm leading-relaxed">
                   Chiedza CheAfrica isn't just a podcast — it's a movement for light, leadership, and legacy. 
                   A global platform celebrating Africa's brilliance through storytelling, featuring voices 
                   shaping the future—from pilots and engineers to advocates and creators—while promoting 
@@ -119,7 +119,7 @@ const AboutUs = () => {
               {stats.map((stat, index) => (
                 <div key={index} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-6 text-center">
                   <div className="text-primary text-2xl font-light mb-2">{stat.number}</div>
-                  <div className="text-gray-300 text-xs">{stat.label}</div>
+                  <div className="text-gray-300 text-sm">{stat.label}</div>
                 </div>
               ))}
             </motion.div>
@@ -157,7 +157,7 @@ const AboutUs = () => {
                       <IconComponent className="w-6 h-6 text-primary" />
                     </div>
                     <h3 className="text-white text-sm font-light mb-3">{area.title}</h3>
-                    <p className="text-gray-300 text-xs leading-relaxed">
+                    <p className="text-gray-300 text-sm leading-relaxed">
                       {area.description}
                     </p>
                   </motion.div>
@@ -177,7 +177,7 @@ const AboutUs = () => {
               <Globe className="w-8 h-8 text-primary mr-4" />
               <h3 className="text-white text-lg font-light">Our Vision</h3>
             </div>
-            <p className="text-gray-300 text-xs leading-relaxed max-w-4xl">
+            <p className="text-gray-300 text-sm leading-relaxed max-w-4xl">
               To create a world where every African story of innovation, courage, and purpose is heard, 
               celebrated, and inspires action. We envision a continent where every voice contributes to 
               shaping extraordinary futures, and where the brilliance of Africa's changemakers lights 
@@ -205,7 +205,7 @@ const AboutUs = () => {
             >
               <Mic2 className="w-12 h-12 text-primary mx-auto mb-4" />
               <h3 className="text-white text-sm font-light mb-3">Authentic Storytelling</h3>
-              <p className="text-gray-300 text-xs leading-relaxed">
+              <p className="text-gray-300 text-sm leading-relaxed">
                 We believe in the power of authentic voices. Every story is told in the words of the changemakers themselves, preserving the raw emotion and truth of their journeys.
               </p>
             </motion.div>
@@ -218,7 +218,7 @@ const AboutUs = () => {
             >
               <Sparkles className="w-12 h-12 text-primary mx-auto mb-4" />
               <h3 className="text-white text-sm font-light mb-3">Quality Production</h3>
-              <p className="text-gray-300 text-xs leading-relaxed">
+              <p className="text-gray-300 text-sm leading-relaxed">
                 Professional audio quality and engaging narratives ensure that every episode is not just heard, but experienced. We invest in the best to honor our storytellers.
               </p>
             </motion.div>
@@ -231,7 +231,7 @@ const AboutUs = () => {
             >
               <Heart className="w-12 h-12 text-primary mx-auto mb-4" />
               <h3 className="text-white text-sm font-light mb-3">Community Impact</h3>
-              <p className="text-gray-300 text-xs leading-relaxed">
+              <p className="text-gray-300 text-sm leading-relaxed">
                 Beyond storytelling, we're committed to creating tangible impact through mentorship programs, awareness campaigns, and community outreach initiatives.
               </p>
             </motion.div>

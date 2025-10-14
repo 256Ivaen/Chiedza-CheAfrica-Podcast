@@ -163,7 +163,7 @@ const AllEpisodes = ({ episodes = [], categories = [], loading: propLoading = fa
           <div className="w-full h-48 bg-gray-700 rounded-xl"></div>
         </div>
         <div className="px-2 py-4 flex-1 flex flex-col">
-          <div className="flex items-center text-xs mb-4 space-x-4">
+          <div className="flex items-center text-sm mb-4 space-x-4">
             <div className="h-3 bg-gray-700 rounded w-20"></div>
             <div className="h-3 bg-gray-700 rounded w-16"></div>
           </div>
@@ -332,7 +332,7 @@ const AllEpisodes = ({ episodes = [], categories = [], loading: propLoading = fa
                 setSearchTerm('');
                 setSelectedCategory(['All']);
               }}
-              className="px-6 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors text-xs font-light"
+              className="px-6 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors text-sm font-light"
             >
               Clear Filters
             </button>

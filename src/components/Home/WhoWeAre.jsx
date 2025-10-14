@@ -43,17 +43,17 @@ const WhoWeAre = () => {
 
               {/* Content */}
               <div className="space-y-4">
-                <p className="text-xs text-gray-300 font-light leading-relaxed">
+                <p className="text-sm text-gray-300 font-light leading-relaxed">
                   At <span className="text-primary font-normal">Chiedza CheAfrica</span>, we believe every story carries light — 
                   <span className="italic"> "Chiedza"</span> means light in Shona.
                 </p>
                 
-                <p className="text-xs text-gray-300 font-light leading-relaxed">
+                <p className="text-sm text-gray-300 font-light leading-relaxed">
                   We are storytellers, dreamers, and changemakers passionate about showcasing the brilliance 
                   of Africa and its people to the world.
                 </p>
                 
-                <p className="text-xs text-gray-300 font-light leading-relaxed">
+                <p className="text-sm text-gray-300 font-light leading-relaxed">
                   Our mission is to <span className="text-white font-normal">educate, empower, and connect</span> — 
                   through conversations that spark curiosity, hope, and action.
                 </p>
@@ -65,19 +65,19 @@ const WhoWeAre = () => {
                   We champion:
                 </h3>
                 <ul className="space-y-2">
-                  <li className="text-xs text-gray-300 font-light leading-relaxed pl-4 relative">
+                  <li className="text-sm text-gray-300 font-light leading-relaxed pl-4 relative">
                     <span className="absolute left-0 text-primary">•</span>
                     <span className="font-normal text-white">Aviation & STEM Pathways</span> – inspiring the next generation of innovators.
                   </li>
-                  <li className="text-xs text-gray-300 font-light leading-relaxed pl-4 relative">
+                  <li className="text-sm text-gray-300 font-light leading-relaxed pl-4 relative">
                     <span className="absolute left-0 text-primary">•</span>
                     <span className="font-normal text-white">Disability Awareness & Inclusion</span> – creating empathy and equal opportunity.
                   </li>
-                  <li className="text-xs text-gray-300 font-light leading-relaxed pl-4 relative">
+                  <li className="text-sm text-gray-300 font-light leading-relaxed pl-4 relative">
                     <span className="absolute left-0 text-primary">•</span>
                     <span className="font-normal text-white">Mental Health & Dementia Advocacy</span> – promoting care and understanding.
                   </li>
-                  <li className="text-xs text-gray-300 font-light leading-relaxed pl-4 relative">
+                  <li className="text-sm text-gray-300 font-light leading-relaxed pl-4 relative">
                     <span className="absolute left-0 text-primary">•</span>
                     <span className="font-normal text-white">Youth Empowerment & Community Outreach</span> – tackling real issues like the Sugar Daddy Campaign and grassroots mentorship.
                   </li>
@@ -86,7 +86,7 @@ const WhoWeAre = () => {
 
               {/* Closing Statement */}
               <div className="pt-4">
-                <p className="text-xs text-gray-300 font-light leading-relaxed">
+                <p className="text-sm text-gray-300 font-light leading-relaxed">
                   Chiedza CheAfrica isn't just a podcast — it's a{" "}
                   <span className="text-primary font-normal">movement</span> for light, leadership, and legacy.
                 </p>

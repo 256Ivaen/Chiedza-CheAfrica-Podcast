@@ -162,10 +162,10 @@ const ContactUs = () => {
                     <IconComponent className="w-6 h-6 text-primary" />
                   </div>
                   <h3 className="text-white text-sm font-light mb-2">{method.title}</h3>
-                  <p className="text-gray-300 text-xs mb-4">{method.description}</p>
+                  <p className="text-gray-300 text-sm mb-4">{method.description}</p>
                   <a 
                     href={method.link}
-                    className="text-primary text-xs font-medium hover:text-primary/80 transition-colors"
+                    className="text-primary text-sm font-medium hover:text-primary/80 transition-colors"
                   >
                     {method.contact}
                   </a>
@@ -191,7 +191,7 @@ const ContactUs = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="name" className="block text-gray-300 text-xs font-light mb-2">
+                    <label htmlFor="name" className="block text-gray-300 text-sm font-light mb-2">
                       Your Name *
                     </label>
                     <input
@@ -201,12 +201,12 @@ const ContactUs = () => {
                       value={formData.name}
                       onChange={handleInputChange}
                       required
-                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-xs placeholder-gray-400 focus:outline-none focus:border-primary transition-colors"
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm placeholder-gray-400 focus:outline-none focus:border-primary transition-colors"
                       placeholder="Enter your full name"
                     />
                   </div>
                   <div>
-                    <label htmlFor="email" className="block text-gray-300 text-xs font-light mb-2">
+                    <label htmlFor="email" className="block text-gray-300 text-sm font-light mb-2">
                       Email Address *
                     </label>
                     <input
@@ -216,14 +216,14 @@ const ContactUs = () => {
                       value={formData.email}
                       onChange={handleInputChange}
                       required
-                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-xs placeholder-gray-400 focus:outline-none focus:border-primary transition-colors"
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm placeholder-gray-400 focus:outline-none focus:border-primary transition-colors"
                       placeholder="your.email@example.com"
                     />
                   </div>
                 </div>
                 
                 <div>
-                  <label htmlFor="subject" className="block text-gray-300 text-xs font-light mb-2">
+                  <label htmlFor="subject" className="block text-gray-300 text-sm font-light mb-2">
                     Subject *
                   </label>
                   <select
@@ -232,7 +232,7 @@ const ContactUs = () => {
                     value={formData.subject}
                     onChange={handleInputChange}
                     required
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-xs focus:outline-none focus:border-primary transition-colors"
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
                   >
                     <option value="">Select a subject</option>
                     <option value="collaboration">Collaboration</option>
@@ -245,7 +245,7 @@ const ContactUs = () => {
                 </div>
                 
                 <div>
-                  <label htmlFor="message" className="block text-gray-300 text-xs font-light mb-2">
+                  <label htmlFor="message" className="block text-gray-300 text-sm font-light mb-2">
                     Your Message *
                   </label>
                   <textarea
@@ -255,14 +255,14 @@ const ContactUs = () => {
                     onChange={handleInputChange}
                     required
                     rows="6"
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-xs placeholder-gray-400 focus:outline-none focus:border-primary transition-colors resize-none"
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm placeholder-gray-400 focus:outline-none focus:border-primary transition-colors resize-none"
                     placeholder="Tell us about your story, collaboration idea, or how we can work together..."
                   />
                 </div>
                 
                 <motion.button
                   type="submit"
-                  className="bg-primary text-white px-8 py-3 rounded-lg font-light text-xs hover:bg-primary/90 transition-all duration-300 flex items-center justify-center gap-2 w-full"
+                  className="bg-primary text-white px-8 py-3 rounded-lg font-light text-sm hover:bg-primary/90 transition-all duration-300 flex items-center justify-center gap-2 w-full"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -284,9 +284,9 @@ const ContactUs = () => {
                 <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
                   <div className="flex items-center mb-2">
                     <Clock className="w-4 h-4 text-primary mr-2" />
-                    <span className="text-white text-xs font-medium">Response Time</span>
+                    <span className="text-white text-sm font-medium">Response Time</span>
                   </div>
-                  <p className="text-gray-300 text-xs">
+                  <p className="text-gray-300 text-sm">
                     We typically respond to all inquiries within 24-48 hours. For urgent matters, 
                     please mention "URGENT" in your subject line.
                   </p>
@@ -309,7 +309,7 @@ const ContactUs = () => {
                           whileTap={{ scale: 0.95 }}
                         >
                           <IconComponent className="w-4 h-4" />
-                          <span className="text-xs font-light">{social.name}</span>
+                          <span className="text-sm font-light">{social.name}</span>
                         </motion.a>
                       );
                     })}
@@ -322,12 +322,12 @@ const ContactUs = () => {
                     <Mail className="w-4 h-4 text-primary mr-2" />
                     <h4 className="text-white text-sm font-light">Stay Updated</h4>
                   </div>
-                  <p className="text-gray-300 text-xs mb-4">
+                  <p className="text-gray-300 text-sm mb-4">
                     Subscribe to our newsletter for new episode alerts and community updates.
                   </p>
                   <motion.button
                     onClick={() => window.location.href = "/newsletter"}
-                    className="bg-white/10 text-white px-6 py-2 rounded-full font-light text-xs hover:bg-white/20 transition-all duration-300 border border-white/20 w-full"
+                    className="bg-white/10 text-white px-6 py-2 rounded-full font-light text-sm hover:bg-white/20 transition-all duration-300 border border-white/20 w-full"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -341,13 +341,13 @@ const ContactUs = () => {
                     <Heart className="w-4 h-4 text-primary mr-2" />
                     <h4 className="text-white text-sm font-light">Support Our Mission</h4>
                   </div>
-                  <p className="text-gray-300 text-xs mb-4">
+                  <p className="text-gray-300 text-sm mb-4">
                     Love what we do? Consider supporting our podcast to help us continue 
                     amplifying African stories.
                   </p>
                   <motion.button
                     onClick={() => window.location.href = "/support"}
-                    className="bg-primary text-white px-6 py-2 rounded-full font-light text-xs hover:bg-primary/90 transition-all duration-300 w-full"
+                    className="bg-primary text-white px-6 py-2 rounded-full font-light text-sm hover:bg-primary/90 transition-all duration-300 w-full"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
