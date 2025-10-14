@@ -15,8 +15,9 @@ import {
   Mail,
   Reply,
   Shield,
+  Send,
 } from "lucide-react";
-import { get, del } from "../../utils/service";
+import { get, del, post } from "../../utils/service";
 import { toast } from "sonner";
 
 const SkeletonBox = ({ className }) => (
@@ -105,6 +106,101 @@ const DeleteModal = ({ isOpen, onClose, onConfirm, loading }) => {
   );
 };
 
+// Reply Modal
+const ReplyModal = ({ isOpen, onClose, onConfirm, loading, comment }) => {
+  const [replyContent, setReplyContent] = useState("");
+
+  if (!isOpen) return null;
+
+  const handleSubmit = () => {
+    if (!replyContent.trim()) {
+      toast.error("Reply content cannot be empty");
+      return;
+    }
+    onConfirm(replyContent);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        className="relative bg-white rounded-lg max-w-md w-full p-6 border border-gray-100"
+      >
+        <div className="flex items-center gap-4 mb-4">
+          <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+            <Reply className="w-6 h-6 text-primary" />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-gray-900">Reply to Comment</h3>
+            <p className="text-xs text-gray-600">Add an admin reply</p>
+          </div>
+        </div>
+
+        {/* Original Comment Preview */}
+        <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+          <p className="text-xs text-gray-600 mb-1">
+            <strong>{comment.name || comment.admin_email || "Unknown"}</strong> on{" "}
+            {comment.blog_title}
+          </p>
+          <p className="text-xs text-gray-700">{comment.content}</p>
+        </div>
+
+        <div className="mb-6">
+          <label className="block text-xs font-medium text-gray-700 mb-2">
+            Your Reply
+          </label>
+          <textarea
+            value={replyContent}
+            onChange={(e) => setReplyContent(e.target.value)}
+            placeholder="Type your reply here..."
+            rows="4"
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-xs resize-none"
+          />
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            onClick={onClose}
+            disabled={loading}
+            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-xs font-medium"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={loading || !replyContent.trim()}
+            className="flex-1 px-4 py-2 bg-primary text-secondary rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors text-xs font-medium flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <>
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="w-3 h-3 border-2 border-secondary border-t-transparent rounded-full"
+                />
+                Sending...
+              </>
+            ) : (
+              <>
+                Send Reply
+              </>
+            )}
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
 // Main Component
 export default function Comments() {
   const navigate = useNavigate();
@@ -116,6 +212,8 @@ export default function Comments() {
   const [filterType, setFilterType] = useState("all");
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, comment: null });
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [replyModal, setReplyModal] = useState({ isOpen: false, comment: null });
+  const [replyLoading, setReplyLoading] = useState(false);
 
   // Fetch all comments from all blogs
   const fetchAllComments = async () => {
@@ -206,6 +304,32 @@ export default function Comments() {
       toast.error("Failed to delete comment");
     } finally {
       setDeleteLoading(false);
+    }
+  };
+
+  // Reply to comment
+  const handleReplyComment = async (replyContent) => {
+    if (!replyModal.comment) return;
+
+    setReplyLoading(true);
+    try {
+      const response = await post(
+        `blogs/${replyModal.comment.blog_id}/comments/${replyModal.comment.id}/reply`,
+        { content: replyContent }
+      );
+      
+      if (response.success) {
+        toast.success("Reply added successfully");
+        setReplyModal({ isOpen: false, comment: null });
+        fetchAllComments();
+      } else {
+        toast.error("Failed to add reply");
+      }
+    } catch (error) {
+      console.error("Error adding reply:", error);
+      toast.error("Failed to add reply");
+    } finally {
+      setReplyLoading(false);
     }
   };
 
@@ -419,12 +543,26 @@ export default function Comments() {
                       </div>
                     </div>
 
-                    <button
-                      onClick={() => setDeleteModal({ isOpen: true, comment })}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <div className="flex items-center gap-1">
+                      {/* Reply Button - Only show for non-admin comments */}
+                      {!comment.is_admin_reply && (
+                        <button
+                          onClick={() => setReplyModal({ isOpen: true, comment })}
+                          className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                          title="Reply to comment"
+                        >
+                          <Reply className="w-4 h-4" />
+                        </button>
+                      )}
+                      
+                      {/* Delete Button */}
+                      <button
+                        onClick={() => setDeleteModal({ isOpen: true, comment })}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
               ))
@@ -443,6 +581,19 @@ export default function Comments() {
             onClose={() => setDeleteModal({ isOpen: false, comment: null })}
             onConfirm={handleDeleteComment}
             loading={deleteLoading}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Reply Modal */}
+      <AnimatePresence>
+        {replyModal.isOpen && (
+          <ReplyModal
+            isOpen={replyModal.isOpen}
+            onClose={() => setReplyModal({ isOpen: false, comment: null })}
+            onConfirm={handleReplyComment}
+            loading={replyLoading}
+            comment={replyModal.comment}
           />
         )}
       </AnimatePresence>
