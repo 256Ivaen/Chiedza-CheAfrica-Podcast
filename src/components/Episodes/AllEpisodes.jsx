@@ -86,6 +86,9 @@ const AllEpisodes = ({ episodes = [], categories = [], loading: propLoading = fa
       .filter(episode => {
         if (!episode) return false;
         
+        // Filter out YouTube shorts
+        if (episode.isShort || episode.type === 'short' || episode.duration < 60) return false;
+        
         const selectedCategories = Array.isArray(selectedCategory) ? selectedCategory : [selectedCategory];
         const matchesCategory = selectedCategories.includes("All") || selectedCategories.includes(episode.category);
         
