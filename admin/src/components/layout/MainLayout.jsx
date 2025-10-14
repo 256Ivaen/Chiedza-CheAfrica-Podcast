@@ -8,12 +8,6 @@ import { Plus, User, LogOut, ChevronRight, Menu } from "lucide-react";
 
 const MainLayout = ({
   children,
-  projects = [],
-  selectedProject,
-  setSelectedProject,
-  companies = [],
-  selectedCompany,
-  setSelectedCompany,
   activeSection = "dashboard",
   setActiveSection,
 }) => {
@@ -23,28 +17,19 @@ const MainLayout = ({
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Get user data from localStorage
   const user = {
-    name: localStorage.getItem("name") || "User",
-    firstName: localStorage.getItem("first_name") || "",
-    lastName: localStorage.getItem("last_name") || "",
-    email: localStorage.getItem("email") || "user@example.com",
-    agentId: localStorage.getItem("agentId") || "",
-    type: localStorage.getItem("type") || "",
-    initials: (localStorage.getItem("name") || "U")
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2),
+    email: localStorage.getItem("email") || "admin@example.com",
+    role: localStorage.getItem("role") || "admin",
+    userId: localStorage.getItem("userId") || "",
+    initials: (localStorage.getItem("email") || "A")
+      .charAt(0)
+      .toUpperCase(),
   };
 
-  // Check for mobile screen size
   useEffect(() => {
     const checkMobile = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
-      // Auto-close sidebar on mobile
       if (mobile) {
         setSidebarOpen(false);
       } else {
@@ -57,11 +42,10 @@ const MainLayout = ({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const toggleSidebar = (isOpen, userInitiated = false) => {
+  const toggleSidebar = (isOpen) => {
     setSidebarOpen(isOpen);
   };
 
-  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (!e.target.closest(".user-menu-container")) {
@@ -76,40 +60,25 @@ const MainLayout = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleCreateCampaign = () => {
-    navigate("/campaignform");
-    setActiveSection("campaigns");
-    setShowMobileMenu(false);
-  };
-
-  const handleNewBusiness = () => {
-    navigate("/business");
-    setActiveSection("businesses");
+  const handleCreateBlog = () => {
+    navigate("/blogs/create");
+    setActiveSection("blogs-create");
     setShowMobileMenu(false);
   };
 
   const handleLogout = () => {
-    // Clear all authentication data from localStorage
-    localStorage.removeItem("agentId");
-    localStorage.removeItem("name");
-    localStorage.removeItem("first_name");
-    localStorage.removeItem("last_name");
-    localStorage.removeItem("email");
-    localStorage.removeItem("type");
     localStorage.removeItem("jwt");
-    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("email");
+    localStorage.removeItem("role");
     localStorage.removeItem("isLoggedIn");
 
-    // Close the user menu
     setShowUserMenu(false);
-
-    // Redirect to login page
     navigate("/login");
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Mobile Overlay */}
       <AnimatePresence>
         {sidebarOpen && isMobile && (
           <motion.div
@@ -125,8 +94,7 @@ const MainLayout = ({
       <Sidebar
         isOpen={sidebarOpen}
         toggleSidebar={toggleSidebar}
-        userRole="admin"
-        projects={projects}
+        userRole={user.role}
         activeSection={activeSection}
         setActiveSection={setActiveSection}
         isMobile={isMobile}
@@ -137,11 +105,9 @@ const MainLayout = ({
           isMobile ? "ml-0" : sidebarOpen ? "ml-64" : "ml-16"
         }`}
       >
-        {/* Header */}
         <header className="bg-white border-b border-gray-200 px-4 md:px-6 py-4 sticky top-0 z-20">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              {/* Mobile Menu Button */}
               {isMobile && (
                 <button
                   onClick={() => setSidebarOpen(true)}
@@ -151,10 +117,9 @@ const MainLayout = ({
                 </button>
               )}
 
-              {/* Desktop Expand Sidebar Button */}
               {!isMobile && !sidebarOpen && (
                 <motion.button
-                  onClick={() => toggleSidebar(true, true)}
+                  onClick={() => toggleSidebar(true)}
                   className="flex items-center gap-2 px-3 py-2 text-xs text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                   whileHover={{ x: 5 }}
                 >
@@ -165,18 +130,16 @@ const MainLayout = ({
             </div>
 
             <div className="flex items-center gap-2 md:gap-3">
-              {/* Desktop Action Buttons */}
               <div className="hidden md:flex items-center gap-3">
                 <button
-                  onClick={handleCreateCampaign}
-                  className="px-4 py-2 bg-primary text-secondary rounded-lg text-xs font-medium flex items-center gap-2 hover:bg-primary-scale-500 transition-colors"
+                  onClick={handleCreateBlog}
+                  className="px-4 py-2 bg-primary text-secondary rounded-lg text-xs font-medium flex items-center gap-2 hover:bg-primary/90 transition-colors"
                 >
                   <Plus className="h-4 w-4" />
-                  Create Campaign
+                  Create Blog
                 </button>
               </div>
 
-              {/* Mobile Menu Button */}
               {isMobile && (
                 <div className="relative mobile-menu-container">
                   <button
@@ -195,11 +158,11 @@ const MainLayout = ({
                         className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-50"
                       >
                         <button
-                          onClick={handleCreateCampaign}
+                          onClick={handleCreateBlog}
                           className="w-full flex items-center gap-2 px-4 py-3 text-xs text-left hover:bg-gray-50 transition-colors"
                         >
                           <Plus className="h-4 w-4" />
-                          Create Campaign
+                          Create Blog
                         </button>
                       </motion.div>
                     )}
@@ -207,7 +170,6 @@ const MainLayout = ({
                 </div>
               )}
 
-              {/* User Menu */}
               <div className="relative user-menu-container">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
@@ -234,8 +196,8 @@ const MainLayout = ({
                             <User className="h-6 w-6 text-secondary" />
                           </div>
                           <div>
-                            <p className="text-xs font-medium text-gray-900">
-                              {user.name}
+                            <p className="text-xs font-medium text-gray-900 capitalize">
+                              {user.role}
                             </p>
                             <p className="text-xs text-gray-600">
                               {user.email}
@@ -267,13 +229,12 @@ const MainLayout = ({
         <main className="h-[calc(100vh-4rem)] flex flex-col">{children}</main>
       </div>
 
-      {/* Mobile Floating Action Button */}
       {isMobile && (
         <div className="fixed bottom-6 right-6 z-40">
           <div className="relative">
             <button
               onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className="w-14 h-14 bg-primary rounded-full shadow-lg flex items-center justify-center hover:bg-primary-scale-500 transition-colors"
+              className="w-14 h-14 bg-primary rounded-full shadow-lg flex items-center justify-center hover:bg-primary/90 transition-colors"
             >
               <Plus className="h-6 w-6 text-secondary" />
             </button>
@@ -287,13 +248,13 @@ const MainLayout = ({
                   className="absolute bottom-16 right-0 w-48 bg-white border border-gray-200 rounded-lg shadow-xl"
                 >
                   <button
-                    onClick={handleCreateCampaign}
+                    onClick={handleCreateBlog}
                     className="w-full flex items-center gap-3 px-4 py-3 text-xs text-left hover:bg-gray-50 transition-colors rounded-t-lg"
                   >
-                    <div className="w-8 h-8 bg-primary-scale-100 rounded-full flex items-center justify-center">
-                      <Plus className="h-4 w-4 text-secondary" />
+                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                      <Plus className="h-4 w-4 text-primary" />
                     </div>
-                    <span className="font-medium">Create Campaign</span>
+                    <span className="font-medium">Create Blog</span>
                   </button>
                 </motion.div>
               )}

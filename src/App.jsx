@@ -14,6 +14,7 @@ import TopScroll from './components/ui/Shared/TopScroll';
 import InsightsPage from './pages/Insights';
 import InsightDetail from './components/Insight/InsightDetail';
 import ContactUs from './pages/ContactUs';
+import EpisodesPage from './pages/Episodes';
 
 const seoConfig = {
   default: {
@@ -220,8 +221,8 @@ const App = () => {
             <Route path="/contact" element={<ContactUs />} />
 
             Episodes Pages comming soon
-            <Route path="/episodes" element={<InsightsPage />} />
-            <Route path="/episodes/:id" element={<InsightDetail />} />
+            <Route path="/episodes" element={<EpisodesPage />} />
+            <Route path="/episodes/:id" element={<EpisodesPage />} />
             <Route path="/blog" element={<InsightsPage />} />
             <Route path="/blog/:id" element={<InsightDetail />} />
             <Route path="/404" element={<NotFound />} />
