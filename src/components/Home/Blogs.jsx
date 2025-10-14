@@ -200,7 +200,7 @@ const BlogsSection = () => {
                   </h3>
 
                   {/* Author */}
-                  <div className="flex items-center text-xs text-gray-400 mb-2">
+                  <div className="flex items-center text-sm text-gray-400 mb-2">
                     <span className="font-light uppercase truncate">{blog.author}</span>
                   </div>
 
@@ -211,7 +211,7 @@ const BlogsSection = () => {
                       <div className="w-0 h-0 border-t-[4px] border-t-transparent border-l-[6px] border-l-gray-400 border-b-[4px] border-b-transparent ml-0.5"></div>
                     </div>
                     {blog.readTime && (
-                      <span className="text-xs text-gray-400">{blog.readTime}</span>
+                      <span className="text-sm text-gray-400">{blog.readTime}</span>
                     )}
                   </div>
                 </div>

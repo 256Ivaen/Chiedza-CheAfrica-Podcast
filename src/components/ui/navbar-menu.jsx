@@ -100,7 +100,7 @@ export const LocationItem = ({ title, description, address, href, mapUrl, image 
         <p className="text-[#0f4761]/70 text-sm max-w-[10rem] mb-1">
           {description}
         </p>
-        <p className="text-[#0f4761]/60 text-xs max-w-[10rem]">
+        <p className="text-[#0f4761]/60 text-sm max-w-[10rem]">
           {address}
         </p>
       </div>

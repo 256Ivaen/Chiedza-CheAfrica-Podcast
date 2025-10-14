@@ -446,7 +446,7 @@ const InsightDetail = () => {
       }`}
     >
       <Check className="w-5 h-5" />
-      <span className="font-medium text-xs">{message}</span>
+      <span className="font-medium text-sm">{message}</span>
     </motion.div>
   );
 
@@ -495,10 +495,10 @@ const InsightDetail = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-light text-white mb-4">Insight not found</h1>
-          <p className="text-gray-300 text-xs mb-6">{error || 'The insight you\'re looking for doesn\'t exist.'}</p>
+          <p className="text-gray-300 text-sm mb-6">{error || 'The insight you\'re looking for doesn\'t exist.'}</p>
           <button 
             onClick={() => navigate('/insights')}
-            className="px-6 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors text-xs font-light"
+            className="px-6 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors text-sm font-light"
           >
             Back to Insights
           </button>
@@ -595,15 +595,15 @@ const InsightDetail = () => {
                   <div className="flex items-center space-x-6">
                     <div className="flex items-center space-x-2 text-gray-300">
                       <Eye className="w-4 h-4" />
-                      <span className="text-xs font-light">{insight.viewCount} views</span>
+                      <span className="text-sm font-light">{insight.viewCount} views</span>
                     </div>
                     <div className="flex items-center space-x-2 text-gray-300">
                       <MessageSquare className="w-4 h-4" />
-                      <span className="text-xs font-light">{comments.length} comments</span>
+                      <span className="text-sm font-light">{comments.length} comments</span>
                     </div>
                     <div className="flex items-center space-x-2 text-gray-300">
                       <Heart className="w-4 h-4" />
-                      <span className="text-xs font-light">{insight.reactionCount} reactions</span>
+                      <span className="text-sm font-light">{insight.reactionCount} reactions</span>
                     </div>
                   </div>
 
@@ -643,7 +643,7 @@ const InsightDetail = () => {
                   className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-8 mb-8"
                   variants={fadeInUp}
                 >
-                  <div className="text-gray-300 text-xs leading-relaxed space-y-6 font-light prose prose-invert max-w-none">
+                  <div className="text-gray-300 text-sm leading-relaxed space-y-6 font-light prose prose-invert max-w-none">
                     {insight.content.split('\n').map((paragraph, index) => (
                       <p key={index} className="mb-4">
                         {paragraph.trim()}
@@ -656,7 +656,7 @@ const InsightDetail = () => {
                     <h3 className="text-white text-sm font-light mb-4">Related Topics</h3>
                     <div className="flex flex-wrap gap-2">
                       {insight.tags?.map(tag => (
-                        <span key={tag} className="px-3 py-1 bg-white/10 text-gray-300 text-xs rounded-full font-light">
+                        <span key={tag} className="px-3 py-1 bg-white/10 text-gray-300 text-sm rounded-full font-light">
                           #{tag}
                         </span>
                       ))}
@@ -692,7 +692,7 @@ const InsightDetail = () => {
                         }`}>
                           {commentForm.isAnonymous && <Check className="w-3 h-3 text-white" />}
                         </div>
-                        <div className="flex items-center gap-2 text-gray-300 text-xs">
+                        <div className="flex items-center gap-2 text-gray-300 text-sm">
                           <UserX className="w-4 h-4" />
                           <span>Comment anonymously</span>
                         </div>
@@ -702,24 +702,24 @@ const InsightDetail = () => {
                     {!commentForm.isAnonymous && (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                          <label className="block text-gray-300 text-xs font-light mb-2">Name *</label>
+                          <label className="block text-gray-300 text-sm font-light mb-2">Name *</label>
                           <input
                             type="text"
                             required
                             value={commentForm.name}
                             onChange={(e) => setCommentForm(prev => ({ ...prev, name: e.target.value }))}
-                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-primary transition-colors"
+                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-primary transition-colors"
                             placeholder="Your name"
                           />
                         </div>
                         <div>
-                          <label className="block text-gray-300 text-xs font-light mb-2">Email *</label>
+                          <label className="block text-gray-300 text-sm font-light mb-2">Email *</label>
                           <input
                             type="email"
                             required
                             value={commentForm.email}
                             onChange={(e) => setCommentForm(prev => ({ ...prev, email: e.target.value }))}
-                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-primary transition-colors"
+                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-primary transition-colors"
                             placeholder="your.email@example.com"
                           />
                         </div>
@@ -727,20 +727,20 @@ const InsightDetail = () => {
                     )}
 
                     <div className="mb-4">
-                      <label className="block text-gray-300 text-xs font-light mb-2">Comment *</label>
+                      <label className="block text-gray-300 text-sm font-light mb-2">Comment *</label>
                       <textarea
                         required
                         value={commentForm.content}
                         onChange={(e) => setCommentForm(prev => ({ ...prev, content: e.target.value }))}
                         rows="4"
-                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white text-xs focus:outline-none focus:border-primary transition-colors resize-none"
+                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-primary transition-colors resize-none"
                         placeholder="Share your thoughts..."
                       />
                     </div>
                     <motion.button
                       type="submit"
                       disabled={commentLoading}
-                      className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors text-xs font-light"
+                      className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors text-sm font-light"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
@@ -774,26 +774,26 @@ const InsightDetail = () => {
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-1">
-                                <p className="text-white text-xs font-semibold">
+                                <p className="text-white text-sm font-semibold">
                                   {comment.name || comment.admin_email}
                                 </p>
                                 {comment.is_admin_reply && (
-                                  <span className="px-2 py-1 bg-primary/20 text-primary text-xs rounded-full">Admin</span>
+                                  <span className="px-2 py-1 bg-primary/20 text-primary text-sm rounded-full">Admin</span>
                                 )}
                                 {comment.email?.includes('@anonymous.') && (
-                                  <span className="px-2 py-1 bg-gray-500/20 text-gray-300 text-xs rounded-full">Anonymous</span>
+                                  <span className="px-2 py-1 bg-gray-500/20 text-gray-300 text-sm rounded-full">Anonymous</span>
                                 )}
                               </div>
                               {comment.email && !comment.is_admin_reply && !comment.email.includes('@anonymous.') && (
-                                <p className="text-gray-400 text-xs flex items-center gap-1 mb-2">
+                                <p className="text-gray-400 text-sm flex items-center gap-1 mb-2">
                                   <Mail className="w-3 h-3" />
                                   {comment.email}
                                 </p>
                               )}
-                              <p className="text-gray-300 text-xs mb-1 leading-relaxed">
+                              <p className="text-gray-300 text-sm mb-1 leading-relaxed">
                                 {comment.content}
                               </p>
-                              <p className="text-gray-500 text-xs">
+                              <p className="text-gray-500 text-sm">
                                 {new Date(comment.created_at).toLocaleDateString()}
                               </p>
                             </div>
@@ -814,17 +814,17 @@ const InsightDetail = () => {
                                     </div>
                                     <div className="flex-1">
                                       <div className="flex items-center gap-2 mb-1">
-                                        <p className="text-white text-xs font-semibold">
+                                        <p className="text-white text-sm font-semibold">
                                           {reply.name || reply.admin_email}
                                         </p>
                                         {reply.is_admin_reply && (
-                                          <span className="px-2 py-1 bg-primary/20 text-primary text-xs rounded-full">Admin</span>
+                                          <span className="px-2 py-1 bg-primary/20 text-primary text-sm rounded-full">Admin</span>
                                         )}
                                       </div>
-                                      <p className="text-gray-300 text-xs mb-1 leading-relaxed">
+                                      <p className="text-gray-300 text-sm mb-1 leading-relaxed">
                                         {reply.content}
                                       </p>
-                                      <p className="text-gray-500 text-xs">
+                                      <p className="text-gray-500 text-sm">
                                         {new Date(reply.created_at).toLocaleDateString()}
                                       </p>
                                     </div>
@@ -838,7 +838,7 @@ const InsightDetail = () => {
                     ) : (
                       <div className="text-center py-8">
                         <MessageSquare className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-gray-400 text-xs">No comments yet. Be the first to share your thoughts!</p>
+                        <p className="text-gray-400 text-sm">No comments yet. Be the first to share your thoughts!</p>
                       </div>
                     )}
                   </div>
@@ -866,7 +866,7 @@ const InsightDetail = () => {
                       whileTap={{ scale: 0.98 }}
                     >
                       <Facebook className="w-4 h-4 text-blue-400" />
-                      <span className="text-gray-300 text-xs font-light group-hover:text-white transition-colors">Facebook</span>
+                      <span className="text-gray-300 text-sm font-light group-hover:text-white transition-colors">Facebook</span>
                     </motion.button>
                     <motion.button
                       onClick={() => handleShare('twitter')}
@@ -875,7 +875,7 @@ const InsightDetail = () => {
                       whileTap={{ scale: 0.98 }}
                     >
                       <Twitter className="w-4 h-4 text-sky-400" />
-                      <span className="text-gray-300 text-xs font-light group-hover:text-white transition-colors">Twitter</span>
+                      <span className="text-gray-300 text-sm font-light group-hover:text-white transition-colors">Twitter</span>
                     </motion.button>
                     <motion.button
                       onClick={() => handleShare('linkedin')}
@@ -884,7 +884,7 @@ const InsightDetail = () => {
                       whileTap={{ scale: 0.98 }}
                     >
                       <Linkedin className="w-4 h-4 text-blue-500" />
-                      <span className="text-gray-300 text-xs font-light group-hover:text-white transition-colors">LinkedIn</span>
+                      <span className="text-gray-300 text-sm font-light group-hover:text-white transition-colors">LinkedIn</span>
                     </motion.button>
                     <motion.button
                       onClick={() => handleShare('copy')}
@@ -906,7 +906,7 @@ const InsightDetail = () => {
                           <Link2 className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
                         )}
                       </motion.div>
-                      <span className={`text-xs font-light transition-colors ${
+                      <span className={`text-sm font-light transition-colors ${
                         copySuccess ? 'text-green-400' : 'text-gray-300 group-hover:text-white'
                       }`}>
                         {copySuccess ? 'Copied!' : 'Copy Content'}
@@ -921,8 +921,8 @@ const InsightDetail = () => {
                         <User className="w-5 h-5 text-gray-300" />
                       </div>
                       <div>
-                        <p className="text-white text-xs font-light">{insight.author}</p>
-                        <p className="text-gray-300 text-xs mt-1 font-light">
+                        <p className="text-white text-sm font-light">{insight.author}</p>
+                        <p className="text-gray-300 text-sm mt-1 font-light">
                           Expert in {insight.category.toLowerCase()} with extensive industry experience.
                         </p>
                       </div>
@@ -967,14 +967,14 @@ const InsightDetail = () => {
                           className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                         <div className="absolute top-3 left-3">
-                          <span className="px-2 py-1 bg-primary text-white text-xs font-light rounded-full">
+                          <span className="px-2 py-1 bg-primary text-white text-sm font-light rounded-full">
                             {relatedInsight.category}
                           </span>
                         </div>
                       </div>
                       
                       <div className="p-6">
-                        <div className="flex items-center text-gray-400 text-xs mb-3 space-x-3">
+                        <div className="flex items-center text-gray-400 text-sm mb-3 space-x-3">
                           <div className="flex items-center space-x-1">
                             <Clock className="w-3 h-3" />
                             <span>{relatedInsight.readTime}</span>
@@ -985,12 +985,12 @@ const InsightDetail = () => {
                           {relatedInsight.title}
                         </h3>
                         
-                        <p className="text-gray-300 text-xs mb-4 leading-relaxed line-clamp-2">
+                        <p className="text-gray-300 text-sm mb-4 leading-relaxed line-clamp-2">
                           {relatedInsight.excerpt}
                         </p>
                         
                         <motion.div 
-                          className="text-primary flex items-center text-xs font-light group-hover:text-primary/80 transition-colors duration-300"
+                          className="text-primary flex items-center text-sm font-light group-hover:text-primary/80 transition-colors duration-300"
                           whileHover={{ x: 4 }}
                         >
                           <span className="mr-1">Read More</span>
@@ -1011,7 +1011,7 @@ const InsightDetail = () => {
               >
                 <button
                   onClick={() => navigate('/insights')}
-                  className="px-6 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors font-light text-xs"
+                  className="px-6 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors font-light text-sm"
                 >
                   View All Insights
                 </button>

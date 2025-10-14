@@ -241,7 +241,7 @@ const InsightsPage = () => {
           <p className="text-red-400 text-sm mb-4">{error}</p>
           <button 
             onClick={fetchBlogs}
-            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-xs"
+            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm"
           >
             Try Again
           </button>

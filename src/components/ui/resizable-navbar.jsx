@@ -130,7 +130,7 @@ export const NavItems = ({
               e.preventDefault();
               onItemClick(item.link);
             }}
-            className="relative px-3 py-2 uppercase transition-colors whitespace-nowrap text-xs"
+            className="relative px-3 py-2 uppercase transition-colors whitespace-nowrap text-sm"
             style={{
               color: isActive(item.link)
                 ? (visible ? "#b8a979" : "white")
@@ -173,7 +173,7 @@ export const NavItems = ({
                 e.preventDefault();
                 onItemClick("/locations");
               }}
-              className="relative px-3 py-2 uppercase transition-colors whitespace-nowrap text-xs flex items-center gap-1"
+              className="relative px-3 py-2 uppercase transition-colors whitespace-nowrap text-sm flex items-center gap-1"
               style={{
                 color: visible ? "black" : "white"
               }}

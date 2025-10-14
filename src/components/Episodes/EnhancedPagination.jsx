@@ -38,7 +38,7 @@ const EnhancedPagination = ({
       transition={{ duration: 0.6 }}
     >
       {/* Results Summary */}
-      <div className="text-xs text-gray-300 font-light">
+      <div className="text-sm text-gray-300 font-light">
         Showing {indexOfFirstInsight + 1}-{Math.min(indexOfLastInsight, filteredCount)} of {filteredCount} insights
       </div>
 
@@ -65,7 +65,7 @@ const EnhancedPagination = ({
             <motion.button
               key={index}
               onClick={() => typeof page === 'number' && onPageChange(page)}
-              className={`min-w-[32px] sm:min-w-[36px] h-8 sm:h-9 rounded-full text-xs font-light transition-all duration-200 ${
+              className={`min-w-[32px] sm:min-w-[36px] h-8 sm:h-9 rounded-full text-sm font-light transition-all duration-200 ${
                 page === currentPage
                   ? 'text-primary border-2 border-primary'
                   : typeof page === 'number'

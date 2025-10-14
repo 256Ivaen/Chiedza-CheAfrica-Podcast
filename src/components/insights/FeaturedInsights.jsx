@@ -62,14 +62,14 @@ const FeaturedInsights = ({ insights = [] }) => {
                   className="w-full h-48 md:h-full object-cover rounded-xl"
                 />
                 <div className="absolute top-4 left-4">
-                  <span className="px-3 py-1 backdrop-blur-xl bg-white/10 border border-primary/20 text-white text-xs font-light rounded-full shadow-2xl ring-1 ring-primary/10">
+                  <span className="px-3 py-1 backdrop-blur-xl bg-white/10 border border-primary/20 text-white text-sm font-light rounded-full shadow-2xl ring-1 ring-primary/10">
                     {displayInsights[0]?.category}
                   </span>
                 </div>
               </div>
               
               <div className="md:w-1/2 flex flex-col justify-center min-h-0">
-                <div className="flex items-center text-xs text-gray-400 mb-3 space-x-4 font-light">
+                <div className="flex items-center text-sm text-gray-400 mb-3 space-x-4 font-light">
                   <div className="flex items-center space-x-1">
                     <Calendar className="w-3 h-3" />
                     <span>{displayInsights[0]?.date}</span>
@@ -84,11 +84,11 @@ const FeaturedInsights = ({ insights = [] }) => {
                   {displayInsights[0]?.title}
                 </h3>
                 
-                <p className="text-xs text-gray-300 mb-4 line-clamp-3 flex-1">
+                <p className="text-sm text-gray-300 mb-4 line-clamp-3 flex-1">
                   {displayInsights[0]?.excerpt}
                 </p>
                 
-                <button className="self-start flex items-center px-4 py-2 bg-primary text-white text-xs font-light rounded-lg transition-all duration-300 mt-auto hover:bg-primary/90">
+                <button className="self-start flex items-center px-4 py-2 bg-primary text-white text-sm font-light rounded-lg transition-all duration-300 mt-auto hover:bg-primary/90">
                   <span className="mr-2">Read Article</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
@@ -113,13 +113,13 @@ const FeaturedInsights = ({ insights = [] }) => {
                   className="w-full h-40 object-cover rounded-xl"
                 />
                 <div className="absolute top-3 left-3">
-                  <span className="px-2 py-1 backdrop-blur-xl bg-white/10 border border-primary/20 text-white text-xs font-light rounded-full shadow-2xl ring-1 ring-primary/10">
+                  <span className="px-2 py-1 backdrop-blur-xl bg-white/10 border border-primary/20 text-white text-sm font-light rounded-full shadow-2xl ring-1 ring-primary/10">
                     {displayInsights[1]?.featured ? 'Featured' : displayInsights[1]?.category}
                   </span>
                 </div>
               </div>
               
-              <div className="flex items-center text-xs text-gray-400 mb-2 space-x-3 font-light">
+              <div className="flex items-center text-sm text-gray-400 mb-2 space-x-3 font-light">
                 <div className="flex items-center space-x-1">
                   <Calendar className="w-3 h-3" />
                   <span>{displayInsights[1]?.date}</span>
@@ -134,7 +134,7 @@ const FeaturedInsights = ({ insights = [] }) => {
                 {displayInsights[1]?.title}
               </h4>
 
-              <p className="text-xs text-gray-300 line-clamp-3 flex-1">
+              <p className="text-sm text-gray-300 line-clamp-3 flex-1">
                 {displayInsights[1]?.excerpt}
               </p>
             </motion.div>
@@ -160,13 +160,13 @@ const FeaturedInsights = ({ insights = [] }) => {
                   className="w-full h-40 object-cover rounded-xl"
                 />
                 <div className="absolute top-3 left-3">
-                  <span className="px-2 py-1 backdrop-blur-xl bg-white/10 border border-primary/20 text-white text-xs font-light rounded-full shadow-2xl ring-1 ring-primary/10">
+                  <span className="px-2 py-1 backdrop-blur-xl bg-white/10 border border-primary/20 text-white text-sm font-light rounded-full shadow-2xl ring-1 ring-primary/10">
                     {insight?.featured ? 'Featured' : insight?.category}
                   </span>
                 </div>
               </div>
               
-              <div className="flex items-center text-xs text-gray-400 mb-2 space-x-3 font-light">
+              <div className="flex items-center text-sm text-gray-400 mb-2 space-x-3 font-light">
                 <div className="flex items-center space-x-1">
                   <Calendar className="w-3 h-3" />
                   <span>{insight?.date}</span>
@@ -181,7 +181,7 @@ const FeaturedInsights = ({ insights = [] }) => {
                 {insight?.title}
               </h4>
 
-              <p className="text-xs text-gray-300 line-clamp-3 flex-1">
+              <p className="text-sm text-gray-300 line-clamp-3 flex-1">
                 {insight?.excerpt}
               </p>
             </motion.div>

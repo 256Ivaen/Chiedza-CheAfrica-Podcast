@@ -91,7 +91,7 @@ const CTA = ({
 
               {/* Description */}
               <motion.p 
-                className="text-xs text-gray-600 mb-8 leading-relaxed"
+                className="text-sm text-gray-600 mb-8 leading-relaxed"
                 variants={itemVariants}
               >
                 {subtitle}
@@ -104,7 +104,7 @@ const CTA = ({
               >
                 {/* Primary Button */}
                 <motion.button
-                  className="bg-primary text-white px-8 py-3 rounded-full font-light text-xs hover:bg-primary/90 transition-all duration-300 shadow-sm hover:shadow-md"
+                  className="bg-primary text-white px-8 py-3 rounded-full font-light text-sm hover:bg-primary/90 transition-all duration-300 shadow-sm hover:shadow-md"
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={primaryButton.onClick}
@@ -114,7 +114,7 @@ const CTA = ({
                 
                 {/* Secondary Button */}
                 <motion.button
-                  className="bg-textdark text-white px-8 py-3 rounded-full font-light text-xs hover:bg-textdark/90 transition-all duration-300 shadow-sm hover:shadow-md"
+                  className="bg-textdark text-white px-8 py-3 rounded-full font-light text-sm hover:bg-textdark/90 transition-all duration-300 shadow-sm hover:shadow-md"
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={secondaryButton.onClick}
