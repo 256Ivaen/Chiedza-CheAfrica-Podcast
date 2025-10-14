@@ -21,7 +21,7 @@ const InsightCard = ({ insight, index }) => {
 
   const handleReadMore = (e) => {
     e.preventDefault();
-    navigate(`/insights/${insight.id}`);
+    navigate(`/blog/${insight.id}`);
   };
 
   return (
