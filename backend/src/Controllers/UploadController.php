@@ -11,9 +11,12 @@ class UploadController {
     private $maxFileSize;
 
     public function __construct() {
-        // Set upload directory - adjust path as needed
-        $this->baseUploadPath = $_SERVER['DOCUMENT_ROOT'] . '/uploads/blogs/';
-        $this->baseUrl = ($_SERVER['REQUEST_SCHEME'] ?? 'https') . '://' . $_SERVER['HTTP_HOST'] . '/uploads/blogs/';
+        // Set upload directory - use the main domain, not API subdomain
+        $this->baseUploadPath = $_SERVER['DOCUMENT_ROOT'] . '/../uploads/blogs/';
+        
+        // Use main domain instead of API subdomain
+        $domain = str_replace('api.', '', $_SERVER['HTTP_HOST']);
+        $this->baseUrl = ($_SERVER['REQUEST_SCHEME'] ?? 'https') . '://' . $domain . '/uploads/blogs/';
         
         // Allowed file types
         $this->allowedMimeTypes = [
@@ -38,12 +41,12 @@ class UploadController {
     private function ensureUploadDirectory() {
         if (!is_dir($this->baseUploadPath)) {
             if (!mkdir($this->baseUploadPath, 0755, true)) {
-                throw new \Exception('Failed to create upload directory');
+                throw new \Exception('Failed to create upload directory: ' . $this->baseUploadPath);
             }
         }
         
         if (!is_writable($this->baseUploadPath)) {
-            throw new \Exception('Upload directory is not writable');
+            throw new \Exception('Upload directory is not writable: ' . $this->baseUploadPath);
         }
     }
 
@@ -152,6 +155,14 @@ class UploadController {
     }
 
     /**
+     * Clean and format URL
+     */
+    private function cleanUrl($url) {
+        // Remove any escaped slashes and ensure clean URL
+        return str_replace('\\/', '/', $url);
+    }
+
+    /**
      * Handle single file upload
      */
     public function uploadImage($data) {
@@ -190,8 +201,8 @@ class UploadController {
             // Set proper permissions
             chmod($filePath, 0644);
             
-            // Return success response
-            $publicUrl = $this->baseUrl . $folderName . '/' . $filename;
+            // Return success response with cleaned URL
+            $publicUrl = $this->cleanUrl($this->baseUrl . $folderName . '/' . $filename);
             
             Response::success([
                 'url' => $publicUrl,
@@ -236,7 +247,8 @@ class UploadController {
                 
                 if (move_uploaded_file($file['tmp_name'], $filePath)) {
                     chmod($filePath, 0644);
-                    $uploadedImages['cover_image'] = $this->baseUrl . $folderName . '/' . $filename;
+                    $cleanUrl = $this->cleanUrl($this->baseUrl . $folderName . '/' . $filename);
+                    $uploadedImages['cover_image'] = $cleanUrl;
                 }
             }
             
@@ -250,7 +262,8 @@ class UploadController {
                 
                 if (move_uploaded_file($file['tmp_name'], $filePath)) {
                     chmod($filePath, 0644);
-                    $uploadedImages['hero_image'] = $this->baseUrl . $folderName . '/' . $filename;
+                    $cleanUrl = $this->cleanUrl($this->baseUrl . $folderName . '/' . $filename);
+                    $uploadedImages['hero_image'] = $cleanUrl;
                 }
             }
             
