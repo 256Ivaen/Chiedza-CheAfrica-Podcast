@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { Helmet } from 'react-helmet-async';
-import { useLocation } from 'react-router-dom';
+import { Helmet } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { 
-  Mail, 
+import {
+  Mail,
   Send,
   Clock,
   Users,
@@ -11,7 +11,7 @@ import {
   Youtube,
   Instagram,
   Facebook,
-  Heart
+  Heart,
 } from "lucide-react";
 import { FaSpotify, FaTiktok } from "react-icons/fa";
 import { assets } from "../assets/assets";
@@ -25,7 +25,7 @@ const ContactUs = () => {
     name: "",
     email: "",
     subject: "",
-    message: ""
+    message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
@@ -36,21 +36,14 @@ const ContactUs = () => {
       title: "Email Us",
       description: "Send us an email anytime",
       contact: "hello@chiedzacheafrica.com",
-      link: "mailto:hello@chiedzacheafrica.com"
+      link: "mailto:hello@chiedzacheafrica.com",
     },
     {
       icon: MessageCircle,
       title: "Collaborate",
       description: "Share your story with us",
       contact: "Share Your Journey",
-      link: "#contact-form"
-    },
-    {
-      icon: Users,
-      title: "Partner With Us",
-      description: "For sponsorships and partnerships",
-      contact: "partnerships@chiedzacheafrica.com",
-      link: "mailto:partnerships@chiedzacheafrica.com"
+      link: "#contact-form",
     }
   ];
 
@@ -59,38 +52,38 @@ const ContactUs = () => {
       name: "YouTube",
       url: "https://youtube.com/@chiedzacheafrica",
       icon: Youtube,
-      color: "hover:text-red-500"
+      color: "hover:text-red-500",
     },
     {
-      name: "Spotify", 
+      name: "Spotify",
       url: "https://open.spotify.com/show/5YBekTisDE8CawmkxGiesr",
       icon: FaSpotify,
-      color: "hover:text-green-400"
+      color: "hover:text-green-400",
     },
     {
       name: "Instagram",
       url: "https://www.instagram.com/chiedzacheafrica",
       icon: Instagram,
-      color: "hover:text-pink-500"
+      color: "hover:text-pink-500",
     },
     {
       name: "Facebook",
       url: "https://www.facebook.com/share/16Mf6x5vw3/",
       icon: Facebook,
-      color: "hover:text-blue-500"
+      color: "hover:text-blue-500",
     },
     {
       name: "TikTok",
       url: "https://www.tiktok.com/@chiedzacheafrica",
       icon: FaTiktok,
-      color: "hover:text-black"
-    }
+      color: "hover:text-black",
+    },
   ];
 
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -102,20 +95,20 @@ const ContactUs = () => {
     try {
       // Add your form submission logic here
       // const response = await post('contact', formData);
-      
+
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      setSubmitStatus('success');
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      setSubmitStatus("success");
       setFormData({
         name: "",
         email: "",
         subject: "",
-        message: ""
+        message: "",
       });
     } catch (error) {
-      console.error('Error submitting form:', error);
-      setSubmitStatus('error');
+      console.error("Error submitting form:", error);
+      setSubmitStatus("error");
     } finally {
       setIsSubmitting(false);
     }
@@ -131,9 +124,9 @@ const ContactUs = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2
-      }
-    }
+        staggerChildren: 0.2,
+      },
+    },
   };
 
   const itemVariants = {
@@ -143,30 +136,36 @@ const ContactUs = () => {
       y: 0,
       transition: {
         duration: 0.6,
-        ease: "easeOut"
-      }
-    }
+        ease: "easeOut",
+      },
+    },
   };
 
   return (
     <>
       <Helmet>
         <title>Contact Us - Chiedza CheAfrica Podcast | Get In Touch</title>
-        <meta 
-          name="description" 
-          content="Connect with Chiedza CheAfrica Podcast. Share your story, collaborate, or get in touch with us. We'd love to hear from you!" 
+        <meta
+          name="description"
+          content="Connect with Chiedza CheAfrica Podcast. Share your story, collaborate, or get in touch with us. We'd love to hear from you!"
         />
         <link rel="canonical" href={getCanonicalUrl()} />
-        
+
         <meta property="og:type" content="website" />
         <meta property="og:url" content={getCanonicalUrl()} />
-        <meta property="og:title" content="Contact Us - Chiedza CheAfrica Podcast" />
-        <meta property="og:description" content="Get in touch with Chiedza CheAfrica. Share your story or collaborate with us." />
+        <meta
+          property="og:title"
+          content="Contact Us - Chiedza CheAfrica Podcast"
+        />
+        <meta
+          property="og:description"
+          content="Get in touch with Chiedza CheAfrica. Share your story or collaborate with us."
+        />
       </Helmet>
 
       <div className="min-h-screen">
         {/* Hero Section */}
-        <PageHero 
+        <PageHero
           title="Get In Touch"
           subtitle="Let's connect and amplify African stories together"
           image={assets.hero1}
@@ -175,7 +174,7 @@ const ContactUs = () => {
         {/* Contact Methods Section */}
         <section className="py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-6xl mx-auto">
-            <SectionHeader 
+            <SectionHeader
               subtitle="How to Reach Us"
               title="Contact Methods"
               icon={MessageCircle}
@@ -185,7 +184,7 @@ const ContactUs = () => {
               variants={containerVariants}
               initial="hidden"
               animate="visible"
-              className="grid md:grid-cols-3 gap-8 mb-16"
+              className="grid md:grid-cols-2 gap-8 mb-16"
             >
               {contactMethods.map((method, index) => {
                 const IconComponent = method.icon;
@@ -200,8 +199,12 @@ const ContactUs = () => {
                     <div className="bg-primary/20 w-12 h-12 rounded-lg flex items-center justify-center mb-4 mx-auto group-hover:bg-primary/30 transition-colors">
                       <IconComponent className="w-6 h-6 text-primary" />
                     </div>
-                    <h3 className="text-white text-base font-normal mb-2">{method.title}</h3>
-                    <p className="text-gray-300 text-xs mb-4 font-light">{method.description}</p>
+                    <h3 className="text-white text-base font-normal mb-2">
+                      {method.title}
+                    </h3>
+                    <p className="text-gray-300 text-xs mb-4 font-light">
+                      {method.description}
+                    </p>
                     <span className="text-primary text-sm font-normal hover:text-primary/80 transition-colors">
                       {method.contact}
                     </span>
@@ -221,13 +224,18 @@ const ContactUs = () => {
               {/* Contact Form */}
               <motion.div variants={itemVariants}>
                 <div className="flex items-center mb-6">
-                  <h3 className="text-white text-xl font-light">Send Us a Message</h3>
+                  <h3 className="text-white text-xl font-light">
+                    Send Us a Message
+                  </h3>
                 </div>
-                
+
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="name" className="block text-gray-300 text-sm font-light mb-2">
+                      <label
+                        htmlFor="name"
+                        className="block text-gray-300 text-sm font-light mb-2"
+                      >
                         Your Name *
                       </label>
                       <input
@@ -242,7 +250,10 @@ const ContactUs = () => {
                       />
                     </div>
                     <div>
-                      <label htmlFor="email" className="block text-gray-300 text-sm font-light mb-2">
+                      <label
+                        htmlFor="email"
+                        className="block text-gray-300 text-sm font-light mb-2"
+                      >
                         Email Address *
                       </label>
                       <input
@@ -257,9 +268,12 @@ const ContactUs = () => {
                       />
                     </div>
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="subject" className="block text-gray-300 text-sm font-light mb-2">
+                    <label
+                      htmlFor="subject"
+                      className="block text-gray-300 text-sm font-light mb-2"
+                    >
                       Subject *
                     </label>
                     <select
@@ -270,18 +284,35 @@ const ContactUs = () => {
                       required
                       className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:border-primary transition-colors"
                     >
-                      <option value="" className="bg-gray-900">Select a subject</option>
-                      <option value="collaboration" className="bg-gray-900">Collaboration</option>
-                      <option value="story-submission" className="bg-gray-900">Story Submission</option>
-                      <option value="sponsorship" className="bg-gray-900">Sponsorship</option>
-                      <option value="volunteer" className="bg-gray-900">Volunteer Opportunity</option>
-                      <option value="general" className="bg-gray-900">General Inquiry</option>
-                      <option value="technical" className="bg-gray-900">Technical Support</option>
+                      <option value="" className="bg-gray-900">
+                        Select a subject
+                      </option>
+                      <option value="collaboration" className="bg-gray-900">
+                        Collaboration
+                      </option>
+                      <option value="story-submission" className="bg-gray-900">
+                        Story Submission
+                      </option>
+                      <option value="sponsorship" className="bg-gray-900">
+                        Sponsorship
+                      </option>
+                      <option value="volunteer" className="bg-gray-900">
+                        Volunteer Opportunity
+                      </option>
+                      <option value="general" className="bg-gray-900">
+                        General Inquiry
+                      </option>
+                      <option value="technical" className="bg-gray-900">
+                        Technical Support
+                      </option>
                     </select>
                   </div>
-                  
+
                   <div>
-                    <label htmlFor="message" className="block text-gray-300 text-sm font-light mb-2">
+                    <label
+                      htmlFor="message"
+                      className="block text-gray-300 text-sm font-light mb-2"
+                    >
                       Your Message *
                     </label>
                     <textarea
@@ -297,18 +328,20 @@ const ContactUs = () => {
                   </div>
 
                   {/* Submit Status Messages */}
-                  {submitStatus === 'success' && (
+                  {submitStatus === "success" && (
                     <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4 text-green-400 text-sm">
-                      Thank you! Your message has been sent successfully. We'll get back to you soon.
+                      Thank you! Your message has been sent successfully. We'll
+                      get back to you soon.
                     </div>
                   )}
 
-                  {submitStatus === 'error' && (
+                  {submitStatus === "error" && (
                     <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400 text-sm">
-                      Something went wrong. Please try again or email us directly.
+                      Something went wrong. Please try again or email us
+                      directly.
                     </div>
                   )}
-                  
+
                   <motion.button
                     type="submit"
                     disabled={isSubmitting}
@@ -341,7 +374,7 @@ const ContactUs = () => {
                   />
                   {/* Overlay with gradient */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                  
+
                   {/* Content on Image */}
                   <div className="absolute bottom-0 left-0 right-0 p-8 gap-5">
                     <h3 className="text-white text-2xl font-light mb-2">
@@ -352,7 +385,9 @@ const ContactUs = () => {
                     </p>
 
                     <p className="text-gray-200 text-sm font-light mt-2">
-                    We typically respond to all inquiries within 24-48 hours. For urgent matters, please mention "URGENT" in your subject line.
+                      We typically respond to all inquiries within 24-48 hours.
+                      For urgent matters, please mention "URGENT" in your
+                      subject line.
                     </p>
                   </div>
                 </div>
@@ -367,21 +402,29 @@ const ContactUs = () => {
             >
               <div className="flex items-center mb-8">
                 <MessageCircle className="w-6 h-6 text-primary mr-3" />
-                <h3 className="text-white text-2xl font-light">Connect With Us</h3>
+                <h3 className="text-white text-2xl font-light">
+                  Connect With Us
+                </h3>
               </div>
 
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Newsletter Signup */}
-                <motion.div variants={itemVariants} className="bg-white/5 border border-white/10 rounded-lg p-6">
+                <motion.div
+                  variants={itemVariants}
+                  className="bg-white/5 border border-white/10 rounded-lg p-6"
+                >
                   <div className="flex items-center mb-3">
                     <Mail className="w-5 h-5 text-primary mr-2" />
-                    <h4 className="text-white text-base font-normal">Stay Updated</h4>
+                    <h4 className="text-white text-base font-normal">
+                      Stay Updated
+                    </h4>
                   </div>
                   <p className="text-gray-300 text-sm mb-4 font-light leading-relaxed">
-                    Subscribe to our newsletter for new episode alerts and community updates.
+                    Subscribe to our newsletter for new episode alerts and
+                    community updates.
                   </p>
                   <motion.button
-                    onClick={() => window.location.href = "/newsletter"}
+                    onClick={() => (window.location.href = "/newsletter")}
                     className="bg-white/10 text-white px-6 py-2 rounded-full font-light text-sm hover:bg-white/20 transition-all duration-300 border border-white/20 w-full"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -391,17 +434,27 @@ const ContactUs = () => {
                 </motion.div>
 
                 {/* Support Section */}
-                <motion.div variants={itemVariants} className="bg-white/5 border border-white/10 rounded-lg p-6">
+                <motion.div
+                  variants={itemVariants}
+                  className="bg-white/5 border border-white/10 rounded-lg p-6"
+                >
                   <div className="flex items-center mb-3">
                     <Heart className="w-5 h-5 text-primary mr-2" />
-                    <h4 className="text-white text-base font-normal">Support Our Mission</h4>
+                    <h4 className="text-white text-base font-normal">
+                      Support Our Mission
+                    </h4>
                   </div>
                   <p className="text-gray-300 text-sm mb-4 font-light leading-relaxed">
-                    Love what we do? Consider supporting our podcast to help us continue 
-                    amplifying African stories.
+                    Love what we do? Consider supporting our podcast to help us
+                    continue amplifying African stories.
                   </p>
                   <motion.button
-                    onClick={() => window.location.href = "/support"}
+                    onClick={() =>
+                      window.open(
+                        "https://buymeacoffee.com/chiedzacheafrica",
+                        "_blank"
+                      )
+                    }
                     className="bg-primary text-white px-6 py-2 rounded-full font-normal text-sm hover:bg-primary/90 transition-all duration-300 w-full"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -413,7 +466,9 @@ const ContactUs = () => {
 
               {/* Social Media - Full Width Below */}
               <motion.div variants={itemVariants} className="mt-8">
-                <h4 className="text-white text-lg font-normal mb-6">Follow Our Journey</h4>
+                <h4 className="text-white text-lg font-normal mb-6">
+                  Follow Our Journey
+                </h4>
                 <div className="flex flex-wrap gap-4 justify-start">
                   {socialLinks.map((social) => {
                     const IconComponent = social.icon;
@@ -428,7 +483,9 @@ const ContactUs = () => {
                         whileTap={{ scale: 0.95 }}
                       >
                         <IconComponent className="w-6 h-6" />
-                        <span className="text-sm font-light">{social.name}</span>
+                        <span className="text-sm font-light">
+                          {social.name}
+                        </span>
                       </motion.a>
                     );
                   })}
