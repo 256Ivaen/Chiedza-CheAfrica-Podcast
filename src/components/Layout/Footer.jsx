@@ -40,8 +40,7 @@ const Footer = () => {
   const quickLinks = [
     { name: "All Episodes", href: "/episodes" },
     { name: "Featured Stories", href: "/featured" },
-    { name: "Blog & Articles", href: "/blog" },
-    { name: "Support Our Work", href: "/support" }
+    { name: "Blog & Articles", href: "/blog" }
   ];
 
   const podcastCategories = [
