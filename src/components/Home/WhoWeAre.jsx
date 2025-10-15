@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from "framer-motion";
+import { assets } from '../../assets/assets';
 
 const WhoWeAre = () => {
   const fadeInUp = {
@@ -21,7 +22,7 @@ const WhoWeAre = () => {
             className="w-full"
           >
             <img
-              src="/assets/images/who-we-are.jpg"
+              src={assets.about}
               alt="Chiedza CheAfrica"
               className="w-full h-auto object-contain rounded-3xl"
             />

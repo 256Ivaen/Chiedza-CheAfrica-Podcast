@@ -41,7 +41,7 @@ const CTA = ({
     <section className="relative py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         <motion.div
-          className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl shadow-2xl relative overflow-hidden max-h-[400px]"
+          className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl shadow-2xl relative overflow-hidden max-h-[350px]"
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
           variants={containerVariants}
@@ -120,7 +120,7 @@ const CTA = ({
                 {/* Person Image - Starts from top, cuts from bottom */}
                 <div className="absolute top-0 right-0 w-full h-full">
                   <img
-                    src={assets.hero1}
+                    src={assets.CTA}
                     alt="Join Chiedza CheAfrica"
                     className="w-full h-full object-cover object-top"
                   />

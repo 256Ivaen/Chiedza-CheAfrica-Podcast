@@ -168,7 +168,7 @@ const ContactUs = () => {
         <PageHero
           title="Get In Touch"
           subtitle="Let's connect and amplify African stories together"
-          image={assets.hero1}
+          image={assets.contacthero}
         />
 
         {/* Contact Methods Section */}
@@ -356,7 +356,6 @@ const ContactUs = () => {
                       </>
                     ) : (
                       <>
-                        <Send className="w-4 h-4" />
                         Send Message
                       </>
                     )}
@@ -368,7 +367,7 @@ const ContactUs = () => {
               <motion.div variants={itemVariants}>
                 <div className="relative h-full min-h-[500px] rounded-2xl overflow-hidden">
                   <img
-                    src={assets.hero1}
+                    src={assets.CTA}
                     alt="Chiedza CheAfrica Team"
                     className="w-full h-full object-cover"
                   />
