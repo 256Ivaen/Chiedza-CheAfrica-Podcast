@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { assets } from '../../../assets/assets';
+import { CiMicrophoneOn } from "react-icons/ci";
 
 const CTA = ({ 
   inView = true,
@@ -8,12 +9,10 @@ const CTA = ({
   subtitle = "Join us in amplifying African stories and lighting paths for future generations.",
   primaryButton = {
     text: "Get Started",
-    onClick: () => window.location.href = "/get-started"
+    onClick: () => window.location.href = "/contact"
   },
-  secondaryButton = {
-    text: "Learn More", 
-    onClick: () => window.location.href = "/about"
-  }
+  secondaryButton = null,
+  showEmailInput = false
 }) => {
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -38,91 +37,96 @@ const CTA = ({
     }
   };
 
-  const logoVariants = {
-    hidden: { opacity: 0, x: -100, scale: 1.2 },
-    visible: {
-      opacity: 0.3,
-      x: 0,
-      scale: 1,
-      transition: {
-        duration: 1.2,
-        ease: "easeOut"
-      }
-    }
-  };
-
   return (
-    <section className="relative py-16">
-      <div className="max-w-6xl mx-auto relative z-10">
+    <section className="relative py-16 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto">
         <motion.div
-          className="bg-white rounded-2xl border border-gray-200 p-8 md:p-12 shadow-sm relative overflow-hidden"
+          className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-3xl shadow-2xl relative overflow-hidden max-h-[350px]"
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
           variants={containerVariants}
         >
-          {/* Faded Logo Background - Left Side */}
-          <motion.div
-            className="absolute left-0 top-0 bottom-0 w-1/3 z-0"
-            variants={logoVariants}
-            initial="hidden"
-            animate={inView ? "visible" : "hidden"}
-          >
-            <img 
-              src={assets.logo}
-              alt="Chiedza CheAfrica Logo"
-              className="w-full h-full object-contain object-left opacity-60"
-              style={{
-                maskImage: 'linear-gradient(to right, black 0%, transparent 100%)',
-                WebkitMaskImage: 'linear-gradient(to right, black 0%, transparent 100%)'
-              }}
-            />
-          </motion.div>
+          {/* Decorative Circle Elements */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
 
-          {/* Centered Content */}
-          <div className="relative z-10">
-            <div className="text-center max-w-2xl mx-auto">
-              {/* Main Heading */}
-              <motion.h2 
-                className="text-2xl font-light text-textdark mb-4 leading-tight uppercase tracking-wide"
-                variants={itemVariants}
-              >
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 h-full">
+            {/* Left Content */}
+            <motion.div 
+              variants={itemVariants}
+              className="flex flex-col justify-center p-8 md:p-12 lg:p-16"
+            >
+              <h2 className="text-3xl md:text-4xl font-light text-white mb-4 leading-tight">
                 {title}
-              </motion.h2>
-
-              {/* Description */}
-              <motion.p 
-                className="text-xs text-gray-600 mb-8 leading-relaxed"
-                variants={itemVariants}
-              >
+              </h2>
+              <p className="text-base text-gray-300 mb-8 leading-relaxed font-light">
                 {subtitle}
-              </motion.p>
+              </p>
 
-              {/* Action Buttons */}
-              <motion.div 
-                className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-                variants={itemVariants}
-              >
-                {/* Primary Button */}
-                <motion.button
-                  className="bg-primary text-white px-8 py-3 rounded-full font-light text-xs hover:bg-primary/90 transition-all duration-300 shadow-sm hover:shadow-md"
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={primaryButton.onClick}
-                >
-                  {primaryButton.text}
-                </motion.button>
+              {/* Email Input or Buttons */}
+              {showEmailInput ? (
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="email"
+                    placeholder="Your e-mail"
+                    className="flex-1 px-6 py-4 rounded-full bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                  />
+                  <button
+                    onClick={primaryButton.onClick}
+                    className="px-8 py-4 bg-primary text-white rounded-full font-normal text-sm hover:bg-primary/90 transition-all duration-300 shadow-lg hover:shadow-xl whitespace-nowrap"
+                  >
+                    {primaryButton.text}
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <motion.button
+                    className="px-8 py-4 bg-primary text-white rounded-full font-normal text-sm hover:bg-primary/90 transition-all duration-300 shadow-lg hover:shadow-xl"
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={primaryButton.onClick}
+                  >
+                    {primaryButton.text}
+                  </motion.button>
+                  
+                  {secondaryButton && (
+                    <motion.button
+                      className="px-8 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-full font-normal text-sm hover:bg-white/20 transition-all duration-300"
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={secondaryButton.onClick}
+                    >
+                      {secondaryButton.text}
+                    </motion.button>
+                  )}
+                </div>
+              )}
+            </motion.div>
+
+            {/* Right Side - Person with Microphone Icon */}
+            <motion.div 
+              variants={itemVariants}
+              className="relative hidden lg:block h-full overflow-hidden"
+            >
+              <div className="relative h-full">
+                {/* Microphone Icon Circle - Top Right */}
+                <div className="absolute top-8 right-8 flex items-center justify-center shadow-xl z-20">
+                  <CiMicrophoneOn className="text-2xl text-white font-light" strokeWidth={0.5} />
+                </div>
+
+                {/* Decorative Circle - Bottom Left */}
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-primary/30 rounded-full blur-xl"></div>
                 
-                {/* Secondary Button */}
-                <motion.button
-                  className="bg-textdark text-white px-8 py-3 rounded-full font-light text-xs hover:bg-textdark/90 transition-all duration-300 shadow-sm hover:shadow-md"
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={secondaryButton.onClick}
-                >
-                  {secondaryButton.text}
-                </motion.button>
-              </motion.div>
-            </div>
+                {/* Person Image - Starts from top, cuts from bottom */}
+                <div className="absolute top-0 right-0 w-full h-full">
+                  <img
+                    src={assets.CTA}
+                    alt="Join Chiedza CheAfrica"
+                    className="w-full h-full object-cover object-top"
+                  />
+                </div>
+              </div>
+            </motion.div>
           </div>
         </motion.div>
       </div>

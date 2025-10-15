@@ -63,7 +63,7 @@ const NotFound = () => {
           <h2 className="text-xl md:text-2xl lg:text-3xl font-light text-textlight uppercase tracking-wide mb-6 font-montserrat leading-tight">
             Page Not Found
           </h2>
-          <p className="text-gray-300 text-xs md:text-sm max-w-lg mx-auto font-montserrat leading-relaxed">
+          <p className="text-gray-300 text-sm md:text-sm max-w-lg mx-auto font-montserrat leading-relaxed">
             The page you're looking for seems to have vanished into the digital void. 
             Let's get you back on track to discovering inspiring African stories.
           </p>
@@ -88,7 +88,7 @@ const NotFound = () => {
           >
             {/* Button shine effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out"></div>
-            <span className="relative z-10 text-xs font-light uppercase tracking-wide">Back to Home</span>
+            <span className="relative z-10 text-sm font-light uppercase tracking-wide">Back to Home</span>
           </motion.button>
           
           <motion.button
@@ -96,7 +96,7 @@ const NotFound = () => {
             className="group inline-flex items-center px-8 py-2 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-textlight font-light rounded-full border border-white/20 hover:border-white/30 shadow-md hover:shadow-lg transition-all duration-300 font-montserrat"
             whileTap={{ scale: 0.98 }}
           >
-            <span className="text-xs font-light uppercase tracking-wide">Go Back</span>
+            <span className="text-sm font-light uppercase tracking-wide">Go Back</span>
           </motion.button>
         </motion.div>
 
@@ -107,7 +107,7 @@ const NotFound = () => {
           transition={{ duration: 0.7, delay: 0.7 }}
           className="text-center"
         >
-          <p className="text-gray-400 text-xs font-light font-montserrat">
+          <p className="text-gray-400 text-sm font-light font-montserrat">
             Still lost?{" "}
             <a 
               href="/contact" 

@@ -40,8 +40,7 @@ const Footer = () => {
   const quickLinks = [
     { name: "All Episodes", href: "/episodes" },
     { name: "Featured Stories", href: "/featured" },
-    { name: "Blog & Articles", href: "/blog" },
-    { name: "Support Our Work", href: "/support" }
+    { name: "Blog & Articles", href: "/blog" }
   ];
 
   const podcastCategories = [
@@ -222,7 +221,7 @@ const Footer = () => {
                 <p className="text-white/80 text-sm">
                   © {currentYear} Chiedza CheAfrica Podcast. All rights reserved.
                 </p>
-                <p className="text-white/60 text-xs mt-1">
+                <p className="text-white/60 text-sm mt-1">
                   Lighting paths. Inspiring minds. Amplifying African stories.
                 </p>
               </div>

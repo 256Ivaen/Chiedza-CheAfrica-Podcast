@@ -14,6 +14,8 @@ build/
 .env.development.local
 .env.test.local
 .env.production.local
+backend/.env
+backend/.env.*
 
 # IDE and editor files
 .vscode/
@@ -40,7 +42,7 @@ pids
 *.seed
 *.pid.lock
 
-# Coverage directory used by tools like istanbul
+# Coverage directory
 coverage/
 .nyc_output
 
@@ -51,3 +53,7 @@ coverage/
 .cache/
 .parcel-cache/
 .eslintcache
+
+# Backend specific
+backend/vendor/
+backend/composer.lock

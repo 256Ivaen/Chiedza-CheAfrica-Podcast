@@ -1,4 +1,5 @@
-name: Deploy React to Hostinger via SSH
+name: Deploy React Frontend, Admin, and PHP Backend to Hostinger
+
 on:
   push:
     branches:
@@ -6,27 +7,51 @@ on:
       - dev
 
 jobs:
-  build-and-deploy:
+  deploy-frontend:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-
+      with:
+        fetch-depth: 2
+    
+    - name: Check for frontend changes
+      id: frontend-changes
+      run: |
+        if git diff --name-only HEAD^ HEAD | grep -qE '^(src/|public/|index.html|package.json|vite.config|tsconfig)'; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+          echo "Frontend files changed, will deploy"
+        else
+          echo "changed=false" >> $GITHUB_OUTPUT
+          echo "No frontend changes detected, skipping deployment"
+        fi
+      
     - name: Setup Node.js
+      if: steps.frontend-changes.outputs.changed == 'true'
       uses: actions/setup-node@v3
       with:
         node-version: '18'
-
+        
+    - name: Create frontend .env
+      if: steps.frontend-changes.outputs.changed == 'true'
+      run: |
+        cat > .env << EOF
+        VITE_YOUTUBE_API_KEY=${{ secrets.VITE_YOUTUBE_API_KEY }}
+        VITE_YOUTUBE_CHANNEL_ID=${{ secrets.VITE_YOUTUBE_CHANNEL_ID }}
+        EOF
+        
     - name: Install dependencies
+      if: steps.frontend-changes.outputs.changed == 'true'
       run: |
         npm install
         npm install framer-motion --save
-
+        
     - name: Build React app
+      if: steps.frontend-changes.outputs.changed == 'true'
       run: npm run build
-
-    - name: Deploy to Staging (dev branch)
-      if: github.ref == 'refs/heads/dev'
+      
+    - name: Deploy Frontend to dev (dev branch)
+      if: steps.frontend-changes.outputs.changed == 'true' && github.ref == 'refs/heads/dev'
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.SSH_HOST }}
@@ -34,11 +59,11 @@ jobs:
         password: ${{ secrets.SSH_PASSWORD }}
         port: ${{ secrets.SSH_PORT }}
         source: "dist/*"
-        target: "/home/${{ secrets.SSH_USER }}/domains/chiedzacheafrica.com/public_html/staging/"
+        target: "/home/${{ secrets.SSH_USER }}/domains/chiedzacheafrica.com/public_html/dev/"
         strip_components: 1
-
-    - name: Deploy to Production (main branch)
-      if: github.ref == 'refs/heads/main'
+        
+    - name: Deploy Frontend to Production (main branch)
+      if: steps.frontend-changes.outputs.changed == 'true' && github.ref == 'refs/heads/main'
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.SSH_HOST }}
@@ -48,3 +73,136 @@ jobs:
         source: "dist/*"
         target: "/home/${{ secrets.SSH_USER }}/domains/chiedzacheafrica.com/public_html/"
         strip_components: 1
+
+  deploy-admin:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 2
+    
+    - name: Check for admin changes
+      id: admin-changes
+      run: |
+        if git diff --name-only HEAD^ HEAD | grep -qE '^admin/'; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+          echo "Admin files changed, will deploy"
+        else
+          echo "changed=false" >> $GITHUB_OUTPUT
+          echo "No admin changes detected, skipping deployment"
+        fi
+      
+    - name: Setup Node.js
+      if: steps.admin-changes.outputs.changed == 'true'
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Install admin dependencies
+      if: steps.admin-changes.outputs.changed == 'true'
+      run: |
+        cd admin
+        npm install
+        
+    - name: Build Admin app
+      if: steps.admin-changes.outputs.changed == 'true'
+      run: |
+        cd admin
+        npm run build
+      
+    - name: Deploy Admin
+      if: steps.admin-changes.outputs.changed == 'true'
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: ${{ secrets.SSH_PORT }}
+        source: "admin/dist/*"
+        target: "/home/${{ secrets.SSH_USER }}/domains/chiedzacheafrica.com/public_html/admin/"
+        strip_components: 2
+
+  deploy-backend:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 2
+    
+    - name: Check for backend changes
+      id: backend-changes
+      run: |
+        if git diff --name-only HEAD^ HEAD | grep -qE '^backend/'; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+          echo "Backend files changed, will deploy"
+        else
+          echo "changed=false" >> $GITHUB_OUTPUT
+          echo "No backend changes detected, skipping deployment"
+        fi
+      
+    - name: Create backend .env
+      if: steps.backend-changes.outputs.changed == 'true'
+      run: |
+        cat > backend/.env << EOF
+        DB_HOST=${{ secrets.DB_HOST }}
+        DB_NAME=${{ secrets.DB_NAME }}
+        DB_USER=${{ secrets.DB_USER }}
+        DB_PASS=${{ secrets.DB_PASS }}
+        JWT_SECRET=${{ secrets.JWT_SECRET }}
+        JWT_EXPIRY=86400
+        SMTP_HOST=${{ secrets.SMTP_HOST }}
+        SMTP_PORT=${{ secrets.SMTP_PORT }}
+        SMTP_USER=${{ secrets.SMTP_USER }}
+        SMTP_PASS=${{ secrets.SMTP_PASS }}
+        SMTP_FROM=${{ secrets.SMTP_FROM }}
+        SMTP_FROM_NAME=${{ secrets.SMTP_FROM_NAME }}
+        APP_URL=https://api.chiedzacheafrica.com
+        APP_ENV=${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+        EOF
+    
+    - name: Deploy Backend API
+      if: steps.backend-changes.outputs.changed == 'true'
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: ${{ secrets.SSH_PORT }}
+        source: "backend/"
+        target: "/home/${{ secrets.SSH_USER }}/domains/chiedzacheafrica.com/public_html/"
+        strip_components: 0
+        overwrite: true
+        
+    - name: Setup backend structure
+      if: steps.backend-changes.outputs.changed == 'true'
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: ${{ secrets.SSH_PORT }}
+        script: |
+          cd /home/${{ secrets.SSH_USER }}/domains/chiedzacheafrica.com/public_html/
+          
+          rm -rf api
+          mv backend api
+          
+          cd api
+          
+          chmod -R 755 .
+          find . -type f -name "*.php" -exec chmod 644 {} \;
+          
+          echo "Checking .env file..."
+          if [ -f .env ]; then
+            echo ".env file exists"
+            echo "Number of lines: $(wc -l < .env)"
+          else
+            echo "ERROR: .env file not found"
+            exit 1
+          fi
+          
+          php setup.php
+          
+          echo "Backend deployed successfully"

@@ -19,6 +19,22 @@ body {
   font-family: 'Satoshi', sans-serif;
 }
 
+/* Remove focus outlines completely for all elements */
+*:focus {
+  outline: none !important;
+}
+
+/* Remove focus outlines for specific elements */
+button:focus,
+a:focus,
+input:focus,
+select:focus,
+textarea:focus,
+div:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 /* Enhanced glass morphism effects */
 @layer components {
   .glass {
@@ -207,13 +223,6 @@ input[type="range"]:active::-moz-range-thumb {
   border-radius: 10px;
   top: 12px;
   opacity: 0.6;
-}
-
-/* Smooth focus states */
-*:focus {
-  outline: 2px solid rgba(237, 171, 18, 0.5);
-  outline-offset: 2px;
-  border-radius: 2px;
 }
 
 /* Enhanced selection colors */
