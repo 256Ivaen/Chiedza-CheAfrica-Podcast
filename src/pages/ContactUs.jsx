@@ -91,21 +91,29 @@ const ContactUs = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus(null);
-
+  
     try {
-      // Add your form submission logic here
-      // const response = await post('contact', formData);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      setSubmitStatus("success");
-      setFormData({
-        name: "",
-        email: "",
-        subject: "",
-        message: "",
+      const response = await fetch('https://api.chiedzacheafrica.com/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
+  
+      const result = await response.json();
+  
+      if (result.success) {
+        setSubmitStatus("success");
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          message: "",
+        });
+      } else {
+        setSubmitStatus("error");
+      }
     } catch (error) {
       console.error("Error submitting form:", error);
       setSubmitStatus("error");

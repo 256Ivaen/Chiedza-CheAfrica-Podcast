@@ -3,102 +3,52 @@
 namespace App\Utils;
 
 class Email {
-    private static $config;
-
-    private static function init() {
-        self::$config = [
-            'host' => $_ENV['SMTP_HOST'],
-            'port' => $_ENV['SMTP_PORT'],
-            'username' => $_ENV['SMTP_USER'],
-            'password' => $_ENV['SMTP_PASS'],
-            'from' => $_ENV['SMTP_FROM'],
-            'from_name' => $_ENV['SMTP_FROM_NAME']
-        ];
-    }
-
-    private static function sendSMTP($to, $subject, $body) {
-        self::init();
-
-        $headers = "MIME-Version: 1.0\r\n";
-        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-        $headers .= "From: " . self::$config['from_name'] . " <" . self::$config['from'] . ">\r\n";
-
-        $socket = @fsockopen(self::$config['host'], self::$config['port'], $errno, $errstr, 30);
+    
+    private static function sendEmailViaAPI($to, $subject, $body) {
+        $url = 'https://mail.chiedzacheafrica.com/api.php';
+        $apiKey = $_ENV['APX_API'] ?? '';
         
-        if (!$socket) {
-            error_log("SMTP Connection failed: $errstr ($errno)");
+        $payload = json_encode([
+            'to' => $to,
+            'subject' => $subject,
+            'body' => $body
+        ]);
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'X-Api-Key: ' . $apiKey
+        ]);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+        
+        if ($httpCode !== 200 || $curlError) {
+            error_log("Email API Failed - HTTP: {$httpCode} | Error: {$curlError} | Response: {$response}");
             return false;
         }
-
-        try {
-            self::readResponse($socket);
-            
-            fwrite($socket, "EHLO " . self::$config['host'] . "\r\n");
-            self::readResponse($socket);
-            
-            fwrite($socket, "STARTTLS\r\n");
-            self::readResponse($socket);
-            
-            stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
-            
-            fwrite($socket, "EHLO " . self::$config['host'] . "\r\n");
-            self::readResponse($socket);
-            
-            fwrite($socket, "AUTH LOGIN\r\n");
-            self::readResponse($socket);
-            
-            fwrite($socket, base64_encode(self::$config['username']) . "\r\n");
-            self::readResponse($socket);
-            
-            fwrite($socket, base64_encode(self::$config['password']) . "\r\n");
-            self::readResponse($socket);
-            
-            fwrite($socket, "MAIL FROM: <" . self::$config['from'] . ">\r\n");
-            self::readResponse($socket);
-            
-            fwrite($socket, "RCPT TO: <$to>\r\n");
-            self::readResponse($socket);
-            
-            fwrite($socket, "DATA\r\n");
-            self::readResponse($socket);
-            
-            $message = "Subject: $subject\r\n";
-            $message .= $headers . "\r\n";
-            $message .= $body . "\r\n.\r\n";
-            
-            fwrite($socket, $message);
-            self::readResponse($socket);
-            
-            fwrite($socket, "QUIT\r\n");
-            self::readResponse($socket);
-            
-            fclose($socket);
-            return true;
-            
-        } catch (\Exception $e) {
-            error_log("SMTP Error: " . $e->getMessage());
-            fclose($socket);
-            return false;
-        }
-    }
-
-    private static function readResponse($socket) {
-        $response = '';
-        while ($line = fgets($socket, 515)) {
-            $response .= $line;
-            if (substr($line, 3, 1) === ' ') {
-                break;
-            }
-        }
-        return $response;
+        
+        return true;
     }
 
     public static function sendInvitation($email, $tempPassword, $role) {
-        $subject = "Welcome to Blog System - Your Account Details";
+        $subject = "Welcome to Chiedza CheAfrica Podcast - Your Account Details";
         
         $body = self::getInvitationTemplate($email, $tempPassword, $role);
         
-        return self::sendSMTP($email, $subject, $body);
+        return self::sendEmailViaAPI($email, $subject, $body);
+    }
+
+    public static function sendContactForm($to, $subject, $body) {
+        return self::sendEmailViaAPI($to, $subject, $body);
     }
 
     private static function getInvitationTemplate($email, $tempPassword, $role) {
@@ -179,7 +129,164 @@ class Email {
                                 If you did not expect this invitation, please disregard this email.
                             </p>
                             <p style="color: #999999; font-size: 11px; margin: 0; line-height: 1.4;">
-                                &copy; 2024 Chiedza CheAfrica Podcast. All rights reserved.<br>
+                                &copy; <span id="year"></span> Chiedza CheAfrica Podcast. All rights reserved.<br>
+                                Lighting Africa's Path Through Stories of Innovation & Impact
+                                </p>
+
+                                <script>
+                                document.getElementById("year").textContent = new Date().getFullYear();
+                                </script>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+HTML;
+    }
+
+    public static function getContactFormTemplate($name, $email, $subject, $message) {
+        return <<<HTML
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Contact Form Submission</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #fafafa;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fafafa; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 0; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e8e8e8;">
+                    <!-- Header -->
+                    <tr>
+                        <td style="background-color: #0a0a0a; padding: 40px 30px; text-align: center; border-bottom: 3px solid #edab12;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 300; letter-spacing: 1px;">CHIEDZA CHEAFRICA PODCAST</h1>
+                            <p style="color: #edab12; margin: 10px 0 0 0; font-size: 14px; font-weight: 300; letter-spacing: 0.5px;">New Contact Form Submission</p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 50px 40px;">
+                            <h2 style="color: #0a0a0a; margin: 0 0 25px 0; font-size: 20px; font-weight: 400; letter-spacing: 0.5px;">You have a new message</h2>
+                            
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8f8f8; border-left: 4px solid #edab12; padding: 25px; margin: 30px 0;">
+                                <tr>
+                                    <td>
+                                        <p style="margin: 0 0 12px 0; color: #666666; font-size: 14px; font-weight: 500;">FROM NAME</p>
+                                        <p style="margin: 0 0 25px 0; color: #0a0a0a; font-size: 16px; font-weight: 400;">{$name}</p>
+                                        
+                                        <p style="margin: 0 0 12px 0; color: #666666; font-size: 14px; font-weight: 500;">EMAIL ADDRESS</p>
+                                        <p style="margin: 0 0 25px 0; color: #0a0a0a; font-size: 16px; font-weight: 400;">{$email}</p>
+                                        
+                                        <p style="margin: 0 0 12px 0; color: #666666; font-size: 14px; font-weight: 500;">SUBJECT</p>
+                                        <p style="margin: 0 0 25px 0; color: #0a0a0a; font-size: 16px; font-weight: 400;">{$subject}</p>
+                                        
+                                        <p style="margin: 0 0 12px 0; color: #666666; font-size: 14px; font-weight: 500;">MESSAGE</p>
+                                        <p style="margin: 0; color: #0a0a0a; font-size: 16px; font-weight: 400; line-height: 1.6; background-color: #ffffff; padding: 12px; border: 1px solid #e8e8e8;">{$message}</p>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <p style="color: #666666; line-height: 1.7; margin: 25px 0; font-size: 14px;">
+                                <strong style="color: #0a0a0a;">Response Required:</strong> Please respond to this inquiry within 24-48 hours.
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f8f8f8; padding: 30px; text-align: center; border-top: 1px solid #e8e8e8;">
+                            <p style="color: #999999; font-size: 11px; margin: 0; line-height: 1.4;">
+                                &copy; <span id="year"></span> Chiedza CheAfrica Podcast. All rights reserved.<br>
+                                Lighting Africa's Path Through Stories of Innovation & Impact
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+HTML;
+    }
+
+    public static function getConfirmationTemplate($name) {
+        return <<<HTML
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You for Contacting Us</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #fafafa;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fafafa; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 0; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e8e8e8;">
+                    <!-- Header -->
+                    <tr>
+                        <td style="background-color: #0a0a0a; padding: 40px 30px; text-align: center; border-bottom: 3px solid #edab12;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 300; letter-spacing: 1px;">CHIEDZA CHEAFRICA PODCAST</h1>
+                            <p style="color: #edab12; margin: 10px 0 0 0; font-size: 14px; font-weight: 300; letter-spacing: 0.5px;">Thank You for Reaching Out</p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 50px 40px;">
+                            <h2 style="color: #0a0a0a; margin: 0 0 25px 0; font-size: 20px; font-weight: 400; letter-spacing: 0.5px;">Hello {$name},</h2>
+                            
+                            <p style="color: #666666; line-height: 1.7; margin: 0 0 25px 0; font-size: 15px;">
+                                Thank you for contacting Chiedza CheAfrica Podcast! We've received your message and appreciate you taking the time to reach out to us.
+                            </p>
+                            
+                            <p style="color: #666666; line-height: 1.7; margin: 0 0 25px 0; font-size: 15px;">
+                                Our team will review your inquiry and get back to you within <strong style="color: #0a0a0a;">24-48 hours</strong>. We're excited to connect with you and explore how we can work together to amplify African stories.
+                            </p>
+                            
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8f8f8; border-left: 4px solid #edab12; padding: 25px; margin: 30px 0;">
+                                <tr>
+                                    <td>
+                                        <p style="color: #666666; font-size: 14px; line-height: 1.6; margin: 0;">
+                                            <strong>What's Next?</strong><br>
+                                            • We'll review your message carefully<br>
+                                            • Our team will discuss your inquiry<br>
+                                            • We'll respond with thoughtful feedback<br>
+                                            • Let's explore collaboration opportunities
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div style="border-top: 1px solid #e8e8e8; padding-top: 30px; margin-top: 30px;">
+                                <p style="color: #666666; font-size: 13px; line-height: 1.6; margin: 0 0 15px 0;">
+                                    <strong>In the meantime:</strong> Explore our latest episodes and stories across our platforms.
+                                </p>
+                                <p style="color: #666666; font-size: 13px; line-height: 1.6; margin: 0;">
+                                    Explore our content: 
+                                    <a href="https://chiedzacheafrica.com" style="color: #edab12; text-decoration: none;">Website</a> • 
+                                    <a href="https://youtube.com/@chiedzacheafrica" style="color: #edab12; text-decoration: none;">YouTube</a> • 
+                                    <a href="https://open.spotify.com/show/5YBekTISDE8CawmkxGiesr" style="color: #edab12; text-decoration: none;">Spotify</a>
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f8f8f8; padding: 30px; text-align: center; border-top: 1px solid #e8e8e8;">
+                            <p style="color: #999999; font-size: 12px; margin: 0 0 8px 0; line-height: 1.4;">
+                                This is an automated confirmation. Please do not reply to this email.
+                            </p>
+                            <p style="color: #999999; font-size: 11px; margin: 0; line-height: 1.4;">
+                                &copy; <span id="year"></span> Chiedza CheAfrica Podcast. All rights reserved.<br>
                                 Lighting Africa's Path Through Stories of Innovation & Impact
                             </p>
                         </td>

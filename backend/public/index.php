@@ -42,6 +42,7 @@ use App\Controllers\CommentController;
 use App\Controllers\ReactionController;
 use App\Controllers\UserController;
 use App\Controllers\UploadController;
+use App\Controllers\ContactController;
 
 try {
     $db = Database::getInstance()->getConnection();
@@ -74,6 +75,7 @@ $commentController = new CommentController($db);
 $reactionController = new ReactionController($db);
 $userController = new UserController($db);
 $uploadController = new UploadController();
+$contactController = new ContactController();
 
 // Public routes
 if ($method === 'GET' && $uri === '/health') {
@@ -116,6 +118,11 @@ if ($method === 'DELETE' && preg_match('#^/blogs/(\d+)/reactions$#', $uri, $matc
 
 if ($method === 'PUT' && preg_match('#^/views/(\d+)$#', $uri, $matches)) {
     $blogController->updateViewDuration($matches[1], $data);
+}
+
+// Contact form route (public)
+if ($method === 'POST' && $uri === '/contact') {
+    $contactController->submit($data);
 }
 
 // Authenticated routes
