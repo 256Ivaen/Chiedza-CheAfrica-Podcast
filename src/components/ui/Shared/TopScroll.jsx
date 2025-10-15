@@ -242,12 +242,12 @@ const FloatingButtons = () => {
                 <h3 id="whatsapp-popup-title" className="text-sm font-semibold text-gray-900 mb-1">
                   Need Help? Chat with us!
                 </h3>
-                <p id="whatsapp-popup-description" className="text-xs text-gray-600 mb-3">
+                <p id="whatsapp-popup-description" className="text-sm text-gray-600 mb-3">
                   Get instant answers about our premium food products and services.
                 </p>
                 <button
                   onClick={handleWhatsAppClick}
-                  className="bg-[#25D366] hover:bg-[#128C7E] text-white text-xs px-4 py-2 rounded-full transition-colors duration-200 focus:outline-none focus-visible"
+                  className="bg-[#25D366] hover:bg-[#128C7E] text-white text-sm px-4 py-2 rounded-full transition-colors duration-200 focus:outline-none focus-visible"
                 >
                   Start Chat
                 </button>

@@ -1,5 +1,8 @@
 import logo from './logo.svg'
-import about from './aboutus.png'
+import about from './about.png'
+import CTA from './cta.jpg'
+import abouthero from './Hero/abouthero.jpg'
+import contacthero from './Hero/contact hero.jpg'
 
 
 // hero 
@@ -10,6 +13,12 @@ export const assets = {
     hero1,
 
     logo,
+
+    CTA,
+
+    abouthero,
+
+    contacthero,
 
     about,
 

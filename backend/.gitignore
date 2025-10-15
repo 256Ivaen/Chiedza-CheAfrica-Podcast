@@ -1,0 +1,19 @@
+# Environment
+.env
+.env.*
+
+# Vendor
+vendor/
+composer.lock
+
+# Cache
+cache/
+temp/
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
