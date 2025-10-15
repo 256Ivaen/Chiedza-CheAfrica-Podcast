@@ -393,7 +393,7 @@ const Login = () => {
                     <input
                       type="email"
                       id="email"
-                      placeholder="agency@socialgems.me"
+                      placeholder="admin@chiedzacheafrica.com"
                       className={`w-full px-4 py-3 rounded-lg border-0 outline-0 bg-gray-200 focus:bg-white focus:border focus:border-primary text-black text-xs transition-all ${
                         emailError ? "border-red-500" : ""
                       }`}
@@ -522,7 +522,7 @@ const Login = () => {
                   <input
                     type="email"
                     id="email-tablet"
-                    placeholder="agency@socialgems.me"
+                    placeholder="admin@chiedzacheafrica.com"
                     className={`w-full px-4 py-3 rounded-lg border-0 outline-0 bg-gray-200 focus:bg-white focus:border focus:border-primary text-black text-xs transition-all ${
                       emailError ? "border-red-500" : ""
                     }`}
@@ -644,7 +644,7 @@ const Login = () => {
                   <input
                     type="email"
                     id="email-mobile"
-                    placeholder="agency@socialgems.me"
+                    placeholder="admin@chiedzacheafrica.com"
                     className={`w-full px-4 py-3 rounded-lg border-0 outline-0 bg-gray-200 focus:bg-white focus:border focus:border-primary text-black text-xs transition-all ${
                       emailError ? "border-red-500" : ""
                     }`}

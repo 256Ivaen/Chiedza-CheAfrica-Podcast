@@ -158,6 +158,7 @@ jobs:
         SMTP_PASS=${{ secrets.SMTP_PASS }}
         SMTP_FROM=${{ secrets.SMTP_FROM }}
         SMTP_FROM_NAME=${{ secrets.SMTP_FROM_NAME }}
+        APX_API=${{ secrets.APX_API }}
         APP_URL=https://api.chiedzacheafrica.com
         APP_ENV=${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
         EOF
