@@ -3,102 +3,48 @@
 namespace App\Utils;
 
 class Email {
-    private static $config;
-
-    private static function init() {
-        self::$config = [
-            'host' => $_ENV['SMTP_HOST'],
-            'port' => $_ENV['SMTP_PORT'],
-            'username' => $_ENV['SMTP_USER'],
-            'password' => $_ENV['SMTP_PASS'],
-            'from' => $_ENV['SMTP_FROM'],
-            'from_name' => $_ENV['SMTP_FROM_NAME']
-        ];
-    }
-
-    private static function sendSMTP($to, $subject, $body) {
-        self::init();
-
-        $headers = "MIME-Version: 1.0\r\n";
-        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-        $headers .= "From: " . self::$config['from_name'] . " <" . self::$config['from'] . ">\r\n";
-
-        $socket = @fsockopen(self::$config['host'], self::$config['port'], $errno, $errstr, 30);
+    
+    private static function sendEmailViaAPI($to, $subject, $body) {
+        $url = 'https://mail.chiedzacheafrica.com/api.php';
+        $apiKey = $_ENV['APX_API'] ?? '';
         
-        if (!$socket) {
-            error_log("SMTP Connection failed: $errstr ($errno)");
+        $payload = json_encode([
+            'to' => $to,
+            'subject' => $subject,
+            'body' => $body
+        ]);
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'X-Api-Key: ' . $apiKey
+        ]);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+        
+        if ($httpCode !== 200 || $curlError) {
+            error_log("Email API Failed - HTTP: {$httpCode} | Error: {$curlError} | Response: {$response}");
             return false;
         }
-
-        try {
-            self::readResponse($socket);
-            
-            fwrite($socket, "EHLO " . self::$config['host'] . "\r\n");
-            self::readResponse($socket);
-            
-            fwrite($socket, "STARTTLS\r\n");
-            self::readResponse($socket);
-            
-            stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
-            
-            fwrite($socket, "EHLO " . self::$config['host'] . "\r\n");
-            self::readResponse($socket);
-            
-            fwrite($socket, "AUTH LOGIN\r\n");
-            self::readResponse($socket);
-            
-            fwrite($socket, base64_encode(self::$config['username']) . "\r\n");
-            self::readResponse($socket);
-            
-            fwrite($socket, base64_encode(self::$config['password']) . "\r\n");
-            self::readResponse($socket);
-            
-            fwrite($socket, "MAIL FROM: <" . self::$config['from'] . ">\r\n");
-            self::readResponse($socket);
-            
-            fwrite($socket, "RCPT TO: <$to>\r\n");
-            self::readResponse($socket);
-            
-            fwrite($socket, "DATA\r\n");
-            self::readResponse($socket);
-            
-            $message = "Subject: $subject\r\n";
-            $message .= $headers . "\r\n";
-            $message .= $body . "\r\n.\r\n";
-            
-            fwrite($socket, $message);
-            self::readResponse($socket);
-            
-            fwrite($socket, "QUIT\r\n");
-            self::readResponse($socket);
-            
-            fclose($socket);
-            return true;
-            
-        } catch (\Exception $e) {
-            error_log("SMTP Error: " . $e->getMessage());
-            fclose($socket);
-            return false;
-        }
-    }
-
-    private static function readResponse($socket) {
-        $response = '';
-        while ($line = fgets($socket, 515)) {
-            $response .= $line;
-            if (substr($line, 3, 1) === ' ') {
-                break;
-            }
-        }
-        return $response;
+        
+        return true;
     }
 
     public static function sendInvitation($email, $tempPassword, $role) {
-        $subject = "Welcome to Blog System - Your Account Details";
+        $subject = "Welcome to Chiedza CheAfrica Podcast - Your Account Details";
         
         $body = self::getInvitationTemplate($email, $tempPassword, $role);
         
-        return self::sendSMTP($email, $subject, $body);
+        return self::sendEmailViaAPI($email, $subject, $body);
     }
 
     private static function getInvitationTemplate($email, $tempPassword, $role) {
