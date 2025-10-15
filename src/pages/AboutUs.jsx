@@ -149,7 +149,7 @@ const AboutUs = () => {
         <PageHero
           title="About Chiedza CheAfrica"
           subtitle="Lighting paths. Inspiring minds. Amplifying African stories."
-          image={assets.hero1}
+          image={assets.abouthero}
         />
 
         {/* Mission Section */}
