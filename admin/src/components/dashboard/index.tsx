@@ -764,6 +764,7 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
   );
 }
 
+
 export function Dashboard({ loading, onRefresh }) {
   return (
     <EnhancedDashboardContent
