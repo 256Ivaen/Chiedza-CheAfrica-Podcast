@@ -414,9 +414,9 @@ const ContactUs = () => {
                 </h3>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-1 gap-6">
                 {/* Newsletter Signup */}
-                <motion.div
+                {/* <motion.div
                   variants={itemVariants}
                   className="bg-white/5 border border-white/10 rounded-lg p-6"
                 >
@@ -438,7 +438,7 @@ const ContactUs = () => {
                   >
                     Subscribe to Newsletter
                   </motion.button>
-                </motion.div>
+                </motion.div> */}
 
                 {/* Support Section */}
                 <motion.div
