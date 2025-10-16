@@ -161,6 +161,8 @@ jobs:
         APX_API=${{ secrets.APX_API }}
         APP_URL=https://api.chiedzacheafrica.com
         APP_ENV=${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+        GA_VIEW_ID=${{ secrets.GA_VIEW_ID }}
+        GA_CREDENTIALS_PATH=${{ secrets.GA_CREDENTIALS_PATH }}
         EOF
     
     - name: Deploy Backend API

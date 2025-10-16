@@ -28,6 +28,7 @@ const CreateBlog = () => {
   const [uploading, setUploading] = useState(false);
   const imageInputRef = useRef(null);
   const heroInputRef = useRef(null);
+  const slideshowInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -35,6 +36,7 @@ const CreateBlog = () => {
     author: "",
     image: "",
     hero_image: "",
+    slideshow_images: [],
     excerpt: "",
     content: "",
     featured: false,
@@ -45,7 +47,8 @@ const CreateBlog = () => {
 
   const [selectedFiles, setSelectedFiles] = useState({
     cover: null,
-    hero: null
+    hero: null,
+    slideshow: []
   });
 
   const [tagInput, setTagInput] = useState("");
@@ -136,6 +139,69 @@ const CreateBlog = () => {
     e.target.value = "";
   };
 
+  // Handle slideshow images selection
+  const handleSlideshowSelect = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    // Check if adding these files would exceed the limit
+    const currentCount = formData.slideshow_images.length;
+    const newCount = currentCount + files.length;
+    
+    if (newCount > 5) {
+      toast.error(`You can only upload up to 5 slideshow images. Currently: ${currentCount}, Trying to add: ${files.length}`);
+      return;
+    }
+
+    // Validate each file
+    for (const file of files) {
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please upload only image files (JPG, PNG, GIF, WebP, SVG)");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Each image size must be less than 5MB");
+        return;
+      }
+    }
+
+    // Create object URLs for preview
+    const imageUrls = files.map(file => URL.createObjectURL(file));
+    
+    // Store the files for later upload
+    setSelectedFiles(prev => ({
+      ...prev,
+      slideshow: [...prev.slideshow, ...files]
+    }));
+
+    // Update form data with preview URLs
+    setFormData((prev) => ({
+      ...prev,
+      slideshow_images: [...prev.slideshow_images, ...imageUrls],
+    }));
+
+    // Reset file input
+    e.target.value = "";
+  };
+
+  // Remove slideshow image
+  const removeSlideshowImage = (index) => {
+    // Revoke object URL
+    if (formData.slideshow_images[index] && formData.slideshow_images[index].startsWith('blob:')) {
+      URL.revokeObjectURL(formData.slideshow_images[index]);
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      slideshow_images: prev.slideshow_images.filter((_, i) => i !== index),
+    }));
+
+    setSelectedFiles(prev => ({
+      ...prev,
+      slideshow: prev.slideshow.filter((_, i) => i !== index)
+    }));
+  };
+
   // Upload images to server using the same service as dashboard
   const uploadImages = async (blogTitle) => {
     const formData = new FormData();
@@ -148,6 +214,14 @@ const CreateBlog = () => {
     }
     if (selectedFiles.hero) {
       formData.append('hero_image', selectedFiles.hero);
+      hasFiles = true;
+    }
+    
+    // Append slideshow images
+    if (selectedFiles.slideshow && selectedFiles.slideshow.length > 0) {
+      selectedFiles.slideshow.forEach((file, index) => {
+        formData.append(`slideshow_image_${index}`, file);
+      });
       hasFiles = true;
     }
 
@@ -214,18 +288,29 @@ const CreateBlog = () => {
       let uploadedImages = {};
 
       // Step 1: Upload images if any were selected
-      if (selectedFiles.cover || selectedFiles.hero) {
+      if (selectedFiles.cover || selectedFiles.hero || selectedFiles.slideshow.length > 0) {
         toast.info('Uploading images...');
         uploadedImages = await uploadImages(formData.title);
       }
 
-      // Step 2: Prepare blog data with uploaded image URLs or existing URLs
+      // Step 2: Extract slideshow image URLs from uploaded images
+      const slideshowUrls = [];
+      if (uploadedImages) {
+        Object.keys(uploadedImages).forEach(key => {
+          if (key.startsWith('slideshow_image_')) {
+            slideshowUrls.push(uploadedImages[key]);
+          }
+        });
+      }
+
+      // Step 3: Prepare blog data with uploaded image URLs or existing URLs
       const blogData = {
         title: formData.title.trim(),
         category: formData.category,
         author: formData.author.trim(),
         image: uploadedImages.cover_image || formData.image, // Use uploaded URL or existing URL
         hero_image: uploadedImages.hero_image || formData.hero_image, // Use uploaded URL or existing URL
+        slideshow_images: slideshowUrls.length > 0 ? slideshowUrls : formData.slideshow_images.filter(url => !url.startsWith('blob:')),
         excerpt: formData.excerpt.trim(),
         content: formData.content.trim(),
         featured: Boolean(formData.featured),
@@ -237,7 +322,7 @@ const CreateBlog = () => {
 
       console.log("Submitting blog data:", blogData);
 
-      // Step 3: Create the blog post using the same post function as dashboard
+      // Step 4: Create the blog post using the same post function as dashboard
       const response = await post("blogs", blogData);
 
       if (response.success) {
@@ -250,6 +335,11 @@ const CreateBlog = () => {
         if (selectedFiles.hero) {
           URL.revokeObjectURL(formData.hero_image);
         }
+        formData.slideshow_images.forEach(url => {
+          if (url.startsWith('blob:')) {
+            URL.revokeObjectURL(url);
+          }
+        });
         
         navigate("/blogs");
       } else {
@@ -506,62 +596,13 @@ const CreateBlog = () => {
                 Images
               </h2>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Cover Image */}
+              <div className="space-y-6">
+                {/* Hero Image - Full Width with Emphasis */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-2">
-                    Cover Image
-                    {selectedFiles.cover && (
-                      <span className="text-green-600 ml-1">(Ready to upload)</span>
-                    )}
-                  </label>
-                  <div className="relative">
-                    {formData.image ? (
-                      <div className="relative">
-                        <img
-                          src={formData.image}
-                          alt="Cover preview"
-                          className="w-full h-40 object-cover rounded-lg border border-gray-200"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                          }}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => clearImage("cover")}
-                          className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => imageInputRef.current?.click()}
-                        className="w-full h-40 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary transition-colors flex flex-col items-center justify-center gap-2 text-gray-500 hover:text-primary"
-                      >
-                        <Upload className="w-6 h-6" />
-                        <span className="text-xs font-medium">
-                          Select Cover Image
-                        </span>
-                      </button>
-                    )}
-                    <input
-                      ref={imageInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleImageSelect(e, "cover")}
-                      className="hidden"
-                    />
-                  </div>
-                </div>
-
-                {/* Hero Image */}
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-2">
-                    Hero Image
+                  <label className="block text-xs font-bold text-gray-900 mb-2 uppercase tracking-wide">
+                    Hero Image (Main)
                     {selectedFiles.hero && (
-                      <span className="text-green-600 ml-1">(Ready to upload)</span>
+                      <span className="text-green-600 ml-1 normal-case font-normal">(Ready to upload)</span>
                     )}
                   </label>
                   <div className="relative">
@@ -570,7 +611,7 @@ const CreateBlog = () => {
                         <img
                           src={formData.hero_image}
                           alt="Hero preview"
-                          className="w-full h-40 object-cover rounded-lg border border-gray-200"
+                          className="w-full h-64 object-cover rounded-lg border-2 border-primary shadow-lg"
                           onError={(e) => {
                             e.target.style.display = 'none';
                           }}
@@ -578,20 +619,23 @@ const CreateBlog = () => {
                         <button
                           type="button"
                           onClick={() => clearImage("hero")}
-                          className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                          className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-md"
                         >
-                          <X className="w-3 h-3" />
+                          <X className="w-4 h-4" />
                         </button>
                       </div>
                     ) : (
                       <button
                         type="button"
                         onClick={() => heroInputRef.current?.click()}
-                        className="w-full h-40 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary transition-colors flex flex-col items-center justify-center gap-2 text-gray-500 hover:text-primary"
+                        className="w-full h-64 border-2 border-dashed border-primary rounded-lg hover:border-primary/70 hover:bg-primary/5 transition-all flex flex-col items-center justify-center gap-3 text-primary"
                       >
-                        <Upload className="w-6 h-6" />
-                        <span className="text-xs font-medium">
+                        <Upload className="w-8 h-8" />
+                        <span className="text-sm font-bold uppercase">
                           Select Hero Image
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          Main featured image for your blog
                         </span>
                       </button>
                     )}
@@ -604,8 +648,128 @@ const CreateBlog = () => {
                     />
                   </div>
                 </div>
+
+                {/* Cover and Slideshow Images Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Cover Image */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      Cover Image
+                      {selectedFiles.cover && (
+                        <span className="text-green-600 ml-1">(Ready to upload)</span>
+                      )}
+                    </label>
+                    <div className="relative">
+                      {formData.image ? (
+                        <div className="relative">
+                          <img
+                            src={formData.image}
+                            alt="Cover preview"
+                            className="w-full h-40 object-cover rounded-lg border border-gray-200"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => clearImage("cover")}
+                            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => imageInputRef.current?.click()}
+                          className="w-full h-40 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary transition-colors flex flex-col items-center justify-center gap-2 text-gray-500 hover:text-primary"
+                        >
+                          <Upload className="w-6 h-6" />
+                          <span className="text-xs font-medium">
+                            Select Cover Image
+                          </span>
+                        </button>
+                      )}
+                      <input
+                        ref={imageInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageSelect(e, "cover")}
+                        className="hidden"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Slideshow Images Upload Button */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      Slideshow Images ({formData.slideshow_images.length}/5)
+                      {selectedFiles.slideshow.length > 0 && (
+                        <span className="text-green-600 ml-1">({selectedFiles.slideshow.length} ready to upload)</span>
+                      )}
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => slideshowInputRef.current?.click()}
+                      disabled={formData.slideshow_images.length >= 5}
+                      className="w-full h-40 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary transition-colors flex flex-col items-center justify-center gap-2 text-gray-500 hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-gray-300 disabled:hover:text-gray-500"
+                    >
+                      <Upload className="w-6 h-6" />
+                      <span className="text-xs font-medium">
+                        {formData.slideshow_images.length >= 5 ? "Maximum Reached" : "Add Slideshow Images"}
+                      </span>
+                      {formData.slideshow_images.length < 5 && (
+                        <span className="text-xs text-gray-400">
+                          Select multiple images
+                        </span>
+                      )}
+                    </button>
+                    <input
+                      ref={slideshowInputRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleSlideshowSelect}
+                      className="hidden"
+                    />
+                  </div>
+                </div>
+
+                {/* Slideshow Images Preview Grid */}
+                {formData.slideshow_images.length > 0 && (
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      Slideshow Preview ({formData.slideshow_images.length} images)
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                      {formData.slideshow_images.map((image, index) => (
+                        <div key={index} className="relative group">
+                          <img
+                            src={image}
+                            alt={`Slideshow ${index + 1}`}
+                            className="w-full h-24 object-cover rounded-lg border border-gray-200"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeSlideshowImage(index)}
+                            className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                          <div className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
+                            {index + 1}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-              <p className="text-xs text-gray-500 mt-2">
+
+              <p className="text-xs text-gray-500 mt-4">
                 Note: Images will be uploaded when you click "Create Blog". Supported formats: JPG, PNG, GIF, WebP, SVG (max 5MB each).
               </p>
             </div>

@@ -43,6 +43,7 @@ use App\Controllers\ReactionController;
 use App\Controllers\UserController;
 use App\Controllers\UploadController;
 use App\Controllers\ContactController;
+use App\Controllers\AnalyticsController;
 
 try {
     $db = Database::getInstance()->getConnection();
@@ -69,6 +70,7 @@ if ($method === 'POST' && !empty($_POST)) {
     $data = array_merge($data, $_POST);
 }
 
+// Initialize controllers
 $authController = new AuthController($db);
 $blogController = new BlogController($db);
 $commentController = new CommentController($db);
@@ -76,8 +78,12 @@ $reactionController = new ReactionController($db);
 $userController = new UserController($db);
 $uploadController = new UploadController();
 $contactController = new ContactController();
+$analyticsController = new AnalyticsController();
 
-// Public routes
+// ============================================
+// PUBLIC ROUTES (No Authentication Required)
+// ============================================
+
 if ($method === 'GET' && $uri === '/health') {
     Response::success(['status' => 'healthy', 'timestamp' => date('Y-m-d H:i:s')]);
 }
@@ -120,14 +126,17 @@ if ($method === 'PUT' && preg_match('#^/views/(\d+)$#', $uri, $matches)) {
     $blogController->updateViewDuration($matches[1], $data);
 }
 
-// Contact form route (public)
 if ($method === 'POST' && $uri === '/contact') {
     $contactController->submit($data);
 }
 
-// Authenticated routes
+// ============================================
+// AUTHENTICATED ROUTES (Require Authentication)
+// ============================================
+
 $user = AuthMiddleware::authenticate();
 
+// Auth Routes
 if ($method === 'POST' && $uri === '/auth/register') {
     RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
     $authController->register($data, $user);
@@ -141,6 +150,7 @@ if ($method === 'GET' && $uri === '/auth/profile') {
     $authController->getProfile($user);
 }
 
+// Blog Management Routes
 if ($method === 'POST' && $uri === '/blogs') {
     RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
     $blogController->create($data, $user);
@@ -161,6 +171,7 @@ if ($method === 'PATCH' && preg_match('#^/blogs/(\d+)/visibility$#', $uri, $matc
     $blogController->toggleVisibility($matches[1], $user);
 }
 
+// Comment Management Routes
 if ($method === 'POST' && preg_match('#^/blogs/(\d+)/comments/(\d+)/reply$#', $uri, $matches)) {
     RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
     $commentController->createAdminReply($matches[1], $matches[2], $data, $user);
@@ -171,6 +182,7 @@ if ($method === 'DELETE' && preg_match('#^/comments/(\d+)$#', $uri, $matches)) {
     $commentController->delete($matches[1], $user);
 }
 
+// User Management Routes
 if ($method === 'GET' && $uri === '/users') {
     RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
     $userController->getAll($user);
@@ -181,7 +193,7 @@ if ($method === 'DELETE' && preg_match('#^/users/(\d+)$#', $uri, $matches)) {
     $userController->delete($matches[1], $user);
 }
 
-// Upload routes
+// Upload Routes
 if ($method === 'POST' && $uri === '/upload/image') {
     RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
     $uploadController->uploadImage($data);
@@ -196,5 +208,53 @@ if ($method === 'POST' && $uri === '/upload/cleanup') {
     RoleMiddleware::checkRole($user, ['super_admin']);
     $uploadController->cleanupEmptyFolders();
 }
+
+// ============================================
+// ANALYTICS ROUTES (Admin Only)
+// ============================================
+
+if ($method === 'GET' && $uri === '/analytics/overview') {
+    RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
+    $analyticsController->getOverview($queryParams);
+}
+
+if ($method === 'GET' && $uri === '/analytics/realtime') {
+    RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
+    $analyticsController->getRealTime();
+}
+
+if ($method === 'GET' && $uri === '/analytics/top-pages') {
+    RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
+    $analyticsController->getTopPages($queryParams);
+}
+
+if ($method === 'GET' && $uri === '/analytics/by-date') {
+    RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
+    $analyticsController->getByDateRange($queryParams);
+}
+
+if ($method === 'GET' && $uri === '/analytics/traffic-sources') {
+    RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
+    $analyticsController->getTrafficSources($queryParams);
+}
+
+if ($method === 'GET' && $uri === '/analytics/devices') {
+    RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
+    $analyticsController->getDeviceBreakdown($queryParams);
+}
+
+if ($method === 'GET' && $uri === '/analytics/geographic') {
+    RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
+    $analyticsController->getGeographicData($queryParams);
+}
+
+if ($method === 'GET' && $uri === '/analytics/dashboard') {
+    RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
+    $analyticsController->getDashboardData($queryParams);
+}
+
+// ============================================
+// 404 - Route Not Found
+// ============================================
 
 Response::notFound('Endpoint not found');
