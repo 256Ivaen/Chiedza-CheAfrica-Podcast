@@ -62,7 +62,7 @@ const Home = () => {
       "https://youtube.com/@chiedzacheafrica",
       "https://www.instagram.com/chiedzacheafrica",
       "https://www.tiktok.com/@chiedzacheafrica",
-      "https://open.spotify.com/show/5YBekTisDE8CawmkxGiesr",
+      // "https://open.spotify.com/show/5YBekTisDE8CawmkxGiesr",
       "https://www.facebook.com/share/16Mf6x5vw3/",
     ],
     makesOffer: [

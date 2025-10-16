@@ -115,8 +115,8 @@ class Email {
                                 <p style="color: #666666; font-size: 13px; line-height: 1.6; margin: 0;">
                                     Explore our content: 
                                     <a href="https://chiedzacheafrica.com" style="color: #edab12; text-decoration: none;">Website</a> • 
-                                    <a href="https://youtube.com/@chiedzacheafrica" style="color: #edab12; text-decoration: none;">YouTube</a> • 
-                                    <a href="https://open.spotify.com/show/5YBekTISDE8CawmkxGiesr" style="color: #edab12; text-decoration: none;">Spotify</a>
+                                    <a href="https://youtube.com/@chiedzacheafrica" style="color: #edab12; text-decoration: none;">YouTube</a> 
+                                    <!-- <a href="https://open.spotify.com/show/5YBekTISDE8CawmkxGiesr" style="color: #edab12; text-decoration: none;">Spotify</a> -->
                                 </p>
                             </div>
                         </td>
@@ -272,8 +272,8 @@ HTML;
                                 <p style="color: #666666; font-size: 13px; line-height: 1.6; margin: 0;">
                                     Explore our content: 
                                     <a href="https://chiedzacheafrica.com" style="color: #edab12; text-decoration: none;">Website</a> • 
-                                    <a href="https://youtube.com/@chiedzacheafrica" style="color: #edab12; text-decoration: none;">YouTube</a> • 
-                                    <a href="https://open.spotify.com/show/5YBekTISDE8CawmkxGiesr" style="color: #edab12; text-decoration: none;">Spotify</a>
+                                    <a href="https://youtube.com/@chiedzacheafrica" style="color: #edab12; text-decoration: none;">YouTube</a> 
+                                    <!-- <a href="https://open.spotify.com/show/5YBekTISDE8CawmkxGiesr" style="color: #edab12; text-decoration: none;">Spotify</a> -->
                                 </p>
                             </div>
                         </td>
