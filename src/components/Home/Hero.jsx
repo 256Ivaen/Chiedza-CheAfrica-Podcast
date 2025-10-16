@@ -22,12 +22,12 @@ const Hero = () => {
       href: "https://youtube.com/@chiedzacheafrica",
       color: "hover:text-red-500",
     },
-    {
-      name: "Spotify",
-      icon: FaSpotify,
-      href: "https://open.spotify.com/show/5YBekTisDE8CawmkxGiesr",
-      color: "hover:text-green-400",
-    },
+    // {
+    //   name: "Spotify",
+    //   icon: FaSpotify,
+    //   href: "https://open.spotify.com/show/5YBekTisDE8CawmkxGiesr",
+    //   color: "hover:text-green-400",
+    // },
     // {
     //   name: "Apple Podcasts",
     //   icon: FaApple,

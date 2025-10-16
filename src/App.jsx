@@ -98,7 +98,7 @@ const organizationSchema = {
   "sameAs": [
     "https://youtube.com/@chiedzacheafrica",
     "https://www.instagram.com/chiedzacheafrica",
-    "https://open.spotify.com/show/5YBekTisDE8CawmkxGiesr",
+    // "https://open.spotify.com/show/5YBekTisDE8CawmkxGiesr",
     "https://www.tiktok.com/@chiedzacheafrica",
     "https://www.facebook.com/share/16Mf6x5vw3/"
   ]
