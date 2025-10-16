@@ -504,7 +504,7 @@ const InsightDetail = () => {
         </Helmet>
 
         <div className="min-h-screen pt-[100px]">
-          <section className=" px-4 sm:px-6">
+          <section className="px-4 sm:px-6">
             <SkeletonPost />
           </section>
         </div>
