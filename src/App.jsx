@@ -104,6 +104,8 @@ const organizationSchema = {
   ]
 };
 
+
+
 const SEOWrapper = ({ children }) => {
   const location = useLocation();
   const path = location.pathname;
