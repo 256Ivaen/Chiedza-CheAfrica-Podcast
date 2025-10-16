@@ -9,47 +9,6 @@ const axiosInstance = axios.create({
   },
 });
 
-const logout = () => {
-  localStorage.removeItem('jwt');
-  localStorage.removeItem('userId');
-  localStorage.removeItem('email');
-  localStorage.removeItem('role');
-  localStorage.removeItem('isLoggedIn');
-  
-  window.location.href = '/login';
-  
-  if ('Notification' in window && Notification.permission === 'granted') {
-    new Notification('Session Expired', {
-      body: 'You have been logged out. Please log in again.',
-      icon: '/favicon.svg'
-    });
-  }
-};
-
-axiosInstance.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('jwt');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-axiosInstance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      console.warn('Session expired or unauthorized access detected');
-      logout();
-    }
-    return Promise.reject(error);
-  }
-);
-
 export const get = async <T>(url: string, params?: object): Promise<T> => {
   const response = await axiosInstance.get<T>(url, { params });
   return response.data;
@@ -83,5 +42,3 @@ export const patch = async <T>(url: string, data?: object): Promise<T> => {
   const response = await axiosInstance.patch<T>(url, data);
   return response.data;
 };
-
-export { logout };
