@@ -211,7 +211,7 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
         <div className="max-w-7xl mx-auto space-y-6">
           
           {/* Google Analytics Section */}
-          <div>
+          {/* <div>
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                 <Globe className="w-4 h-4 text-primary" />
@@ -225,7 +225,6 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Active Users (Real-time) */}
               <div className="bg-gradient-to-br from-green-50 to-white rounded-lg p-4 border-2 border-green-200 shadow-sm">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -428,10 +427,10 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Top Pages from Analytics */}
-          {!analyticsLoading && analyticsData.topPages.length > 0 && (
+          {/* {!analyticsLoading && analyticsData.topPages.length > 0 && (
             <div className="bg-white rounded-lg border border-gray-200">
               <div className="p-4 border-b border-gray-100 flex items-center justify-between">
                 <div>
@@ -482,12 +481,11 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Device & Traffic Sources Grid */}
-          {!analyticsLoading && (analyticsData.devices.length > 0 || analyticsData.trafficSources.length > 0) && (
+          {/* {!analyticsLoading && (analyticsData.devices.length > 0 || analyticsData.trafficSources.length > 0) && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {/* Device Breakdown */}
               {analyticsData.devices.length > 0 && (
                 <div className="bg-white rounded-lg border border-gray-200">
                   <div className="p-4 border-b border-gray-100">
@@ -571,7 +569,7 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
                 </div>
               )}
             </div>
-          )}
+          )} */}
 
           {/* Blog Performance Section */}
           <div>
