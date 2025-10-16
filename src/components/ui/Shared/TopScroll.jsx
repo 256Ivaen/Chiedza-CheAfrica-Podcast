@@ -188,7 +188,7 @@ const FloatingButtons = () => {
             exit="hidden"
             variants={buttonVariants}
             onClick={scrollToTop}
-            className="fixed bottom-20 right-6 z-40 bg-secondary text-textlight p-3 rounded-full shadow-lg transition-colors duration-200 focus:outline-none focus-visible"
+            className="fixed bottom-6 right-6 z-40 bg-secondary text-textlight p-3 rounded-full shadow-lg transition-colors duration-200 focus:outline-none focus-visible"
             aria-label="Scroll to top"
             title="Back to top"
           >
@@ -198,7 +198,7 @@ const FloatingButtons = () => {
       </AnimatePresence>
 
       {/* WhatsApp Button - Bottom Position */}
-      <motion.button
+      {/* <motion.button
         initial="hidden"
         animate="visible"
         variants={buttonVariants}
@@ -208,10 +208,10 @@ const FloatingButtons = () => {
         title="Chat with us on WhatsApp"
       >
         <WhatsAppIcon />
-      </motion.button>
+      </motion.button> */}
 
       {/* WhatsApp Popup */}
-      <AnimatePresence>
+      {/* <AnimatePresence>
         {showWhatsAppPopup && (
           <motion.div
             ref={popupRef}
@@ -255,7 +255,7 @@ const FloatingButtons = () => {
             </div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
     </>
   );
 };
