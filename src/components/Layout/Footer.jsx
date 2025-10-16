@@ -64,12 +64,12 @@ const Footer = () => {
       icon: Youtube,
       color: "hover:bg-red-600"
     },
-    {
-      name: "Spotify", 
-      href: "https://open.spotify.com/show/5YBekTisDE8CawmkxGiesr",
-      icon: FaSpotify,
-      color: "hover:bg-green-500"
-    },
+    // {
+    //   name: "Spotify", 
+    //   href: "https://open.spotify.com/show/5YBekTisDE8CawmkxGiesr",
+    //   icon: FaSpotify,
+    //   color: "hover:bg-green-500"
+    // },
     {
       name: "Instagram",
       href: "https://www.instagram.com/chiedzacheafrica",
