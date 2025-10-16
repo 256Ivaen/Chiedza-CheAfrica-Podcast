@@ -28,12 +28,12 @@ const Hero = () => {
       href: "https://open.spotify.com/show/5YBekTisDE8CawmkxGiesr",
       color: "hover:text-green-400",
     },
-    {
-      name: "Apple Podcasts",
-      icon: FaApple,
-      href: "#",
-      color: "hover:text-gray-300",
-    },
+    // {
+    //   name: "Apple Podcasts",
+    //   icon: FaApple,
+    //   href: "#",
+    //   color: "hover:text-gray-300",
+    // },
     {
       name: "Instagram",
       icon: FaInstagram,
