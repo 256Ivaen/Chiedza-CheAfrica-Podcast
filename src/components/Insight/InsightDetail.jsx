@@ -176,6 +176,7 @@ const InsightDetail = () => {
             month: 'long',
             day: 'numeric'
           }),
+          createdAt: blogData.created_at,
           featured: blogData.featured,
           visible: blogData.visible,
           tags: blogData.tags || [],
@@ -510,41 +511,141 @@ const InsightDetail = () => {
   return (
     <>
       <Helmet>
+        {/* Primary Meta Tags */}
         <title>{insight.title} | Chiedza CheAfrica Insights</title>
+        <meta name="title" content={insight.title} />
         <meta name="description" content={insight.excerpt} />
         <meta name="keywords" content={insight.tags?.join(', ')} />
+        <meta name="author" content={insight.author} />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        
+        {/* Canonical URL */}
+        <link rel="canonical" href={`https://chiedzacheafrica.com/blog/${id}`} />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={`https://chiedzacheafrica.com/blog/${id}`} />
         <meta property="og:title" content={insight.title} />
         <meta property="og:description" content={insight.excerpt} />
         <meta property="og:image" content={insight.heroImage || insight.image} />
-        <meta property="og:type" content="article" />
+        <meta property="og:image:secure_url" content={insight.heroImage || insight.image} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={insight.title} />
+        <meta property="og:site_name" content="Chiedza CheAfrica Podcast" />
+        <meta property="og:locale" content="en_US" />
+        <meta property="article:published_time" content={insight.createdAt} />
+        <meta property="article:modified_time" content={insight.createdAt} />
+        <meta property="article:author" content={insight.author} />
+        <meta property="article:section" content={insight.category} />
+        {insight.tags?.map(tag => (
+          <meta key={tag} property="article:tag" content={tag} />
+        ))}
+        
+        {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@chiedzacheafrica" />
+        <meta name="twitter:creator" content="@chiedzacheafrica" />
+        <meta name="twitter:url" content={`https://chiedzacheafrica.com/blog/${id}`} />
         <meta name="twitter:title" content={insight.title} />
         <meta name="twitter:description" content={insight.excerpt} />
         <meta name="twitter:image" content={insight.heroImage || insight.image} />
+        <meta name="twitter:image:alt" content={insight.title} />
+        
+        {/* Additional SEO Meta Tags */}
+        <meta name="language" content="English" />
+        <meta name="revisit-after" content="7 days" />
+        <meta name="rating" content="general" />
+        <meta httpEquiv="content-language" content="en-US" />
+        
+        {/* Structured Data - Article Schema */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Article",
             "headline": insight.title,
             "description": insight.excerpt,
-            "image": insight.heroImage || insight.image,
+            "image": {
+              "@type": "ImageObject",
+              "url": insight.heroImage || insight.image,
+              "width": 1200,
+              "height": 630,
+              "caption": insight.title
+            },
             "author": {
               "@type": "Person",
-              "name": insight.author
+              "name": insight.author,
+              "url": "https://chiedzacheafrica.com/about"
             },
             "publisher": {
               "@type": "Organization",
               "name": "Chiedza CheAfrica Podcast",
               "logo": {
                 "@type": "ImageObject",
-                "url": "https://chiedzacheafrica.com/logo.png"
-              }
+                "url": "https://chiedzacheafrica.com/logo.png",
+                "width": 600,
+                "height": 60
+              },
+              "url": "https://chiedzacheafrica.com"
             },
-            "datePublished": insight.date,
+            "datePublished": insight.createdAt,
+            "dateModified": insight.createdAt,
             "mainEntityOfPage": {
               "@type": "WebPage",
-              "@id": window.location.href
-            }
+              "@id": `https://chiedzacheafrica.com/blog/${id}`
+            },
+            "url": `https://chiedzacheafrica.com/blog/${id}`,
+            "keywords": insight.tags?.join(', '),
+            "articleSection": insight.category,
+            "wordCount": insight.content.split(' ').length,
+            "commentCount": comments.length,
+            "inLanguage": "en-US",
+            "isAccessibleForFree": true,
+            "interactionStatistic": [
+              {
+                "@type": "InteractionCounter",
+                "interactionType": "https://schema.org/ViewAction",
+                "userInteractionCount": insight.viewCount
+              },
+              {
+                "@type": "InteractionCounter",
+                "interactionType": "https://schema.org/CommentAction",
+                "userInteractionCount": comments.length
+              },
+              {
+                "@type": "InteractionCounter",
+                "interactionType": "https://schema.org/LikeAction",
+                "userInteractionCount": insight.reactionCount
+              }
+            ]
+          })}
+        </script>
+        
+        {/* Breadcrumb Schema */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://chiedzacheafrica.com"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Blog",
+                "item": "https://chiedzacheafrica.com/blog"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": insight.title,
+                "item": `https://chiedzacheafrica.com/blog/${id}`
+              }
+            ]
           })}
         </script>
       </Helmet>
