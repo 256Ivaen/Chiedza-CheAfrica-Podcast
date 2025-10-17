@@ -226,7 +226,7 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Active Now */}
-              <div className="bg-gradient-to-br from-green-50 to-white rounded-lg p-4 border-2 border-green-200 shadow-sm">
+              {/* <div className="bg-gradient-to-br from-green-50 to-white rounded-lg p-4 border-2 border-green-200 shadow-sm">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center mb-2">
@@ -253,7 +253,7 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
                     </p>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               {/* Total Visitors */}
               <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
@@ -431,7 +431,7 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
           </div>
 
           {/* Top Pages from Analytics */}
-          {!analyticsLoading && analyticsData.topPages.length > 0 && (
+          {/* {!analyticsLoading && analyticsData.topPages.length > 0 && (
             <div className="bg-white rounded-lg border border-gray-200">
               <div className="p-4 border-b border-gray-100 flex items-center justify-between">
                 <div>
@@ -482,11 +482,11 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Device & Traffic Sources Grid */}
           {!analyticsLoading && (analyticsData.devices.length > 0 || analyticsData.trafficSources.length > 0) && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               {/* Device Breakdown */}
               {analyticsData.devices.length > 0 && (
                 <div className="bg-white rounded-lg border border-gray-200">
@@ -499,11 +499,11 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
                     </p>
                   </div>
                   <div className="p-4">
-                    <div className="space-y-3">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       {analyticsData.devices.map((device, index) => (
                         <div
                           key={index}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                          className="flex items-center justify-between p-3 bg-gray-50 border border-secondary/20 gap-6 rounded-lg"
                         >
                           <div className="flex items-center gap-3">
                             {getDeviceIcon(device.device)}
