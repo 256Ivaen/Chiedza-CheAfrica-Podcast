@@ -7,7 +7,7 @@ use App\Utils\GoogleAuth;
 class Analytics {
     private $auth;
     private $propertyId;
-    private $apiEndpoint = 'https://analyticsdata.googleapis.com/v1beta/properties/%s:runReport';
+    private $apiEndpoint = 'https://analyticsdata.googleapis.com/v1beta/%s:runReport';
 
     public function __construct() {
         // Get environment variables
@@ -32,12 +32,12 @@ class Analytics {
     }
 
     /**
-     * Make API request to Google Analytics GA4 API
+     * Make API request to Google Analytics GA4 API - FIXED URL FORMATTING
      */
     private function makeRequest($requestBody) {
         $accessToken = $this->auth->getAccessToken();
         
-        // Format the property ID correctly for GA4 API
+        // Format the property ID correctly for GA4 API - FIXED: Don't double-format
         $formattedPropertyId = $this->propertyId;
         if (!str_starts_with($formattedPropertyId, 'properties/')) {
             $formattedPropertyId = 'properties/' . $this->propertyId;
@@ -52,6 +52,7 @@ class Analytics {
         error_log("Endpoint: " . $endpoint);
         error_log("Property ID: " . $formattedPropertyId);
         error_log("Request Body: " . $jsonBody);
+        error_log("Access Token Length: " . strlen($accessToken));
 
         $ch = curl_init($endpoint);
         
@@ -89,6 +90,9 @@ class Analytics {
             } else {
                 $errorMessage .= ' - Response: ' . $response;
             }
+            
+            // Add more debug info
+            $errorMessage .= ' [Property: ' . $formattedPropertyId . ']';
             
             throw new \Exception($errorMessage);
         }
@@ -145,7 +149,7 @@ class Analytics {
         try {
             $accessToken = $this->auth->getAccessToken();
             
-            // Format the property ID correctly for GA4 API
+            // Format the property ID correctly for GA4 API - FIXED: Don't double-format
             $formattedPropertyId = $this->propertyId;
             if (!str_starts_with($formattedPropertyId, 'properties/')) {
                 $formattedPropertyId = 'properties/' . $this->propertyId;

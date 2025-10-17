@@ -44,6 +44,7 @@ use App\Controllers\UserController;
 use App\Controllers\UploadController;
 use App\Controllers\ContactController;
 use App\Controllers\AnalyticsController;
+use App\Models\Analytics;
 
 try {
     $db = Database::getInstance()->getConnection();
@@ -251,6 +252,80 @@ if ($method === 'GET' && $uri === '/analytics/geographic') {
 if ($method === 'GET' && $uri === '/analytics/dashboard') {
     RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
     $analyticsController->getDashboardData($queryParams);
+}
+
+// ============================================
+// DEBUG ROUTES (Admin Only) - Temporary for troubleshooting
+// ============================================
+
+if ($method === 'GET' && $uri === '/debug/ga4-setup') {
+    RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
+    
+    $debugInfo = [
+        'environment' => [
+            'GA_VIEW_ID' => $_ENV['GA_VIEW_ID'] ?? 'NOT SET',
+            'GA_CREDENTIALS_PATH' => $_ENV['GA_CREDENTIALS_PATH'] ?? 'NOT SET',
+            'GA_PROJECT_ID' => $_ENV['GA_PROJECT_ID'] ?? 'NOT SET',
+            'GA_CLIENT_EMAIL' => $_ENV['GA_CLIENT_EMAIL'] ?? 'NOT SET',
+        ],
+        'files' => [
+            'credentials_file_exists' => file_exists(__DIR__ . '/../' . ($_ENV['GA_CREDENTIALS_PATH'] ?? 'config/google-analytics-credentials.json')) ? 'YES' : 'NO',
+            'credentials_file_path' => __DIR__ . '/../' . ($_ENV['GA_CREDENTIALS_PATH'] ?? 'config/google-analytics-credentials.json'),
+        ],
+        'api_url' => [
+            'expected_url' => 'https://analyticsdata.googleapis.com/v1beta/properties/509113325:runReport',
+            'property_id_format' => 'properties/' . ($_ENV['GA_VIEW_ID'] ?? 'NOT_SET')
+        ]
+    ];
+    
+    // Test credentials file
+    $credentialsPath = __DIR__ . '/../' . ($_ENV['GA_CREDENTIALS_PATH'] ?? 'config/google-analytics-credentials.json');
+    if (file_exists($credentialsPath)) {
+        $credentialsContent = file_get_contents($credentialsPath);
+        $credentials = json_decode($credentialsContent, true);
+        $debugInfo['credentials'] = [
+            'is_valid_json' => json_last_error() === JSON_ERROR_NONE ? 'YES' : 'NO',
+            'has_private_key' => isset($credentials['private_key']) ? 'YES' : 'NO',
+            'private_key_length' => isset($credentials['private_key']) ? strlen($credentials['private_key']) : 0,
+            'client_email' => $credentials['client_email'] ?? 'NOT FOUND'
+        ];
+    }
+    
+    // Test Analytics initialization
+    try {
+        $analytics = new Analytics();
+        $debugInfo['analytics_initialization'] = 'SUCCESS';
+        
+        // Test a simple API call
+        try {
+            $testData = $analytics->getOverview('7daysAgo', 'today');
+            $debugInfo['test_api_call'] = 'SUCCESS';
+            $debugInfo['test_data'] = $testData;
+        } catch (Exception $e) {
+            $debugInfo['test_api_call'] = 'FAILED: ' . $e->getMessage();
+        }
+    } catch (Exception $e) {
+        $debugInfo['analytics_initialization'] = 'FAILED: ' . $e->getMessage();
+    }
+    
+    Response::success($debugInfo, 'GA4 Setup Debug Information');
+}
+
+if ($method === 'GET' && $uri === '/debug/env-check') {
+    RoleMiddleware::checkRole($user, ['super_admin', 'admin']);
+    
+    $envVars = [
+        'GA_VIEW_ID' => $_ENV['GA_VIEW_ID'] ?? 'NOT SET',
+        'GA_CREDENTIALS_PATH' => $_ENV['GA_CREDENTIALS_PATH'] ?? 'NOT SET',
+        'GA_PROJECT_ID' => $_ENV['GA_PROJECT_ID'] ?? 'NOT SET',
+        'GA_PRIVATE_KEY_ID' => $_ENV['GA_PRIVATE_KEY_ID'] ? 'SET (length: ' . strlen($_ENV['GA_PRIVATE_KEY_ID']) . ')' : 'NOT SET',
+        'GA_PRIVATE_KEY' => $_ENV['GA_PRIVATE_KEY'] ? 'SET (length: ' . strlen($_ENV['GA_PRIVATE_KEY']) . ')' : 'NOT SET',
+        'GA_CLIENT_EMAIL' => $_ENV['GA_CLIENT_EMAIL'] ?? 'NOT SET',
+        'GA_CLIENT_ID' => $_ENV['GA_CLIENT_ID'] ?? 'NOT SET',
+        'GA_CLIENT_X509_CERT_URL' => $_ENV['GA_CLIENT_X509_CERT_URL'] ?? 'NOT SET',
+    ];
+    
+    Response::success($envVars, 'Environment Variables Check');
 }
 
 // ============================================
