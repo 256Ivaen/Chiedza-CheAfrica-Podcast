@@ -124,9 +124,9 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
             bounceRate: overview?.bounceRate || 0,
             sessionsPerUser: overview?.sessionsPerUser || 0,
             activeUsers: realTime?.activeUsers || 0,
-            topPages: topPages || [],
-            devices: devices || [],
-            trafficSources: trafficSources || [],
+            topPages: Array.isArray(topPages) ? topPages : [],
+            devices: Array.isArray(devices) ? devices : [],
+            trafficSources: Array.isArray(trafficSources) ? trafficSources : [],
           });
         }
       } catch (error) {
@@ -146,7 +146,7 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
         if (realtimeResponse?.success) {
           setAnalyticsData(prev => ({
             ...prev,
-            activeUsers: realtimeResponse.data.activeUsers || 0,
+            activeUsers: realtimeResponse.data?.activeUsers || 0,
           }));
         }
       } catch (error) {
@@ -211,7 +211,7 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
         <div className="max-w-7xl mx-auto space-y-6">
           
           {/* Google Analytics Section */}
-          {/* <div>
+          <div>
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                 <Globe className="w-4 h-4 text-primary" />
@@ -225,6 +225,7 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Active Now */}
               <div className="bg-gradient-to-br from-green-50 to-white rounded-lg p-4 border-2 border-green-200 shadow-sm">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -421,16 +422,16 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
                       )}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {analyticsData.devices[0]?.users.toLocaleString() || 0} users
+                      {analyticsData.devices[0]?.users?.toLocaleString() || 0} users
                     </p>
                   </div>
                 </div>
               </div>
             </div>
-          </div> */}
+          </div>
 
           {/* Top Pages from Analytics */}
-          {/* {!analyticsLoading && analyticsData.topPages.length > 0 && (
+          {!analyticsLoading && analyticsData.topPages.length > 0 && (
             <div className="bg-white rounded-lg border border-gray-200">
               <div className="p-4 border-b border-gray-100 flex items-center justify-between">
                 <div>
@@ -465,13 +466,13 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
                       <div className="flex items-center gap-4 ml-4">
                         <div className="text-right">
                           <p className="text-sm font-bold text-gray-900">
-                            {page.views.toLocaleString()}
+                            {page.views?.toLocaleString() || 0}
                           </p>
                           <p className="text-xs text-gray-500">views</p>
                         </div>
                         <div className="text-right">
                           <p className="text-sm font-semibold text-gray-700">
-                            {page.users.toLocaleString()}
+                            {page.users?.toLocaleString() || page.uniqueViews?.toLocaleString() || 0}
                           </p>
                           <p className="text-xs text-gray-500">users</p>
                         </div>
@@ -481,11 +482,12 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
                 </div>
               </div>
             </div>
-          )} */}
+          )}
 
           {/* Device & Traffic Sources Grid */}
-          {/* {!analyticsLoading && (analyticsData.devices.length > 0 || analyticsData.trafficSources.length > 0) && (
+          {!analyticsLoading && (analyticsData.devices.length > 0 || analyticsData.trafficSources.length > 0) && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Device Breakdown */}
               {analyticsData.devices.length > 0 && (
                 <div className="bg-white rounded-lg border border-gray-200">
                   <div className="p-4 border-b border-gray-100">
@@ -507,16 +509,16 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
                             {getDeviceIcon(device.device)}
                             <div>
                               <p className="text-sm font-semibold text-gray-900 capitalize">
-                                {device.device}
+                                {device.device || 'Unknown'}
                               </p>
                               <p className="text-xs text-gray-500">
-                                {device.sessions.toLocaleString()} sessions
+                                {device.sessions?.toLocaleString() || 0} sessions
                               </p>
                             </div>
                           </div>
                           <div className="text-right">
                             <p className="text-lg font-bold text-gray-900">
-                              {device.users.toLocaleString()}
+                              {device.users?.toLocaleString() || 0}
                             </p>
                             <p className="text-xs text-gray-500">users</p>
                           </div>
@@ -549,16 +551,16 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
                             <MapPin className="w-4 h-4 text-red-600 flex-shrink-0" />
                             <div className="min-w-0">
                               <p className="text-sm font-semibold text-gray-900 truncate">
-                                {source.source}
+                                {source.source || 'Unknown'}
                               </p>
                               <p className="text-xs text-gray-500 truncate">
-                                {source.medium}
+                                {source.medium || 'N/A'}
                               </p>
                             </div>
                           </div>
                           <div className="text-right ml-4">
                             <p className="text-lg font-bold text-gray-900">
-                              {source.sessions.toLocaleString()}
+                              {source.sessions?.toLocaleString() || 0}
                             </p>
                             <p className="text-xs text-gray-500">sessions</p>
                           </div>
@@ -569,7 +571,7 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
                 </div>
               )}
             </div>
-          )} */}
+          )}
 
           {/* Blog Performance Section */}
           <div>
@@ -719,7 +721,7 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
                             By {blog.author} | {blog.category}
                           </p>
                           <p className="text-xs text-gray-400">
-                            {new Date(blog.created_at).toLocaleDateString()}
+                          {new Date(blog.created_at).toLocaleDateString()}
                           </p>
                         </div>
                       </div>
@@ -727,15 +729,15 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
                       <div className="w-full flex flex-wrap gap-4 items-center text-xs text-gray-500">
                         <span className="flex items-center gap-1">
                           <Eye className="h-3 w-3" />
-                          {blog.view_count} views
+                          {blog.view_count || 0} views
                         </span>
                         <span className="flex items-center gap-1">
-                        <MessageSquare className="h-3 w-3" />
-                          {blog.comment_count} comments
+                          <MessageSquare className="h-3 w-3" />
+                          {blog.comment_count || 0} comments
                         </span>
                         <span className="flex items-center gap-1">
                           <Heart className="h-3 w-3" />
-                          {blog.reaction_count} reactions
+                          {blog.reaction_count || 0} reactions
                         </span>
                       </div>
                     </div>
@@ -761,7 +763,6 @@ function EnhancedDashboardContent({ loading, onRefresh }) {
     </div>
   );
 }
-
 
 export function Dashboard({ loading, onRefresh }) {
   return (
