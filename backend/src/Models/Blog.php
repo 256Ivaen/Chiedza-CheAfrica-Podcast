@@ -13,13 +13,14 @@ class Blog {
 
     public function create($data) {
         $stmt = $this->db->prepare(
-            "INSERT INTO blogs (title, category, author, image, hero_image, excerpt, content, 
+            "INSERT INTO blogs (title, category, author, image, hero_image, slideshow_images, excerpt, content, 
              featured, tags, hero_data, read_time, visible, created_at, updated_at) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
         );
         
         $tags = is_array($data['tags']) ? json_encode($data['tags']) : $data['tags'];
         $heroData = is_array($data['hero_data']) ? json_encode($data['hero_data']) : $data['hero_data'];
+        $slideshowImages = is_array($data['slideshow_images']) ? json_encode($data['slideshow_images']) : $data['slideshow_images'];
         
         $stmt->execute([
             $data['title'],
@@ -27,6 +28,7 @@ class Blog {
             $data['author'],
             $data['image'],
             $data['hero_image'],
+            $slideshowImages,
             $data['excerpt'],
             $data['content'],
             $data['featured'] ?? false,
@@ -43,14 +45,14 @@ class Blog {
         $fields = [];
         $values = [];
         
-        $allowedFields = ['title', 'category', 'author', 'image', 'hero_image', 'excerpt', 
+        $allowedFields = ['title', 'category', 'author', 'image', 'hero_image', 'slideshow_images', 'excerpt', 
                           'content', 'featured', 'tags', 'hero_data', 'read_time', 'visible'];
         
         foreach ($allowedFields as $field) {
             if (isset($data[$field])) {
                 $fields[] = "$field = ?";
                 
-                if ($field === 'tags' || $field === 'hero_data') {
+                if ($field === 'tags' || $field === 'hero_data' || $field === 'slideshow_images') {
                     $values[] = is_array($data[$field]) ? json_encode($data[$field]) : $data[$field];
                 } else {
                     $values[] = $data[$field];
@@ -91,6 +93,7 @@ class Blog {
         if ($blog) {
             $blog['tags'] = json_decode($blog['tags'], true);
             $blog['hero_data'] = json_decode($blog['hero_data'], true);
+            $blog['slideshow_images'] = json_decode($blog['slideshow_images'], true);
         }
         
         return $blog;
@@ -126,6 +129,7 @@ class Blog {
         foreach ($blogs as &$blog) {
             $blog['tags'] = json_decode($blog['tags'], true);
             $blog['hero_data'] = json_decode($blog['hero_data'], true);
+            $blog['slideshow_images'] = json_decode($blog['slideshow_images'], true);
         }
         
         return $blogs;

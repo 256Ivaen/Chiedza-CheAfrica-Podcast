@@ -114,6 +114,10 @@ const InsightDetail = () => {
   const [copySuccess, setCopySuccess] = useState(false);
   const [shareSuccess, setShareSuccess] = useState('');
   
+  // Hero slideshow state
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [heroImages, setHeroImages] = useState([]);
+  
   // Comment state
   const [commentForm, setCommentForm] = useState({
     name: '',
@@ -126,11 +130,9 @@ const InsightDetail = () => {
 
   // Generate device identifier
   const getDeviceIdentifier = () => {
-    // Try to get from localStorage first
     let deviceId = localStorage.getItem('device_identifier');
     
     if (!deviceId) {
-      // Generate a new device identifier
       deviceId = `device_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       localStorage.setItem('device_identifier', deviceId);
     }
@@ -146,6 +148,41 @@ const InsightDetail = () => {
     celebrate: { icon: Award, label: 'Celebrate', color: 'text-yellow-500', activeColor: 'text-yellow-400' }
   };
 
+  // Setup hero images slideshow
+  useEffect(() => {
+    if (!insight) return;
+
+    const images = [];
+    
+    // Add hero image first
+    if (insight.heroImage) {
+      images.push(insight.heroImage);
+    }
+    
+    // Add slideshow images
+    if (insight.slideshowImages && Array.isArray(insight.slideshowImages)) {
+      images.push(...insight.slideshowImages.filter(img => img && img.trim() !== ''));
+    }
+    
+    // Fallback to regular image if no hero/slideshow images
+    if (images.length === 0 && insight.image) {
+      images.push(insight.image);
+    }
+    
+    setHeroImages(images);
+  }, [insight]);
+
+  // Auto-cycle hero images
+  useEffect(() => {
+    if (heroImages.length <= 1) return;
+    
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroImages.length);
+    }, 10000); // 10 seconds per slide
+
+    return () => clearInterval(timer);
+  }, [heroImages.length]);
+
   // Fetch insight details
   const fetchInsightDetails = async () => {
     try {
@@ -154,13 +191,11 @@ const InsightDetail = () => {
 
       const deviceIdentifier = getDeviceIdentifier();
 
-      // Fetch main insight with device identifier for view tracking
       const insightResponse = await get(`blogs/${id}?identifier=${deviceIdentifier}`);
       
       if (insightResponse?.success && insightResponse?.data) {
         const blogData = insightResponse.data;
         
-        // Transform API data to match frontend structure
         const transformedInsight = {
           id: blogData.id,
           title: blogData.title,
@@ -170,6 +205,7 @@ const InsightDetail = () => {
           author: blogData.author,
           image: blogData.image,
           heroImage: blogData.hero_image,
+          slideshowImages: blogData.slideshow_images || [],
           readTime: blogData.read_time,
           date: new Date(blogData.created_at).toLocaleDateString('en-US', {
             year: 'numeric',
@@ -185,18 +221,13 @@ const InsightDetail = () => {
           commentCount: blogData.comment_count || 0,
           reactionCount: blogData.reaction_count || 0,
           viewStats: blogData.view_stats || {},
-          viewId: blogData.view_id // For updating view duration
+          viewId: blogData.view_id
         };
 
         setInsight(transformedInsight);
 
-        // Fetch related insights
         await fetchRelatedInsights(blogData.category, blogData.id);
-        
-        // Fetch comments
         await fetchComments();
-        
-        // Fetch reactions
         await fetchReactions(deviceIdentifier);
 
       } else {
@@ -220,7 +251,6 @@ const InsightDetail = () => {
             blog.visible
           )
           .sort((a, b) => {
-            // Prioritize same category, then featured, then by date
             if (a.category === category && b.category !== category) return -1;
             if (b.category === category && a.category !== category) return 1;
             if (a.featured && !b.featured) return -1;
@@ -280,20 +310,17 @@ const InsightDetail = () => {
     }
   };
 
-  // Handle reaction
   const handleReaction = async (reactionType) => {
     try {
       const deviceIdentifier = getDeviceIdentifier();
       
       if (userReaction === reactionType) {
-        // Remove reaction
         const response = await del(`blogs/${id}/reactions`, { identifier: deviceIdentifier });
         if (response?.success) {
           setUserReaction(null);
           await fetchReactions(deviceIdentifier);
         }
       } else {
-        // Add reaction
         const response = await post(`blogs/${id}/reactions`, {
           type: reactionType,
           identifier: deviceIdentifier
@@ -308,7 +335,6 @@ const InsightDetail = () => {
     }
   };
 
-  // Handle comment submission
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     
@@ -324,12 +350,10 @@ const InsightDetail = () => {
       };
 
       if (commentForm.isAnonymous) {
-        // Use device identifier for anonymous comments
         const deviceIdentifier = getDeviceIdentifier();
         commentData.name = `Anonymous_${deviceIdentifier.substr(0, 8)}`;
         commentData.email = `${deviceIdentifier}@anonymous.chiedzacheafrica.com`;
       } else {
-        // Use provided name and email
         commentData.name = commentForm.name.trim();
         commentData.email = commentForm.email.trim();
       }
@@ -339,7 +363,7 @@ const InsightDetail = () => {
       if (response?.success) {
         setCommentForm({ name: '', email: '', content: '', isAnonymous: false });
         setCommentSuccess(true);
-        await fetchComments(); // Refresh comments
+        await fetchComments();
         
         setTimeout(() => setCommentSuccess(false), 3000);
       }
@@ -350,15 +374,14 @@ const InsightDetail = () => {
     }
   };
 
-  // Update view duration when user spends time on page
   useEffect(() => {
     if (!insight?.viewId) return;
 
     const startTime = Date.now();
     
     return () => {
-      const duration = Math.floor((Date.now() - startTime) / 1000); // Convert to seconds
-      if (duration > 5) { // Only record if user spent more than 5 seconds
+      const duration = Math.floor((Date.now() - startTime) / 1000);
+      if (duration > 5) {
         updateViewDuration(duration);
       }
     };
@@ -451,7 +474,6 @@ const InsightDetail = () => {
     </motion.div>
   );
 
-  // Loading state
   if (loading) {
     return (
       <>
@@ -460,12 +482,10 @@ const InsightDetail = () => {
         </Helmet>
 
         <div className="min-h-screen">
-          {/* Skeleton Hero */}
           <section className="py-8">
             <SkeletonHero />
           </section>
 
-          {/* Skeleton Content */}
           <section className="py-16 px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -479,7 +499,6 @@ const InsightDetail = () => {
             </div>
           </section>
 
-          {/* Skeleton Comments */}
           <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/5">
             <div className="max-w-6xl mx-auto">
               <SkeletonComments />
@@ -490,7 +509,6 @@ const InsightDetail = () => {
     );
   }
 
-  // Error state
   if (error || !insight) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -508,6 +526,8 @@ const InsightDetail = () => {
     );
   }
 
+  const currentHeroImage = heroImages[currentSlide] || insight.image;
+
   return (
     <>
       <Helmet>
@@ -519,10 +539,8 @@ const InsightDetail = () => {
         <meta name="author" content={insight.author} />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         
-        {/* Canonical URL */}
         <link rel="canonical" href={`https://chiedzacheafrica.com/blog/${id}`} />
         
-        {/* Open Graph / Facebook */}
         <meta property="og:type" content="article" />
         <meta property="og:url" content={`https://chiedzacheafrica.com/blog/${id}`} />
         <meta property="og:title" content={insight.title} />
@@ -542,7 +560,6 @@ const InsightDetail = () => {
           <meta key={tag} property="article:tag" content={tag} />
         ))}
         
-        {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@chiedzacheafrica" />
         <meta name="twitter:creator" content="@chiedzacheafrica" />
@@ -552,13 +569,11 @@ const InsightDetail = () => {
         <meta name="twitter:image" content={insight.heroImage || insight.image} />
         <meta name="twitter:image:alt" content={insight.title} />
         
-        {/* Additional SEO Meta Tags */}
         <meta name="language" content="English" />
         <meta name="revisit-after" content="7 days" />
         <meta name="rating" content="general" />
         <meta httpEquiv="content-language" content="en-US" />
         
-        {/* Structured Data - Article Schema */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -621,7 +636,6 @@ const InsightDetail = () => {
           })}
         </script>
         
-        {/* Breadcrumb Schema */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -669,12 +683,51 @@ const InsightDetail = () => {
       </AnimatePresence>
 
       <div className="min-h-screen">
-        {/* Hero Section */}
-        <PageHero 
-          title={insight.title}
-          subtitle={`${insight.category} • ${insight.readTime} • ${insight.author}`}
-          image={insight.heroImage || insight.image}
-        />
+        {/* Dynamic Hero Section with Slideshow */}
+        <div className="relative">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentSlide}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.5 }}
+            >
+              <PageHero 
+                title={insight.title}
+                subtitle={`${insight.category} • ${insight.readTime} • ${insight.author}`}
+                image={currentHeroImage}
+              />
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Slide Indicators */}
+          {heroImages.length > 1 && (
+            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2">
+              {heroImages.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`transition-all duration-300 ${
+                    index === currentSlide
+                      ? 'bg-primary w-8 h-2'
+                      : 'bg-white/50 hover:bg-white/75 w-2 h-2'
+                  } rounded-full`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Image Counter */}
+          {heroImages.length > 1 && (
+            <div className="absolute top-8 right-8 z-20 bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full">
+              <span className="text-white text-sm font-light">
+                {currentSlide + 1} / {heroImages.length}
+              </span>
+            </div>
+          )}
+        </div>
 
         {/* Content Section */}
         <section className="py-16 px-4 sm:px-6 lg:px-8">
@@ -879,14 +932,14 @@ const InsightDetail = () => {
                                   {comment.name || comment.admin_email}
                                 </p>
                                 {comment.is_admin_reply && (
-                                  <span className="px-2 py-1 bg-primary/20 text-primary text-sm rounded-full">Admin</span>
+                                  <span className="px-2 py-1 bg-primary/20 text-primary text-xs rounded-full">Admin</span>
                                 )}
                                 {comment.email?.includes('@anonymous.') && (
-                                  <span className="px-2 py-1 bg-gray-500/20 text-gray-300 text-sm rounded-full">Anonymous</span>
+                                  <span className="px-2 py-1 bg-gray-500/20 text-gray-300 text-xs rounded-full">Anonymous</span>
                                 )}
                               </div>
                               {comment.email && !comment.is_admin_reply && !comment.email.includes('@anonymous.') && (
-                                <p className="text-gray-400 text-sm flex items-center gap-1 mb-2">
+                                <p className="text-gray-400 text-xs flex items-center gap-1 mb-2">
                                   <Mail className="w-3 h-3" />
                                   {comment.email}
                                 </p>
@@ -894,7 +947,7 @@ const InsightDetail = () => {
                               <p className="text-gray-300 text-sm mb-1 leading-relaxed">
                                 {comment.content}
                               </p>
-                              <p className="text-gray-500 text-sm">
+                              <p className="text-gray-500 text-xs">
                                 {new Date(comment.created_at).toLocaleDateString()}
                               </p>
                             </div>
@@ -919,13 +972,13 @@ const InsightDetail = () => {
                                           {reply.name || reply.admin_email}
                                         </p>
                                         {reply.is_admin_reply && (
-                                          <span className="px-2 py-1 bg-primary/20 text-primary text-sm rounded-full">Admin</span>
+                                          <span className="px-2 py-1 bg-primary/20 text-primary text-xs rounded-full">Admin</span>
                                         )}
                                       </div>
                                       <p className="text-gray-300 text-sm mb-1 leading-relaxed">
                                         {reply.content}
                                       </p>
-                                      <p className="text-gray-500 text-sm">
+                                      <p className="text-gray-500 text-xs">
                                         {new Date(reply.created_at).toLocaleDateString()}
                                       </p>
                                     </div>
@@ -1023,7 +1076,7 @@ const InsightDetail = () => {
                       </div>
                       <div>
                         <p className="text-white text-sm font-light">{insight.author}</p>
-                        <p className="text-gray-300 text-sm mt-1 font-light">
+                        <p className="text-gray-300 text-xs mt-1 font-light">
                           Expert in {insight.category.toLowerCase()} with extensive industry experience.
                         </p>
                       </div>
