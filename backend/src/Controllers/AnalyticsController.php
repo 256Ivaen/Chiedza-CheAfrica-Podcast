@@ -18,18 +18,12 @@ class AnalyticsController {
     }
 
     /**
-     * Get overview analytics
+     * Get overview analytics - MODIFIED TO RETURN ACTUAL ERRORS
      */
     public function getOverview($queryParams = []) {
         if (!$this->analyticsModel) {
-            Response::success([
-                'totalUsers' => 0,
-                'totalSessions' => 0,
-                'totalPageViews' => 0,
-                'avgSessionDuration' => 0,
-                'bounceRate' => 0,
-                'sessionsPerUser' => 0
-            ], 'Analytics not configured');
+            Response::error('Analytics not configured: ' . $e->getMessage(), 500);
+            return;
         }
 
         try {
@@ -40,16 +34,17 @@ class AnalyticsController {
             Response::success($data, 'Analytics overview retrieved successfully');
 
         } catch (\Exception $e) {
-            Response::error('Failed to fetch analytics: ' . $e->getMessage(), 500);
+            Response::error('Failed to fetch analytics overview: ' . $e->getMessage(), 500);
         }
     }
 
     /**
-     * Get real-time users
+     * Get real-time users - MODIFIED TO RETURN ACTUAL ERRORS
      */
     public function getRealTime() {
         if (!$this->analyticsModel) {
-            Response::success(['activeUsers' => 0], 'Real-time data unavailable');
+            Response::error('Analytics not configured', 500);
+            return;
         }
 
         try {
@@ -57,16 +52,17 @@ class AnalyticsController {
             Response::success($data, 'Real-time data retrieved successfully');
 
         } catch (\Exception $e) {
-            Response::success(['activeUsers' => 0], 'Real-time data unavailable');
+            Response::error('Failed to fetch real-time data: ' . $e->getMessage(), 500);
         }
     }
 
     /**
-     * Get top pages
+     * Get top pages - MODIFIED TO RETURN ACTUAL ERRORS
      */
     public function getTopPages($queryParams = []) {
         if (!$this->analyticsModel) {
-            Response::success([], 'Analytics not configured');
+            Response::error('Analytics not configured', 500);
+            return;
         }
 
         try {
@@ -83,11 +79,12 @@ class AnalyticsController {
     }
 
     /**
-     * Get analytics by date range
+     * Get analytics by date range - MODIFIED TO RETURN ACTUAL ERRORS
      */
     public function getByDateRange($queryParams = []) {
         if (!$this->analyticsModel) {
-            Response::success([], 'Analytics not configured');
+            Response::error('Analytics not configured', 500);
+            return;
         }
 
         try {
@@ -103,11 +100,12 @@ class AnalyticsController {
     }
 
     /**
-     * Get traffic sources
+     * Get traffic sources - MODIFIED TO RETURN ACTUAL ERRORS
      */
     public function getTrafficSources($queryParams = []) {
         if (!$this->analyticsModel) {
-            Response::success([], 'Analytics not configured');
+            Response::error('Analytics not configured', 500);
+            return;
         }
 
         try {
@@ -123,11 +121,12 @@ class AnalyticsController {
     }
 
     /**
-     * Get device breakdown
+     * Get device breakdown - MODIFIED TO RETURN ACTUAL ERRORS
      */
     public function getDeviceBreakdown($queryParams = []) {
         if (!$this->analyticsModel) {
-            Response::success([], 'Analytics not configured');
+            Response::error('Analytics not configured', 500);
+            return;
         }
 
         try {
@@ -143,11 +142,12 @@ class AnalyticsController {
     }
 
     /**
-     * Get geographic data
+     * Get geographic data - MODIFIED TO RETURN ACTUAL ERRORS
      */
     public function getGeographicData($queryParams = []) {
         if (!$this->analyticsModel) {
-            Response::success([], 'Analytics not configured');
+            Response::error('Analytics not configured', 500);
+            return;
         }
 
         try {
@@ -164,24 +164,12 @@ class AnalyticsController {
     }
 
     /**
-     * Get complete dashboard data
+     * Get complete dashboard data - MODIFIED TO RETURN ACTUAL ERRORS
      */
     public function getDashboardData($queryParams = []) {
         if (!$this->analyticsModel) {
-            Response::success([
-                'overview' => [
-                    'totalUsers' => 0,
-                    'totalSessions' => 0,
-                    'totalPageViews' => 0,
-                    'avgSessionDuration' => 0,
-                    'bounceRate' => 0,
-                    'sessionsPerUser' => 0
-                ],
-                'realTime' => ['activeUsers' => 0],
-                'topPages' => [],
-                'trafficSources' => [],
-                'devices' => []
-            ], 'Analytics not configured');
+            Response::error('Analytics not configured', 500);
+            return;
         }
 
         try {
