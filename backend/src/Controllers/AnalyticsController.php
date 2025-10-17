@@ -18,11 +18,11 @@ class AnalyticsController {
     }
 
     /**
-     * Get overview analytics - MODIFIED TO RETURN ACTUAL ERRORS
+     * Get overview analytics
      */
     public function getOverview($queryParams = []) {
         if (!$this->analyticsModel) {
-            Response::error('Analytics not configured: ' . $e->getMessage(), 500);
+            Response::error('Analytics not configured. Check GA_VIEW_ID and GA_CREDENTIALS_PATH in your .env file', 500);
             return;
         }
 
@@ -34,16 +34,17 @@ class AnalyticsController {
             Response::success($data, 'Analytics overview retrieved successfully');
 
         } catch (\Exception $e) {
-            Response::error('Failed to fetch analytics overview: ' . $e->getMessage(), 500);
+            error_log('OVERVIEW ERROR: ' . $e->getMessage());
+            Response::error('Google Analytics Error: ' . $e->getMessage(), 500);
         }
     }
 
     /**
-     * Get real-time users - MODIFIED TO RETURN ACTUAL ERRORS
+     * Get real-time users
      */
     public function getRealTime() {
         if (!$this->analyticsModel) {
-            Response::error('Analytics not configured', 500);
+            Response::error('Analytics not configured. Check GA_VIEW_ID and GA_CREDENTIALS_PATH in your .env file', 500);
             return;
         }
 
@@ -52,16 +53,17 @@ class AnalyticsController {
             Response::success($data, 'Real-time data retrieved successfully');
 
         } catch (\Exception $e) {
-            Response::error('Failed to fetch real-time data: ' . $e->getMessage(), 500);
+            error_log('REAL-TIME ERROR: ' . $e->getMessage());
+            Response::error('Google Analytics Error: ' . $e->getMessage(), 500);
         }
     }
 
     /**
-     * Get top pages - MODIFIED TO RETURN ACTUAL ERRORS
+     * Get top pages
      */
     public function getTopPages($queryParams = []) {
         if (!$this->analyticsModel) {
-            Response::error('Analytics not configured', 500);
+            Response::error('Analytics not configured. Check GA_VIEW_ID and GA_CREDENTIALS_PATH in your .env file', 500);
             return;
         }
 
@@ -74,16 +76,17 @@ class AnalyticsController {
             Response::success($data, 'Top pages retrieved successfully');
 
         } catch (\Exception $e) {
-            Response::error('Failed to fetch top pages: ' . $e->getMessage(), 500);
+            error_log('TOP PAGES ERROR: ' . $e->getMessage());
+            Response::error('Google Analytics Error: ' . $e->getMessage(), 500);
         }
     }
 
     /**
-     * Get analytics by date range - MODIFIED TO RETURN ACTUAL ERRORS
+     * Get analytics by date range
      */
     public function getByDateRange($queryParams = []) {
         if (!$this->analyticsModel) {
-            Response::error('Analytics not configured', 500);
+            Response::error('Analytics not configured. Check GA_VIEW_ID and GA_CREDENTIALS_PATH in your .env file', 500);
             return;
         }
 
@@ -95,16 +98,17 @@ class AnalyticsController {
             Response::success($data, 'Date range analytics retrieved successfully');
 
         } catch (\Exception $e) {
-            Response::error('Failed to fetch analytics by date: ' . $e->getMessage(), 500);
+            error_log('DATE RANGE ERROR: ' . $e->getMessage());
+            Response::error('Google Analytics Error: ' . $e->getMessage(), 500);
         }
     }
 
     /**
-     * Get traffic sources - MODIFIED TO RETURN ACTUAL ERRORS
+     * Get traffic sources
      */
     public function getTrafficSources($queryParams = []) {
         if (!$this->analyticsModel) {
-            Response::error('Analytics not configured', 500);
+            Response::error('Analytics not configured. Check GA_VIEW_ID and GA_CREDENTIALS_PATH in your .env file', 500);
             return;
         }
 
@@ -116,16 +120,17 @@ class AnalyticsController {
             Response::success($data, 'Traffic sources retrieved successfully');
 
         } catch (\Exception $e) {
-            Response::error('Failed to fetch traffic sources: ' . $e->getMessage(), 500);
+            error_log('TRAFFIC SOURCES ERROR: ' . $e->getMessage());
+            Response::error('Google Analytics Error: ' . $e->getMessage(), 500);
         }
     }
 
     /**
-     * Get device breakdown - MODIFIED TO RETURN ACTUAL ERRORS
+     * Get device breakdown
      */
     public function getDeviceBreakdown($queryParams = []) {
         if (!$this->analyticsModel) {
-            Response::error('Analytics not configured', 500);
+            Response::error('Analytics not configured. Check GA_VIEW_ID and GA_CREDENTIALS_PATH in your .env file', 500);
             return;
         }
 
@@ -137,16 +142,17 @@ class AnalyticsController {
             Response::success($data, 'Device breakdown retrieved successfully');
 
         } catch (\Exception $e) {
-            Response::error('Failed to fetch device breakdown: ' . $e->getMessage(), 500);
+            error_log('DEVICE BREAKDOWN ERROR: ' . $e->getMessage());
+            Response::error('Google Analytics Error: ' . $e->getMessage(), 500);
         }
     }
 
     /**
-     * Get geographic data - MODIFIED TO RETURN ACTUAL ERRORS
+     * Get geographic data
      */
     public function getGeographicData($queryParams = []) {
         if (!$this->analyticsModel) {
-            Response::error('Analytics not configured', 500);
+            Response::error('Analytics not configured. Check GA_VIEW_ID and GA_CREDENTIALS_PATH in your .env file', 500);
             return;
         }
 
@@ -159,16 +165,17 @@ class AnalyticsController {
             Response::success($data, 'Geographic data retrieved successfully');
 
         } catch (\Exception $e) {
-            Response::error('Failed to fetch geographic data: ' . $e->getMessage(), 500);
+            error_log('GEOGRAPHIC DATA ERROR: ' . $e->getMessage());
+            Response::error('Google Analytics Error: ' . $e->getMessage(), 500);
         }
     }
 
     /**
-     * Get complete dashboard data - MODIFIED TO RETURN ACTUAL ERRORS
+     * Get complete dashboard data
      */
     public function getDashboardData($queryParams = []) {
         if (!$this->analyticsModel) {
-            Response::error('Analytics not configured', 500);
+            Response::error('Analytics not configured. Check GA_VIEW_ID and GA_CREDENTIALS_PATH in your .env file', 500);
             return;
         }
 
@@ -193,7 +200,8 @@ class AnalyticsController {
             Response::success($data, 'Dashboard data retrieved successfully');
 
         } catch (\Exception $e) {
-            Response::error('Failed to fetch dashboard data: ' . $e->getMessage(), 500);
+            error_log('DASHBOARD DATA ERROR: ' . $e->getMessage());
+            Response::error('Google Analytics Error: ' . $e->getMessage(), 500);
         }
     }
 }

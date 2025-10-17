@@ -6,22 +6,22 @@ use App\Utils\GoogleAuth;
 
 class Analytics {
     private $auth;
-    private $viewId;
-    private $apiEndpoint = 'https://analyticsreporting.googleapis.com/v4/reports:batchGet';
+    private $propertyId;
+    private $apiEndpoint = 'https://analyticsdata.googleapis.com/v1beta/properties/%s:runReport';
 
     public function __construct() {
-        // Get environment variables - using proper path from src/Models to root
+        // Get environment variables
         $credentialsPath = __DIR__ . '/../../' . ($_ENV['GA_CREDENTIALS_PATH'] ?? 'config/google-analytics-credentials.json');
-        $this->viewId = $_ENV['GA_VIEW_ID'] ?? '';
+        $this->propertyId = $_ENV['GA_VIEW_ID'] ?? ''; // This should be your GA4 Property ID
 
         // Log configuration for debugging
-        error_log("Google Analytics Configuration:");
+        error_log("Google Analytics GA4 Configuration:");
         error_log("Credentials Path: " . $credentialsPath);
-        error_log("View ID: " . $this->viewId);
+        error_log("Property ID: " . $this->propertyId);
         error_log("File exists: " . (file_exists($credentialsPath) ? 'Yes' : 'No'));
 
-        if (empty($this->viewId)) {
-            throw new \Exception('Google Analytics View ID not configured. Please set GA_VIEW_ID in your environment variables.');
+        if (empty($this->propertyId)) {
+            throw new \Exception('Google Analytics Property ID not configured. Please set GA_VIEW_ID in your environment variables.');
         }
 
         if (!file_exists($credentialsPath)) {
@@ -32,32 +32,38 @@ class Analytics {
     }
 
     /**
-     * Make API request to Google Analytics - MODIFIED TO RETURN ACTUAL ERRORS
+     * Make API request to Google Analytics GA4 API
      */
-    private function makeRequest($reportRequests) {
+    private function makeRequest($requestBody) {
         $accessToken = $this->auth->getAccessToken();
         
-        $requestBody = json_encode([
-            'reportRequests' => $reportRequests
-        ]);
+        // Format the property ID correctly for GA4 API
+        $formattedPropertyId = $this->propertyId;
+        if (!str_starts_with($formattedPropertyId, 'properties/')) {
+            $formattedPropertyId = 'properties/' . $this->propertyId;
+        }
+        
+        $endpoint = sprintf($this->apiEndpoint, $formattedPropertyId);
+        
+        $jsonBody = json_encode($requestBody);
 
         // Log the request for debugging
-        error_log("Google Analytics API Request:");
-        error_log("Endpoint: " . $this->apiEndpoint);
-        error_log("View ID: " . $this->viewId);
-        error_log("Request Body: " . $requestBody);
+        error_log("Google Analytics GA4 API Request:");
+        error_log("Endpoint: " . $endpoint);
+        error_log("Property ID: " . $formattedPropertyId);
+        error_log("Request Body: " . $jsonBody);
 
-        $ch = curl_init($this->apiEndpoint);
+        $ch = curl_init($endpoint);
         
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $requestBody,
+            CURLOPT_POSTFIELDS => $jsonBody,
             CURLOPT_HTTPHEADER => [
                 'Authorization: Bearer ' . $accessToken,
                 'Content-Type: application/json'
             ],
-            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYPEER => true,
             CURLOPT_TIMEOUT => 30,
         ]);
         
@@ -67,26 +73,22 @@ class Analytics {
         curl_close($ch);
         
         // Log the actual response for debugging
-        error_log("Google Analytics API Response - HTTP Code: " . $httpCode);
-        error_log("Google Analytics API Response - Body: " . $response);
+        error_log("Google Analytics GA4 API Response - HTTP Code: " . $httpCode);
+        error_log("Google Analytics GA4 API Response - Body: " . $response);
         
         if ($error) {
             throw new \Exception('cURL error: ' . $error);
         }
         
         if ($httpCode !== 200) {
-            // Return the actual error response instead of throwing generic error
             $errorData = json_decode($response, true);
-            $errorMessage = 'API request failed with HTTP code ' . $httpCode;
+            $errorMessage = 'GA4 API request failed with HTTP code ' . $httpCode;
             
             if (isset($errorData['error']['message'])) {
                 $errorMessage .= ': ' . $errorData['error']['message'];
             } else {
-                $errorMessage .= '. Response: ' . $response;
+                $errorMessage .= ' - Response: ' . $response;
             }
-            
-            // Include additional debug info
-            $errorMessage .= ' [View ID: ' . $this->viewId . ']';
             
             throw new \Exception($errorMessage);
         }
@@ -97,146 +99,149 @@ class Analytics {
             throw new \Exception('Invalid JSON response: ' . $response);
         }
         
-        if (!isset($data['reports'])) {
-            throw new \Exception('Invalid API response structure. Expected "reports" key. Response: ' . $response);
-        }
-        
-        return $data['reports'][0];
+        return $data;
     }
 
     /**
-     * Get overview analytics data
+     * Get overview analytics data for GA4
      */
     public function getOverview($startDate = '30daysAgo', $endDate = 'today') {
-        $reportRequest = [
-            [
-                'viewId' => $this->viewId,
-                'dateRanges' => [
-                    [
-                        'startDate' => $startDate,
-                        'endDate' => $endDate
-                    ]
-                ],
-                'metrics' => [
-                    ['expression' => 'ga:users'],
-                    ['expression' => 'ga:sessions'],
-                    ['expression' => 'ga:pageviews'],
-                    ['expression' => 'ga:avgSessionDuration'],
-                    ['expression' => 'ga:bounceRate'],
-                    ['expression' => 'ga:sessionsPerUser']
+        $requestBody = [
+            'dateRanges' => [
+                [
+                    'startDate' => $startDate,
+                    'endDate' => $endDate
                 ]
+            ],
+            'metrics' => [
+                ['name' => 'totalUsers'],
+                ['name' => 'sessions'],
+                ['name' => 'screenPageViews'],
+                ['name' => 'averageSessionDuration'],
+                ['name' => 'bounceRate'],
+                ['name' => 'sessionsPerUser']
             ]
         ];
 
-        $report = $this->makeRequest($reportRequest);
+        $report = $this->makeRequest($requestBody);
         
-        $totals = $report['data']['totals'][0]['values'] ?? [];
+        $rows = $report['rows'][0] ?? [];
+        $metricValues = $rows['metricValues'] ?? [];
         
         return [
-            'totalUsers' => (int)($totals[0] ?? 0),
-            'totalSessions' => (int)($totals[1] ?? 0),
-            'totalPageViews' => (int)($totals[2] ?? 0),
-            'avgSessionDuration' => round((float)($totals[3] ?? 0), 2),
-            'bounceRate' => round((float)($totals[4] ?? 0), 2),
-            'sessionsPerUser' => round((float)($totals[5] ?? 0), 2)
+            'totalUsers' => (int)($metricValues[0]['value'] ?? 0),
+            'totalSessions' => (int)($metricValues[1]['value'] ?? 0),
+            'totalPageViews' => (int)($metricValues[2]['value'] ?? 0),
+            'avgSessionDuration' => round((float)($metricValues[3]['value'] ?? 0), 2),
+            'bounceRate' => round((float)($metricValues[4]['value'] ?? 0) * 100, 2), // Convert to percentage
+            'sessionsPerUser' => round((float)($metricValues[5]['value'] ?? 0), 2)
         ];
     }
 
     /**
-     * Get real-time active users
+     * Get real-time active users for GA4
      */
     public function getRealTimeUsers() {
-        $accessToken = $this->auth->getAccessToken();
-        $url = "https://www.googleapis.com/analytics/v3/data/realtime?ids=ga:{$this->viewId}&metrics=rt:activeUsers";
-        
-        error_log("Real-time API Request: " . $url);
-        
-        $ch = curl_init($url);
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HTTPHEADER => [
-                'Authorization: Bearer ' . $accessToken
-            ],
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_TIMEOUT => 10,
-        ]);
-        
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error = curl_error($ch);
-        curl_close($ch);
-        
-        error_log("Real-time API Response - HTTP Code: " . $httpCode);
-        error_log("Real-time API Response - Body: " . $response);
-        
-        if ($error) {
-            throw new \Exception('Real-time cURL error: ' . $error);
-        }
-        
-        if ($httpCode !== 200) {
-            $errorData = json_decode($response, true);
-            $errorMessage = 'Real-time API request failed with HTTP code ' . $httpCode;
+        try {
+            $accessToken = $this->auth->getAccessToken();
             
-            if (isset($errorData['error']['message'])) {
-                $errorMessage .= ': ' . $errorData['error']['message'];
+            // Format the property ID correctly for GA4 API
+            $formattedPropertyId = $this->propertyId;
+            if (!str_starts_with($formattedPropertyId, 'properties/')) {
+                $formattedPropertyId = 'properties/' . $this->propertyId;
             }
             
-            throw new \Exception($errorMessage);
+            $url = "https://analyticsdata.googleapis.com/v1beta/{$formattedPropertyId}:runRealtimeReport";
+            
+            $requestBody = [
+                'metrics' => [
+                    ['name' => 'activeUsers']
+                ]
+            ];
+            
+            error_log("Real-time API Request: " . $url);
+            
+            $ch = curl_init($url);
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => json_encode($requestBody),
+                CURLOPT_HTTPHEADER => [
+                    'Authorization: Bearer ' . $accessToken,
+                    'Content-Type: application/json'
+                ],
+                CURLOPT_SSL_VERIFYPEER => true,
+                CURLOPT_TIMEOUT => 10,
+            ]);
+            
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $error = curl_error($ch);
+            curl_close($ch);
+            
+            error_log("Real-time API Response - HTTP Code: " . $httpCode);
+            
+            if ($error || $httpCode !== 200) {
+                // Real-time API often has issues, return 0 instead of throwing error
+                error_log("Real-time API error, returning 0: " . ($error ?: "HTTP $httpCode"));
+                return ['activeUsers' => 0];
+            }
+            
+            $data = json_decode($response, true);
+            $activeUsers = (int)($data['rows'][0]['metricValues'][0]['value'] ?? 0);
+            
+            return ['activeUsers' => $activeUsers];
+            
+        } catch (\Exception $e) {
+            error_log("Real-time users error: " . $e->getMessage());
+            return ['activeUsers' => 0];
         }
-        
-        $data = json_decode($response, true);
-        $activeUsers = (int)($data['totalsForAllResults']['rt:activeUsers'] ?? 0);
-        
-        return ['activeUsers' => $activeUsers];
     }
 
     /**
-     * Get top pages
+     * Get top pages for GA4
      */
     public function getTopPages($limit = 10, $startDate = '30daysAgo', $endDate = 'today') {
-        $reportRequest = [
-            [
-                'viewId' => $this->viewId,
-                'dateRanges' => [
-                    [
-                        'startDate' => $startDate,
-                        'endDate' => $endDate
-                    ]
-                ],
-                'dimensions' => [
-                    ['name' => 'ga:pageTitle'],
-                    ['name' => 'ga:pagePath']
-                ],
-                'metrics' => [
-                    ['expression' => 'ga:pageviews'],
-                    ['expression' => 'ga:uniquePageviews'],
-                    ['expression' => 'ga:avgTimeOnPage']
-                ],
-                'orderBys' => [
-                    [
-                        'fieldName' => 'ga:pageviews',
-                        'sortOrder' => 'DESCENDING'
-                    ]
-                ],
-                'pageSize' => $limit
-            ]
+        $requestBody = [
+            'dateRanges' => [
+                [
+                    'startDate' => $startDate,
+                    'endDate' => $endDate
+                ]
+            ],
+            'dimensions' => [
+                ['name' => 'pageTitle'],
+                ['name' => 'pagePath']
+            ],
+            'metrics' => [
+                ['name' => 'screenPageViews'],
+                ['name' => 'totalUsers'],
+                ['name' => 'averageSessionDuration']
+            ],
+            'orderBys' => [
+                [
+                    'metric' => ['metricName' => 'screenPageViews'],
+                    'desc' => true
+                ]
+            ],
+            'limit' => $limit
         ];
 
-        $report = $this->makeRequest($reportRequest);
+        $report = $this->makeRequest($requestBody);
         
         $pages = [];
-        $rows = $report['data']['rows'] ?? [];
+        $rows = $report['rows'] ?? [];
         
         foreach ($rows as $row) {
-            $dimensions = $row['dimensions'] ?? [];
-            $metrics = $row['metrics'][0]['values'] ?? [];
+            $dimensionValues = $row['dimensionValues'] ?? [];
+            $metricValues = $row['metricValues'] ?? [];
             
             $pages[] = [
-                'title' => $dimensions[0] ?? 'Unknown',
-                'path' => $dimensions[1] ?? '/',
-                'views' => (int)($metrics[0] ?? 0),
-                'uniqueViews' => (int)($metrics[1] ?? 0),
-                'avgTimeOnPage' => round((float)($metrics[2] ?? 0), 2)
+                'title' => $dimensionValues[0]['value'] ?? 'Unknown',
+                'path' => $dimensionValues[1]['value'] ?? '/',
+                'views' => (int)($metricValues[0]['value'] ?? 0),
+                'uniqueViews' => (int)($metricValues[1]['value'] ?? 0),
+                'avgTimeOnPage' => round((float)($metricValues[2]['value'] ?? 0), 2)
             ];
         }
         
@@ -244,45 +249,42 @@ class Analytics {
     }
 
     /**
-     * Get analytics by date range
+     * Get analytics by date range for GA4
      */
     public function getByDateRange($startDate = '7daysAgo', $endDate = 'today') {
-        $reportRequest = [
-            [
-                'viewId' => $this->viewId,
-                'dateRanges' => [
-                    [
-                        'startDate' => $startDate,
-                        'endDate' => $endDate
-                    ]
-                ],
-                'dimensions' => [
-                    ['name' => 'ga:date']
-                ],
-                'metrics' => [
-                    ['expression' => 'ga:users'],
-                    ['expression' => 'ga:sessions'],
-                    ['expression' => 'ga:pageviews']
-                ],
-                'orderBys' => [
-                    [
-                        'fieldName' => 'ga:date',
-                        'sortOrder' => 'ASCENDING'
-                    ]
+        $requestBody = [
+            'dateRanges' => [
+                [
+                    'startDate' => $startDate,
+                    'endDate' => $endDate
+                ]
+            ],
+            'dimensions' => [
+                ['name' => 'date']
+            ],
+            'metrics' => [
+                ['name' => 'totalUsers'],
+                ['name' => 'sessions'],
+                ['name' => 'screenPageViews']
+            ],
+            'orderBys' => [
+                [
+                    'dimension' => ['dimensionName' => 'date'],
+                    'desc' => false
                 ]
             ]
         ];
 
-        $report = $this->makeRequest($reportRequest);
+        $report = $this->makeRequest($requestBody);
         
         $byDate = [];
-        $rows = $report['data']['rows'] ?? [];
+        $rows = $report['rows'] ?? [];
         
         foreach ($rows as $row) {
-            $dimensions = $row['dimensions'] ?? [];
-            $metrics = $row['metrics'][0]['values'] ?? [];
+            $dimensionValues = $row['dimensionValues'] ?? [];
+            $metricValues = $row['metricValues'] ?? [];
             
-            $date = $dimensions[0] ?? '';
+            $date = $dimensionValues[0]['value'] ?? '';
             // Format date from YYYYMMDD to YYYY-MM-DD
             if (strlen($date) === 8) {
                 $date = substr($date, 0, 4) . '-' . substr($date, 4, 2) . '-' . substr($date, 6, 2);
@@ -290,9 +292,9 @@ class Analytics {
             
             $byDate[] = [
                 'date' => $date,
-                'users' => (int)($metrics[0] ?? 0),
-                'sessions' => (int)($metrics[1] ?? 0),
-                'pageViews' => (int)($metrics[2] ?? 0)
+                'users' => (int)($metricValues[0]['value'] ?? 0),
+                'sessions' => (int)($metricValues[1]['value'] ?? 0),
+                'pageViews' => (int)($metricValues[2]['value'] ?? 0)
             ];
         }
         
@@ -300,50 +302,47 @@ class Analytics {
     }
 
     /**
-     * Get traffic sources
+     * Get traffic sources for GA4
      */
     public function getTrafficSources($startDate = '30daysAgo', $endDate = 'today') {
-        $reportRequest = [
-            [
-                'viewId' => $this->viewId,
-                'dateRanges' => [
-                    [
-                        'startDate' => $startDate,
-                        'endDate' => $endDate
-                    ]
-                ],
-                'dimensions' => [
-                    ['name' => 'ga:source'],
-                    ['name' => 'ga:medium']
-                ],
-                'metrics' => [
-                    ['expression' => 'ga:sessions'],
-                    ['expression' => 'ga:users']
-                ],
-                'orderBys' => [
-                    [
-                        'fieldName' => 'ga:sessions',
-                        'sortOrder' => 'DESCENDING'
-                    ]
-                ],
-                'pageSize' => 10
-            ]
+        $requestBody = [
+            'dateRanges' => [
+                [
+                    'startDate' => $startDate,
+                    'endDate' => $endDate
+                ]
+            ],
+            'dimensions' => [
+                ['name' => 'source'],
+                ['name' => 'medium']
+            ],
+            'metrics' => [
+                ['name' => 'sessions'],
+                ['name' => 'totalUsers']
+            ],
+            'orderBys' => [
+                [
+                    'metric' => ['metricName' => 'sessions'],
+                    'desc' => true
+                ]
+            ],
+            'limit' => 10
         ];
 
-        $report = $this->makeRequest($reportRequest);
+        $report = $this->makeRequest($requestBody);
         
         $sources = [];
-        $rows = $report['data']['rows'] ?? [];
+        $rows = $report['rows'] ?? [];
         
         foreach ($rows as $row) {
-            $dimensions = $row['dimensions'] ?? [];
-            $metrics = $row['metrics'][0]['values'] ?? [];
+            $dimensionValues = $row['dimensionValues'] ?? [];
+            $metricValues = $row['metricValues'] ?? [];
             
             $sources[] = [
-                'source' => $dimensions[0] ?? 'Unknown',
-                'medium' => $dimensions[1] ?? 'Unknown',
-                'sessions' => (int)($metrics[0] ?? 0),
-                'users' => (int)($metrics[1] ?? 0)
+                'source' => $dimensionValues[0]['value'] ?? 'Unknown',
+                'medium' => $dimensionValues[1]['value'] ?? 'Unknown',
+                'sessions' => (int)($metricValues[0]['value'] ?? 0),
+                'users' => (int)($metricValues[1]['value'] ?? 0)
             ];
         }
         
@@ -351,41 +350,38 @@ class Analytics {
     }
 
     /**
-     * Get device breakdown
+     * Get device breakdown for GA4
      */
     public function getDeviceBreakdown($startDate = '30daysAgo', $endDate = 'today') {
-        $reportRequest = [
-            [
-                'viewId' => $this->viewId,
-                'dateRanges' => [
-                    [
-                        'startDate' => $startDate,
-                        'endDate' => $endDate
-                    ]
-                ],
-                'dimensions' => [
-                    ['name' => 'ga:deviceCategory']
-                ],
-                'metrics' => [
-                    ['expression' => 'ga:users'],
-                    ['expression' => 'ga:sessions']
+        $requestBody = [
+            'dateRanges' => [
+                [
+                    'startDate' => $startDate,
+                    'endDate' => $endDate
                 ]
+            ],
+            'dimensions' => [
+                ['name' => 'deviceCategory']
+            ],
+            'metrics' => [
+                ['name' => 'totalUsers'],
+                ['name' => 'sessions']
             ]
         ];
 
-        $report = $this->makeRequest($reportRequest);
+        $report = $this->makeRequest($requestBody);
         
         $devices = [];
-        $rows = $report['data']['rows'] ?? [];
+        $rows = $report['rows'] ?? [];
         
         foreach ($rows as $row) {
-            $dimensions = $row['dimensions'] ?? [];
-            $metrics = $row['metrics'][0]['values'] ?? [];
+            $dimensionValues = $row['dimensionValues'] ?? [];
+            $metricValues = $row['metricValues'] ?? [];
             
             $devices[] = [
-                'device' => $dimensions[0] ?? 'Unknown',
-                'users' => (int)($metrics[0] ?? 0),
-                'sessions' => (int)($metrics[1] ?? 0)
+                'device' => $dimensionValues[0]['value'] ?? 'Unknown',
+                'users' => (int)($metricValues[0]['value'] ?? 0),
+                'sessions' => (int)($metricValues[1]['value'] ?? 0)
             ];
         }
         
@@ -393,50 +389,47 @@ class Analytics {
     }
 
     /**
-     * Get geographic data
+     * Get geographic data for GA4
      */
     public function getGeographicData($startDate = '30daysAgo', $endDate = 'today', $limit = 10) {
-        $reportRequest = [
-            [
-                'viewId' => $this->viewId,
-                'dateRanges' => [
-                    [
-                        'startDate' => $startDate,
-                        'endDate' => $endDate
-                    ]
-                ],
-                'dimensions' => [
-                    ['name' => 'ga:country'],
-                    ['name' => 'ga:city']
-                ],
-                'metrics' => [
-                    ['expression' => 'ga:users'],
-                    ['expression' => 'ga:sessions']
-                ],
-                'orderBys' => [
-                    [
-                        'fieldName' => 'ga:users',
-                        'sortOrder' => 'DESCENDING'
-                    ]
-                ],
-                'pageSize' => $limit
-            ]
+        $requestBody = [
+            'dateRanges' => [
+                [
+                    'startDate' => $startDate,
+                    'endDate' => $endDate
+                ]
+            ],
+            'dimensions' => [
+                ['name' => 'country'],
+                ['name' => 'city']
+            ],
+            'metrics' => [
+                ['name' => 'totalUsers'],
+                ['name' => 'sessions']
+            ],
+            'orderBys' => [
+                [
+                    'metric' => ['metricName' => 'totalUsers'],
+                    'desc' => true
+                ]
+            ],
+            'limit' => $limit
         ];
 
-        $report = $this->makeRequest($reportRequest);
+        $report = $this->makeRequest($requestBody);
         
         $locations = [];
-        $rows = $report['data']['rows'] ?? [];
+        $rows = $report['rows'] ?? [];
         
         foreach ($rows as $row) {
-            $dimensions = $row['dimensions'] ?? [];
-            $metrics = $row['metrics'][0]['values'] ?? [];
+            $dimensionValues = $row['dimensionValues'] ?? [];
+            $metricValues = $row['metricValues'] ?? [];
             
             $locations[] = [
-                'country' => $dimensions[0] ?? 'Unknown',
-                'city' => $dimensions[1] ?? 'Unknown',
-                'users' => (int)($metrics[0] ?? 0),
-                'sessions' => (int)($metrics[1] ?? 0)
+                'country' => $dimensionValues[0]['value'] ?? 'Unknown',
+                'city' => $dimensionValues[1]['value'] ?? 'Unknown',
+                'users' => (int)($metricValues[0]['value'] ?? 0),
+                'sessions' => (int)($metricValues[1]['value'] ?? 0)
             ];
         }
         
