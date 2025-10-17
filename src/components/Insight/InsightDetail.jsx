@@ -531,6 +531,7 @@ const InsightDetail = () => {
   return (
     <>
       <Helmet>
+        {/* Primary Meta Tags */}
         <title>{insight.title} | Chiedza CheAfrica Insights</title>
         <meta name="title" content={insight.title} />
         <meta name="description" content={insight.excerpt} />
@@ -1120,14 +1121,14 @@ const InsightDetail = () => {
                           className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                         <div className="absolute top-3 left-3">
-                          <span className="px-2 py-1 bg-primary text-white text-xs font-light rounded-full">
+                          <span className="px-2 py-1 bg-primary text-white text-sm font-light rounded-full">
                             {relatedInsight.category}
                           </span>
                         </div>
                       </div>
                       
                       <div className="p-6">
-                        <div className="flex items-center text-gray-400 text-xs mb-3 space-x-3">
+                        <div className="flex items-center text-gray-400 text-sm mb-3 space-x-3">
                           <div className="flex items-center space-x-1">
                             <Clock className="w-3 h-3" />
                             <span>{relatedInsight.readTime}</span>
@@ -1138,12 +1139,12 @@ const InsightDetail = () => {
                           {relatedInsight.title}
                         </h3>
                         
-                        <p className="text-gray-300 text-xs mb-4 leading-relaxed line-clamp-2">
+                        <p className="text-gray-300 text-sm mb-4 leading-relaxed line-clamp-2">
                           {relatedInsight.excerpt}
                         </p>
                         
                         <motion.div 
-                          className="text-primary flex items-center text-xs font-light group-hover:text-primary/80 transition-colors duration-300"
+                          className="text-primary flex items-center text-sm font-light group-hover:text-primary/80 transition-colors duration-300"
                           whileHover={{ x: 4 }}
                         >
                           <span className="mr-1">Read More</span>
