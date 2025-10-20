@@ -32,7 +32,9 @@ const Badge = ({ children, variant = "default" }) => {
   };
 
   return (
-    <span className={`inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium ${variants[variant]}`}>
+    <span
+      className={`inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium ${variants[variant]}`}
+    >
       {children}
     </span>
   );
@@ -62,13 +64,18 @@ const DeleteModal = ({ isOpen, onClose, onConfirm, loading }) => {
             <Trash2 className="w-6 h-6 text-red-600" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-gray-900">Delete Comment</h3>
-            <p className="text-xs text-gray-600">This action cannot be undone</p>
+            <h3 className="text-base font-bold text-gray-900">
+              Delete Comment
+            </h3>
+            <p className="text-xs text-gray-600">
+              This action cannot be undone
+            </p>
           </div>
         </div>
 
         <p className="text-xs text-gray-700 mb-6">
-          Are you sure you want to delete this comment? This will also remove all replies to this comment.
+          Are you sure you want to delete this comment? This will also remove
+          all replies to this comment.
         </p>
 
         <div className="flex gap-3">
@@ -140,7 +147,9 @@ const ReplyModal = ({ isOpen, onClose, onConfirm, loading, comment }) => {
             <Reply className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-gray-900">Reply to Comment</h3>
+            <h3 className="text-base font-bold text-gray-900">
+              Reply to Comment
+            </h3>
             <p className="text-xs text-gray-600">Add an admin reply</p>
           </div>
         </div>
@@ -148,8 +157,8 @@ const ReplyModal = ({ isOpen, onClose, onConfirm, loading, comment }) => {
         {/* Original Comment Preview */}
         <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
           <p className="text-xs text-gray-600 mb-1">
-            <strong>{comment.name || comment.admin_email || "Unknown"}</strong> on{" "}
-            {comment.blog_title}
+            <strong>{comment.name || comment.admin_email || "Unknown"}</strong>{" "}
+            on {comment.blog_title}
           </p>
           <p className="text-xs text-gray-700">{comment.content}</p>
         </div>
@@ -190,12 +199,127 @@ const ReplyModal = ({ isOpen, onClose, onConfirm, loading, comment }) => {
                 Sending...
               </>
             ) : (
-              <>
-                Send Reply
-              </>
+              <>Send Reply</>
             )}
           </button>
         </div>
+      </motion.div>
+    </div>
+  );
+};
+
+// Comment Component with nested replies
+const CommentItem = ({ comment, blogTitle, onReply, onDelete, level = 0 }) => {
+  const navigate = useNavigate();
+  const isReply = level > 0;
+
+  // Helper function to check if comment is admin reply
+  const isAdminReply = comment.is_admin_reply === 1;
+  
+  // Helper function to check if comment has parent
+  const hasParent = comment.parent_id !== null;
+
+  return (
+    <div className={`${isReply ? "ml-6 border-l-2 border-gray-200 pl-4" : ""}`}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={`bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow ${
+          isReply ? "bg-gray-50" : ""
+        }`}
+      >
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                {isAdminReply ? (
+                  <Shield className="w-4 h-4 text-primary" />
+                ) : (
+                  <User className="w-4 h-4 text-primary" />
+                )}
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-xs font-semibold text-gray-900">
+                    {comment.name || comment.admin_email || "Unknown"}
+                  </p>
+                  {isAdminReply && (
+                    <Badge variant="primary">Admin</Badge>
+                  )}
+                  {isReply && <Badge variant="default">Reply</Badge>}
+                </div>
+                {comment.email && (
+                  <div className="flex items-center gap-1 text-xs text-gray-500">
+                    <Mail className="w-3 h-3" />
+                    {comment.email}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <p className="text-xs text-gray-700 mb-3 leading-relaxed">
+              {comment.content}
+            </p>
+
+            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+              <span className="flex items-center gap-1">
+                <Calendar className="w-3 h-3" />
+                {new Date(comment.created_at).toLocaleDateString()}
+              </span>
+              <button
+                onClick={() => navigate(`/blogs/${comment.blog_id}`)}
+                className="flex items-center gap-1 text-primary hover:text-primary/80"
+              >
+                <ExternalLink className="w-3 h-3" />
+                {blogTitle}
+              </button>
+              {hasParent && (
+                <span className="flex items-center gap-1">
+                  <Reply className="w-3 h-3" />
+                  Reply to comment #{comment.parent_id}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1">
+            {/* Reply Button - Only show for non-admin comments that are not replies themselves */}
+            {!isAdminReply && !hasParent && (
+              <button
+                onClick={() => onReply(comment)}
+                className="px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-xs font-medium flex items-center gap-2"
+                title="Reply to comment"
+              >
+                <Reply className="w-3 h-3" />
+                Reply to Comment
+              </button>
+            )}
+
+            {/* Delete Button */}
+            <button
+              onClick={() => onDelete(comment)}
+              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Render nested replies */}
+        {comment.replies && comment.replies.length > 0 && (
+          <div className="mt-4 space-y-3">
+            {comment.replies.map((reply) => (
+              <CommentItem
+                key={reply.id}
+                comment={reply}
+                blogTitle={blogTitle}
+                onReply={onReply}
+                onDelete={onDelete}
+                level={level + 1}
+              />
+            ))}
+          </div>
+        )}
       </motion.div>
     </div>
   );
@@ -210,10 +334,41 @@ export default function Comments() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [filterType, setFilterType] = useState("all");
-  const [deleteModal, setDeleteModal] = useState({ isOpen: false, comment: null });
+  const [deleteModal, setDeleteModal] = useState({
+    isOpen: false,
+    comment: null,
+  });
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [replyModal, setReplyModal] = useState({ isOpen: false, comment: null });
+  const [replyModal, setReplyModal] = useState({
+    isOpen: false,
+    comment: null,
+  });
   const [replyLoading, setReplyLoading] = useState(false);
+
+  // Flatten comments for filtering and searching
+  const flattenComments = (commentsArray) => {
+    const flattened = [];
+
+    const processComment = (comment, blogTitle, level = 0) => {
+      flattened.push({
+        ...comment,
+        blog_title: blogTitle,
+        level: level,
+      });
+
+      if (comment.replies && comment.replies.length > 0) {
+        comment.replies.forEach((reply) => {
+          processComment(reply, blogTitle, level + 1);
+        });
+      }
+    };
+
+    commentsArray.forEach((comment) => {
+      processComment(comment, comment.blog_title);
+    });
+
+    return flattened;
+  };
 
   // Fetch all comments from all blogs
   const fetchAllComments = async () => {
@@ -223,16 +378,16 @@ export default function Comments() {
 
       if (blogsResponse?.success && blogsResponse?.data?.blogs) {
         const allComments = [];
-        
+
         for (const blog of blogsResponse.data.blogs) {
           try {
             const commentsResponse = await get(`blogs/${blog.id}/comments`);
             if (commentsResponse?.success && commentsResponse?.data) {
-              const blogComments = Array.isArray(commentsResponse.data) 
-                ? commentsResponse.data 
+              const blogComments = Array.isArray(commentsResponse.data)
+                ? commentsResponse.data
                 : [];
-              
-              blogComments.forEach(comment => {
+
+              blogComments.forEach((comment) => {
                 allComments.push({
                   ...comment,
                   blog_title: blog.title,
@@ -241,7 +396,10 @@ export default function Comments() {
               });
             }
           } catch (error) {
-            console.error(`Error fetching comments for blog ${blog.id}:`, error);
+            console.error(
+              `Error fetching comments for blog ${blog.id}:`,
+              error
+            );
           }
         }
 
@@ -266,20 +424,58 @@ export default function Comments() {
 
     // Search filter
     if (searchQuery) {
-      filtered = filtered.filter(
+      const flattened = flattenComments(comments);
+      const searchMatches = flattened.filter(
         (comment) =>
           comment.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           comment.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           comment.content?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          comment.blog_title?.toLowerCase().includes(searchQuery.toLowerCase())
+          comment.blog_title
+            ?.toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          comment.admin_email?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+      // Get unique parent comments that contain the matches
+      const parentCommentIds = new Set();
+      searchMatches.forEach((comment) => {
+        if (comment.parent_id) {
+          parentCommentIds.add(comment.parent_id);
+        } else {
+          parentCommentIds.add(comment.id);
+        }
+      });
+
+      filtered = comments.filter(
+        (comment) =>
+          parentCommentIds.has(comment.id) ||
+          searchMatches.some((match) => match.id === comment.id)
       );
     }
 
     // Type filter
     if (filterType === "admin") {
-      filtered = filtered.filter((comment) => comment.is_admin_reply === 1);
+      const flattened = flattenComments(comments);
+      const adminComments = flattened.filter(
+        (comment) => comment.is_admin_reply === 1
+      );
+      const parentCommentIds = new Set();
+
+      adminComments.forEach((comment) => {
+        if (comment.parent_id) {
+          parentCommentIds.add(comment.parent_id);
+        }
+      });
+
+      filtered = comments.filter(
+        (comment) =>
+          parentCommentIds.has(comment.id) ||
+          adminComments.some((admin) => admin.id === comment.id)
+      );
     } else if (filterType === "user") {
-      filtered = filtered.filter((comment) => !comment.is_admin_reply);
+      filtered = comments.filter(
+        (comment) => comment.is_admin_reply === 0 && !comment.parent_id
+      );
     }
 
     setFilteredComments(filtered);
@@ -317,7 +513,7 @@ export default function Comments() {
         `blogs/${replyModal.comment.blog_id}/comments/${replyModal.comment.id}/reply`,
         { content: replyContent }
       );
-      
+
       if (response.success) {
         toast.success("Reply added successfully");
         setReplyModal({ isOpen: false, comment: null });
@@ -343,7 +539,9 @@ export default function Comments() {
       <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
         <MessageSquare className="w-8 h-8 text-primary" />
       </div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">No Comments Found</h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+        No Comments Found
+      </h3>
       <p className="text-xs text-gray-600 mb-6 max-w-md mx-auto">
         {searchQuery || filterType !== "all"
           ? "Try adjusting your filters or search query"
@@ -363,7 +561,9 @@ export default function Comments() {
           >
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
               <div>
-                <h1 className="text-base font-bold text-gray-900 mb-0.5">Comments</h1>
+                <h1 className="text-base font-bold text-gray-900 mb-0.5">
+                  Comments
+                </h1>
                 <p className="text-xs text-gray-500">
                   Manage comments from all blog posts
                 </p>
@@ -453,8 +653,15 @@ export default function Comments() {
             {/* Results Count */}
             <div className="mt-4 flex items-center justify-between text-xs text-gray-600">
               <span>
-                Showing <span className="font-semibold text-gray-900">{filteredComments.length}</span> of{" "}
-                <span className="font-semibold text-gray-900">{comments.length}</span> comments
+                Showing{" "}
+                <span className="font-semibold text-gray-900">
+                  {filteredComments.length}
+                </span>{" "}
+                of{" "}
+                <span className="font-semibold text-gray-900">
+                  {comments.length}
+                </span>{" "}
+                comments
               </span>
               {(searchQuery || filterType !== "all") && (
                 <span className="text-primary font-medium">Filters active</span>
@@ -483,88 +690,17 @@ export default function Comments() {
               ))
             ) : filteredComments.length > 0 ? (
               filteredComments.map((comment, index) => (
-                <motion.div
+                <CommentItem
                   key={comment.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.03 }}
-                  className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow"
-                >
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                          {comment.is_admin_reply ? (
-                            <Shield className="w-4 h-4 text-primary" />
-                          ) : (
-                            <User className="w-4 h-4 text-primary" />
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <p className="text-xs font-semibold text-gray-900">
-                              {comment.name || comment.admin_email || "Unknown"}
-                            </p>
-                            {comment.is_admin_reply && (
-                              <Badge variant="primary">Admin</Badge>
-                            )}
-                          </div>
-                          {comment.email && (
-                            <div className="flex items-center gap-1 text-xs text-gray-500">
-                              <Mail className="w-3 h-3" />
-                              {comment.email}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <p className="text-xs text-gray-700 mb-3 leading-relaxed">
-                        {comment.content}
-                      </p>
-
-                      <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {new Date(comment.created_at).toLocaleDateString()}
-                        </span>
-                        <button
-                          onClick={() => navigate(`/blogs/${comment.blog_id}`)}
-                          className="flex items-center gap-1 text-primary hover:text-primary/80"
-                        >
-                          <ExternalLink className="w-3 h-3" />
-                          {comment.blog_title}
-                        </button>
-                        {comment.parent_id && (
-                          <span className="flex items-center gap-1">
-                            <Reply className="w-3 h-3" />
-                            Reply to comment
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      {/* Reply Button - Only show for non-admin comments */}
-                      {!comment.is_admin_reply && (
-                        <button
-                          onClick={() => setReplyModal({ isOpen: true, comment })}
-                          className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors"
-                          title="Reply to comment"
-                        >
-                          <Reply className="w-4 h-4" />
-                        </button>
-                      )}
-                      
-                      {/* Delete Button */}
-                      <button
-                        onClick={() => setDeleteModal({ isOpen: true, comment })}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
+                  comment={comment}
+                  blogTitle={comment.blog_title}
+                  onReply={(comment) =>
+                    setReplyModal({ isOpen: true, comment })
+                  }
+                  onDelete={(comment) =>
+                    setDeleteModal({ isOpen: true, comment })
+                  }
+                />
               ))
             ) : (
               <NoCommentsState />
