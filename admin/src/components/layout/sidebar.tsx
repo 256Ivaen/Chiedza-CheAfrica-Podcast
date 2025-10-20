@@ -9,7 +9,7 @@ import {
   FiSettings,
 } from 'react-icons/fi'
 import { ChevronLeft, X } from 'react-feather'
-import { FileText, MessageSquare, Heart } from "lucide-react"
+import { FileText, MessageSquare, Heart, Globe } from "lucide-react"
 import { LuLayoutDashboard } from "react-icons/lu"
 
 const Sidebar = ({ 
@@ -33,6 +33,12 @@ const Sidebar = ({
         path: '/',
         section: 'dashboard',
         icon: <LuLayoutDashboard className="h-4 w-4" />,
+      },
+      {
+        title: 'Website Analytics',
+        path: '/analytics',
+        section: 'analytics',
+        icon: <Globe className="h-4 w-4" />,
       },
       {
         title: 'Blogs',
@@ -100,6 +106,10 @@ const Sidebar = ({
 
   const isActiveRoute = (path) => {
     if (path === '/' && location.pathname === '/') {
+      return true
+    }
+
+    if (path === '/analytics' && location.pathname === '/analytics') {
       return true
     }
     
