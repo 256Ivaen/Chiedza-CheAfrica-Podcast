@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import MainLayout from "@/components/layout/MainLayout"
 import { Dashboard } from "../components/dashboard/index"
 import type { Business } from "@/types"
 import { mockBusinesses } from "@/assets/mock.js"

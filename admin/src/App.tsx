@@ -10,15 +10,15 @@ import MainLayout from "@/components/layout/MainLayout";
 import DashboardPage from "@/pages/DashboardPage";
 import Login from "@/pages/Login";
 import Settings from "./pages/Settings.jsx";
-import PlaceholderPage from "@/components/ui/PlaceHolderPage";
-import CreateBlog from './pages/CreateBlog.jsx'
-import Reactions from './pages/Reactions'
-import Comments from './pages/Comments'
-import BlogDetails from './pages/BlogDetail.jsx'
-import Users from './pages/Users.jsx'
-import EditBlog from './pages/EditBlog.jsx'
+import CreateBlog from "./pages/CreateBlog.jsx";
+import Reactions from "./pages/Reactions";
+import Comments from "./pages/Comments";
+import BlogDetails from "./pages/BlogDetail.jsx";
+import Users from "./pages/Users.jsx";
+import EditBlog from "./pages/EditBlog.jsx";
+import Analytics from './pages/Analytics.jsx'
 
-import AllBlogsPage from './pages/AllBlogs.jsx'
+import AllBlogsPage from "./pages/AllBlogs.jsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -89,6 +89,15 @@ function AppContent() {
             }
           />
 
+<Route
+            path="/analytics"
+            element={
+              <ProtectedRoute activeSection="analytics">
+                <Analytics />
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/blogs"
             element={
@@ -116,7 +125,7 @@ function AppContent() {
             }
           />
 
-<Route
+          <Route
             path="/blogs/:id/edit"
             element={
               <ProtectedRoute activeSection="blogs">
