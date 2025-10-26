@@ -354,9 +354,9 @@ export default function BlogDetail() {
           </motion.div>
 
           {/* Main Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6">
             {/* Blog Content - Left Side */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-1 space-y-6">
               {/* Header Card */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -454,7 +454,8 @@ export default function BlogDetail() {
                         <img
                           src={blog.image}
                           alt="Cover"
-                          className="w-full h-48 object-cover rounded-lg border border-gray-200"
+                          className="w-full object-cover rounded-lg border border-gray-200"
+                          style={{ maxHeight: '300px' }}
                         />
                       </div>
                     )}
@@ -464,7 +465,8 @@ export default function BlogDetail() {
                         <img
                           src={blog.hero_image}
                           alt="Hero"
-                          className="w-full h-48 object-cover rounded-lg border border-gray-200"
+                          className="w-full object-cover rounded-lg border border-gray-200"
+                          style={{ maxHeight: '300px' }}
                         />
                       </div>
                     )}
@@ -480,11 +482,10 @@ export default function BlogDetail() {
                 className="bg-white rounded-lg border border-gray-200 p-6"
               >
                 <h2 className="text-sm font-bold text-gray-900 mb-4">Content</h2>
-                <div className="prose prose-sm max-w-none">
-                  <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap">
-                    {blog.content}
-                  </p>
-                </div>
+                <div 
+                  className="prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: blog.content }}
+                />
               </motion.div>
 
               {/* Comments Section */}
@@ -772,6 +773,172 @@ export default function BlogDetail() {
           />
         )}
       </AnimatePresence>
+
+      {/* Rich Text Styling */}
+      <style jsx global>{`
+        /* Base text size - text-xs (0.75rem / 12px) */
+        .prose {
+          font-size: 0.75rem;
+          line-height: 1.6;
+          color: #374151;
+        }
+
+        .prose p {
+          margin-bottom: 0.75em;
+          margin-top: 0.75em;
+        }
+
+        .prose h1 {
+          font-size: 1.75em;
+          font-weight: bold;
+          margin-top: 0.5em;
+          margin-bottom: 0.5em;
+          color: #111827;
+        }
+
+        .prose h2 {
+          font-size: 1.4em;
+          font-weight: bold;
+          margin-top: 0.5em;
+          margin-bottom: 0.5em;
+          color: #111827;
+        }
+
+        .prose h3 {
+          font-size: 1.15em;
+          font-weight: bold;
+          margin-top: 0.5em;
+          margin-bottom: 0.5em;
+          color: #111827;
+        }
+
+        .prose h4 {
+          font-size: 1em;
+          font-weight: 600;
+          margin-top: 0.5em;
+          margin-bottom: 0.5em;
+          color: #111827;
+        }
+
+        .prose strong {
+          font-weight: 600;
+          color: #111827;
+        }
+
+        .prose em {
+          font-style: italic;
+        }
+
+        .prose u {
+          text-decoration: underline;
+        }
+
+        .prose a {
+          color: #667eea;
+          text-decoration: underline;
+          font-weight: 500;
+        }
+
+        .prose a:hover {
+          color: #5568d3;
+        }
+
+        .prose blockquote {
+          border-left: 4px solid #667eea;
+          padding-left: 1em;
+          margin: 1em 0;
+          font-style: italic;
+          color: #64748b;
+        }
+
+        .prose ul {
+          list-style-type: disc;
+          padding-left: 1.5em;
+          margin: 1em 0;
+        }
+
+        .prose ol {
+          list-style-type: decimal;
+          padding-left: 1.5em;
+          margin: 1em 0;
+        }
+
+        .prose li {
+          margin: 0.5em 0;
+          padding-left: 0.25em;
+        }
+
+        .prose li::marker {
+          color: #667eea;
+        }
+
+        .prose img {
+          margin: 0.75em 0;
+          border-radius: 0.5rem;
+          max-width: 100%;
+          height: auto;
+        }
+
+        .prose code {
+          color: #111827;
+          background-color: #f3f4f6;
+          padding: 0.2em 0.4em;
+          border-radius: 0.25rem;
+          font-size: 0.875em;
+          font-weight: 600;
+        }
+
+        .prose pre {
+          background-color: #1f2937;
+          color: #e5e7eb;
+          overflow-x: auto;
+          font-size: 0.875em;
+          margin: 1em 0;
+          border-radius: 0.5rem;
+          padding: 1em;
+        }
+
+        .prose pre code {
+          background-color: transparent;
+          color: inherit;
+          font-size: inherit;
+          font-weight: inherit;
+          padding: 0;
+        }
+
+        .prose hr {
+          border-color: #e5e7eb;
+          margin: 2em 0;
+        }
+
+        .prose table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 1em 0;
+          font-size: 0.875em;
+        }
+
+        .prose th,
+        .prose td {
+          border: 1px solid #e5e7eb;
+          padding: 0.5em;
+          text-align: left;
+        }
+
+        .prose th {
+          background-color: #f9fafb;
+          font-weight: 600;
+        }
+
+        /* Image grid layouts preserve their inline styles */
+        .prose div[style*="display: grid"] {
+          margin: 1em 0;
+        }
+
+        .prose div[style*="display: grid"] img {
+          margin: 0;
+        }
+      `}</style>
     </div>
   );
 }
