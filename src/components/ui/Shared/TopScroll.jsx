@@ -188,7 +188,7 @@ const FloatingButtons = () => {
             exit="hidden"
             variants={buttonVariants}
             onClick={scrollToTop}
-            className="fixed bottom-20 right-6 z-40 bg-secondary text-textlight p-3 rounded-full shadow-lg transition-colors duration-200 focus:outline-none focus-visible"
+            className="fixed bottom-6 right-6 z-40 bg-secondary text-textlight p-3 rounded-full shadow-lg transition-colors duration-200 focus:outline-none focus-visible"
             aria-label="Scroll to top"
             title="Back to top"
           >
@@ -198,7 +198,7 @@ const FloatingButtons = () => {
       </AnimatePresence>
 
       {/* WhatsApp Button - Bottom Position */}
-      <motion.button
+      {/* <motion.button
         initial="hidden"
         animate="visible"
         variants={buttonVariants}
@@ -208,10 +208,10 @@ const FloatingButtons = () => {
         title="Chat with us on WhatsApp"
       >
         <WhatsAppIcon />
-      </motion.button>
+      </motion.button> */}
 
       {/* WhatsApp Popup */}
-      <AnimatePresence>
+      {/* <AnimatePresence>
         {showWhatsAppPopup && (
           <motion.div
             ref={popupRef}
@@ -242,12 +242,12 @@ const FloatingButtons = () => {
                 <h3 id="whatsapp-popup-title" className="text-sm font-semibold text-gray-900 mb-1">
                   Need Help? Chat with us!
                 </h3>
-                <p id="whatsapp-popup-description" className="text-xs text-gray-600 mb-3">
+                <p id="whatsapp-popup-description" className="text-sm text-gray-600 mb-3">
                   Get instant answers about our premium food products and services.
                 </p>
                 <button
                   onClick={handleWhatsAppClick}
-                  className="bg-[#25D366] hover:bg-[#128C7E] text-white text-xs px-4 py-2 rounded-full transition-colors duration-200 focus:outline-none focus-visible"
+                  className="bg-[#25D366] hover:bg-[#128C7E] text-white text-sm px-4 py-2 rounded-full transition-colors duration-200 focus:outline-none focus-visible"
                 >
                   Start Chat
                 </button>
@@ -255,7 +255,7 @@ const FloatingButtons = () => {
             </div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
     </>
   );
 };

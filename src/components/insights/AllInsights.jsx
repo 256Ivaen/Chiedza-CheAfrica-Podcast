@@ -5,6 +5,7 @@ import AdvancedFilterSearch from './AdvancedFilterSearch';
 import InsightCard from './InsightCard';
 import EnhancedPagination from './EnhancedPagination';
 import SectionHeader from '../ui/Shared/SectionHeader';
+import NoInsightsAvailable from './NoInsightsAvailable'; // Import the new component
 
 const AllInsights = ({ insights = [], categories = [] }) => {
   const [selectedCategory, setSelectedCategory] = useState(["All"]);
@@ -13,6 +14,14 @@ const AllInsights = ({ insights = [], categories = [] }) => {
   const [viewMode, setViewMode] = useState("grid");
   const [sortBy, setSortBy] = useState("newest");
   const insightsPerPage = 6;
+
+  // Check if there are no insights at all
+  const hasNoInsights = !insights || insights.length === 0;
+
+  // If no insights exist, show the NoInsightsAvailable component
+  if (hasNoInsights) {
+    return <NoInsightsAvailable />;
+  }
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
@@ -31,12 +40,11 @@ const AllInsights = ({ insights = [], categories = [] }) => {
     }
   };
 
-  // Filter and sort insights with safety checks
+  // Rest of your existing component logic...
   const filteredInsights = (Array.isArray(insights) ? insights : [])
     .filter(insight => {
       if (!insight) return false;
       
-      // Handle multiple category selection
       const selectedCategories = Array.isArray(selectedCategory) ? selectedCategory : [selectedCategory];
       const matchesCategory = selectedCategories.includes("All") || selectedCategories.includes(insight.category);
       
@@ -62,13 +70,11 @@ const AllInsights = ({ insights = [], categories = [] }) => {
       }
     });
 
-  // Pagination
   const indexOfLastInsight = currentPage * insightsPerPage;
   const indexOfFirstInsight = indexOfLastInsight - insightsPerPage;
   const currentInsights = filteredInsights.slice(indexOfFirstInsight, indexOfLastInsight);
   const totalPages = Math.ceil(filteredInsights.length / insightsPerPage);
 
-  // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedCategory, searchTerm, sortBy]);
@@ -121,7 +127,7 @@ const AllInsights = ({ insights = [], categories = [] }) => {
           </motion.div>
         </AnimatePresence>
 
-        {/* No Results */}
+        {/* No Results from filtering */}
         {filteredInsights.length === 0 && (
           <motion.div 
             className="text-center py-12"
@@ -139,7 +145,7 @@ const AllInsights = ({ insights = [], categories = [] }) => {
                 setSearchTerm('');
                 setSelectedCategory(['All']);
               }}
-              className="px-6 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors text-xs font-light"
+              className="px-6 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors text-sm font-light"
             >
               Clear Filters
             </button>
@@ -147,14 +153,16 @@ const AllInsights = ({ insights = [], categories = [] }) => {
         )}
 
         {/* Enhanced Pagination */}
-        <EnhancedPagination 
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          indexOfFirstInsight={indexOfFirstInsight}
-          indexOfLastInsight={indexOfLastInsight}
-          filteredCount={filteredInsights.length}
-        />
+        {filteredInsights.length > 0 && (
+          <EnhancedPagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            indexOfFirstInsight={indexOfFirstInsight}
+            indexOfLastInsight={indexOfLastInsight}
+            filteredCount={filteredInsights.length}
+          />
+        )}
       </div>
     </section>
   );

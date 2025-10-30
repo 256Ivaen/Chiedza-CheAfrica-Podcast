@@ -14,7 +14,7 @@ import TopScroll from './components/ui/Shared/TopScroll';
 import InsightsPage from './pages/Insights';
 import InsightDetail from './components/Insight/InsightDetail';
 import ContactUs from './pages/ContactUs';
-import Services from './pages/Services';
+import EpisodesPage from './pages/Episodes';
 
 const seoConfig = {
   default: {
@@ -29,7 +29,7 @@ const seoConfig = {
     twitter_site: '@chiedzacheafrica',
     twitter_creator: '@chiedzacheafrica',
     locale: 'en_US',
-    email: 'info@chiedzacheafrica.com'
+    email: 'hello@chiedzacheafrica.com'
   },
   routes: {
     '/': {
@@ -98,11 +98,13 @@ const organizationSchema = {
   "sameAs": [
     "https://youtube.com/@chiedzacheafrica",
     "https://www.instagram.com/chiedzacheafrica",
-    "https://open.spotify.com/show/5YBekTisDE8CawmkxGiesr",
+    // "https://open.spotify.com/show/5YBekTisDE8CawmkxGiesr",
     "https://www.tiktok.com/@chiedzacheafrica",
     "https://www.facebook.com/share/16Mf6x5vw3/"
   ]
 };
+
+
 
 const SEOWrapper = ({ children }) => {
   const location = useLocation();
@@ -222,8 +224,8 @@ const App = () => {
             <Route path="/contact" element={<ContactUs />} />
 
             Episodes Pages comming soon
-            <Route path="/episodes" element={<InsightsPage />} />
-            <Route path="/episodes/:id" element={<InsightDetail />} />
+            <Route path="/episodes" element={<EpisodesPage />} />
+            <Route path="/episodes/:id" element={<EpisodesPage />} />
             <Route path="/blog" element={<InsightsPage />} />
             <Route path="/blog/:id" element={<InsightDetail />} />
             <Route path="/404" element={<NotFound />} />

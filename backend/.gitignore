@@ -1,0 +1,22 @@
+# Environment
+.env
+.env.*
+
+# Vendor
+vendor/
+composer.lock
+
+# Cache
+cache/
+temp/
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+
+# Sensitive credentials
+backend/config/google-analytics-credentials.json

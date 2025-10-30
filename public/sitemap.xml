@@ -4,7 +4,6 @@
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
-  <!-- Home Page -->
   <url>
     <loc>https://chiedzacheafrica.com/</loc>
     <lastmod>2025-01-15</lastmod>
@@ -12,7 +11,6 @@
     <priority>1.0</priority>
   </url>
   
-  <!-- Main Pages -->
   <url>
     <loc>https://chiedzacheafrica.com/about</loc>
     <lastmod>2025-01-15</lastmod>
@@ -38,13 +36,6 @@
     <loc>https://chiedzacheafrica.com/contact</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>yearly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  
-  <url>
-    <loc>https://chiedzacheafrica.com/support</loc>
-    <lastmod>2025-01-15</lastmod>
-    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 

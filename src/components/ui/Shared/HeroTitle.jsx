@@ -20,7 +20,7 @@ const HeroTitle = ({ title, subtitle }) => {
       }}
     >
       <motion.h1 
-        className="text-2xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-light text-white leading-tight mb-4"
+        className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight mb-4"
         variants={{
           hidden: { opacity: 0, y: 30 },
           visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
@@ -29,7 +29,7 @@ const HeroTitle = ({ title, subtitle }) => {
         {title}
       </motion.h1>
       <motion.p 
-        className="text-primary text-xs font-semibold uppercase tracking-wider"
+        className="text-primary text-xs sm:text-sm font-light uppercase tracking-wider"
         variants={{
           hidden: { opacity: 0, y: 20 },
           visible: { opacity: 1, y: 0, transition: { duration: 0.8, delay: 0.2 } }

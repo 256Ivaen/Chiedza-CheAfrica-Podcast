@@ -39,23 +39,22 @@ const Footer = () => {
 
   const quickLinks = [
     { name: "All Episodes", href: "/episodes" },
-    { name: "Featured Stories", href: "/featured" },
-    { name: "Blog & Articles", href: "/blog" },
-    { name: "Support Our Work", href: "/support" }
+    { name: "Featured Stories", href: "/blog" },
+    { name: "Blog & Articles", href: "/blog" }
   ];
 
-  const podcastCategories = [
-    { name: "Aviation & STEM", href: "/category/aviation-stem" },
-    { name: "Disability Inclusion", href: "/category/disability-inclusion" },
-    { name: "Mental Health", href: "/category/mental-health" },
-    { name: "Youth Empowerment", href: "/category/youth-empowerment" }
-  ];
+  // const podcastCategories = [
+  //   { name: "Aviation & STEM", href: "/category/aviation-stem" },
+  //   { name: "Disability Inclusion", href: "/category/disability-inclusion" },
+  //   { name: "Mental Health", href: "/category/mental-health" },
+  //   { name: "Youth Empowerment", href: "/category/youth-empowerment" }
+  // ];
 
   const helpLinks = [
-    { name: "Email Us", href: "mailto:info@chiedzacheafrica.com" },
-    { name: "Collaborate", href: "/collaborate" },
-    { name: "Share Your Story", href: "/share-story" },
-    { name: "Volunteer", href: "/volunteer" }
+    { name: "Email Us", href: "mailto:hello@chiedzacheafrica.com" },
+    { name: "Collaborate", href: "/contact" },
+    { name: "Share Your Story", href: "/contact" },
+    { name: "Volunteer", href: "/contact" }
   ];
 
   const socialLinks = [
@@ -65,12 +64,12 @@ const Footer = () => {
       icon: Youtube,
       color: "hover:bg-red-600"
     },
-    {
-      name: "Spotify", 
-      href: "https://open.spotify.com/show/5YBekTisDE8CawmkxGiesr",
-      icon: FaSpotify,
-      color: "hover:bg-green-500"
-    },
+    // {
+    //   name: "Spotify", 
+    //   href: "https://open.spotify.com/show/5YBekTisDE8CawmkxGiesr",
+    //   icon: FaSpotify,
+    //   color: "hover:bg-green-500"
+    // },
     {
       name: "Instagram",
       href: "https://www.instagram.com/chiedzacheafrica",
@@ -96,7 +95,7 @@ const Footer = () => {
       {/* Main Footer Content - Dark Background */}
       <div className="pt-20 pb-8 px-4 md:px-6 lg:px-8">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             
             {/* Podcast Info */}
             <motion.div
@@ -185,12 +184,12 @@ const Footer = () => {
             </motion.div>
 
             {/* Podcast Categories */}
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.3 }}
-            >
+            >   
               <h3 className="text-lg font-semibold text-white mb-6">Categories</h3>
               <ul className="space-y-3">
                 {podcastCategories.map((link, index) => (
@@ -206,7 +205,7 @@ const Footer = () => {
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </motion.div> */}
           </div>
 
           {/* Bottom Copyright & Social Links */}
@@ -222,7 +221,7 @@ const Footer = () => {
                 <p className="text-white/80 text-sm">
                   © {currentYear} Chiedza CheAfrica Podcast. All rights reserved.
                 </p>
-                <p className="text-white/60 text-xs mt-1">
+                <p className="text-white/60 text-sm mt-1">
                   Lighting paths. Inspiring minds. Amplifying African stories.
                 </p>
               </div>

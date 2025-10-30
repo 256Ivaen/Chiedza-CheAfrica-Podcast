@@ -59,7 +59,7 @@ const ProductItem = ({
         {/* Content Container */}
         <div className="flex-1 flex flex-col p-4">
           {/* Brand and Category */}
-          <div className="flex items-center text-xs text-textdark/60 mb-2">
+          <div className="flex items-center text-sm text-textdark/60 mb-2">
             {brandData && (
               <span className="font-medium text-textdark">{brandData.name}</span>
             )}
@@ -79,13 +79,13 @@ const ProductItem = ({
           {/* Technical Details - This is where dimensions and packaging should display */}
           <div className="mt-auto space-y-2 mb-4">
             {dimensions && (
-              <div className="flex justify-between items-center text-xs">
+              <div className="flex justify-between items-center text-sm">
                 <span className="text-textdark/60 font-medium">Dimensions:</span>
                 <span className="text-textdark font-semibold">{dimensions}</span>
               </div>
             )}
             {packaging && (
-              <div className="flex justify-between items-center text-xs">
+              <div className="flex justify-between items-center text-sm">
                 <span className="text-textdark/60 font-medium">Packaging:</span>
                 <span className="text-textdark font-semibold">{packaging}</span>
               </div>
@@ -94,7 +94,7 @@ const ProductItem = ({
           
           {/* Action Button */}
           <motion.button
-            className="w-full py-2.5 bg-secondary text-textlight text-xs font-semibold rounded-md transition-all duration-300 hover:bg-secondary/90 uppercase tracking-wide"
+            className="w-full py-2.5 bg-secondary text-textlight text-sm font-semibold rounded-md transition-all duration-300 hover:bg-secondary/90 uppercase tracking-wide"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={(e) => {
