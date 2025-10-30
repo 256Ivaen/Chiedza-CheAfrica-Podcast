@@ -28,7 +28,8 @@
     "sonner": "^2.0.7",
     "swiper": "^11.2.1",
     "tailwind-merge": "^3.3.1",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "vite-plugin-ssr": "^0.4.142"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",

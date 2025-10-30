@@ -338,7 +338,7 @@ const InsightDetail = () => {
                     className="group cursor-pointer"
                     variants={fadeInUp}
                     whileHover={{ y: -5 }}
-                    onClick={() => navigate(`/insights/${relatedInsight.id}`)}
+                    onClick={() => navigate(`/blog/${relatedInsight.id}`)}
                   >
                     <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg hover:bg-white/10 transition-all duration-300 overflow-hidden h-full">
                       <div className="relative overflow-hidden">
