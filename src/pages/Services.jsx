@@ -1,4 +1,3 @@
-// pages/Services.jsx
 import React from "react";
 import { motion } from "framer-motion";
 import { 
@@ -114,15 +113,7 @@ const Services = () => {
             initial="hidden"
             animate="visible"
             className="text-center mb-16"
-          >
-            <motion.div variants={itemVariants} className="mb-8">
-              <p className="text-gray-300 text-xs leading-relaxed max-w-4xl mx-auto">
-                Chiedza CheAfrica believes in shaping Africa's future through knowledge, innovation, and opportunity. 
-                Our consultancy and engagement services are designed to inspire, guide, and connect individuals, 
-                groups, and organizations within aviation, STEM, leadership, and creative sectors.
-              </p>
-            </motion.div>
-            
+          > 
             <motion.div variants={itemVariants} className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-7xl mx-auto">
               {stats.map((stat, index) => (
                 <div key={index} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-4 text-center">
@@ -183,12 +174,12 @@ const Services = () => {
                       )}
                     </ul>
                     
-                    <button 
+                    {/* <button 
                       onClick={() => window.location.href = service.link}
                       className="flex items-center text-primary text-xs hover:text-primary/80 transition-colors"
                     >
                       Learn more <ArrowRight className="w-3 h-3 ml-1" />
-                    </button>
+                    </button> */}
                   </motion.div>
                 );
               })}
@@ -252,29 +243,6 @@ const Services = () => {
               </p>
             </motion.div>
           </div>
-        </div>
-      </section>
-
-      {/* Contact Info Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="bg-primary/10 border border-primary/20 rounded-lg p-8"
-          >
-            <h3 className="text-white text-lg font-light mb-4">Get in Touch</h3>
-            <p className="text-gray-300 text-xs leading-relaxed mb-6">
-              Explore our services to find the right fit for your needs. Each subdivision page includes detailed offerings, 
-              and booking or enquiry forms.
-            </p>
-            <div className="text-gray-300 text-xs space-y-2">
-              <p>Email: hello@chiedzacheafrica.com</p>
-              <p>Website: www.chiedzacheafrica.com</p>
-              <p>Social Media: @ChiedzaCheAfrica (Instagram | LinkedIn | YouTube | X)</p>
-            </div>
-          </motion.div>
         </div>
       </section>
 

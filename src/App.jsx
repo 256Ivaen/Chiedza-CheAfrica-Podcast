@@ -15,6 +15,7 @@ import InsightsPage from './pages/Insights';
 import InsightDetail from './components/Insight/InsightDetail';
 import ContactUs from './pages/ContactUs';
 import EpisodesPage from './pages/Episodes';
+import Services from './pages/Services';
 
 const seoConfig = {
   default: {
