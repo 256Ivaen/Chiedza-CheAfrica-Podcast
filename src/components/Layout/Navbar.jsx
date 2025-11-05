@@ -174,7 +174,7 @@ export function NavbarDemo() {
             </div>
 
             {/* Listen Now Button */}
-            <div className="hidden lg:flex items-center">
+            {/* <div className="hidden lg:flex items-center">
               <motion.button
                 onClick={() =>
                   window.open(
@@ -192,7 +192,24 @@ export function NavbarDemo() {
               >
                 Support Us
               </motion.button>
-            </div>
+            </div> */}
+
+<div className="hidden lg:flex items-center">
+  <motion.button
+    onClick={() => handleNavigation('/support')}
+    className={`px-6 py-2 rounded-full text-sm font-medium uppercase transition-all duration-300 ${
+      isScrolled
+        ? "bg-primary text-white hover:bg-secondary"
+        : "bg-white text-primary hover:bg-gray-50"
+    }`}
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+  >
+    Support Us
+  </motion.button>
+</div>
+
+
 
             {/* Mobile Menu Button */}
             <motion.button
