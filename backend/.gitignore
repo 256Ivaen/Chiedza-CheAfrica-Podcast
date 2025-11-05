@@ -20,3 +20,5 @@ logs/
 
 # Sensitive credentials
 backend/config/google-analytics-credentials.json
+
+backend/public/.env.example

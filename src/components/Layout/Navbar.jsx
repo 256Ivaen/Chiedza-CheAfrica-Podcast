@@ -16,6 +16,7 @@ export function NavbarDemo() {
   const navItems = [
     { name: "Home", link: "/" },
     { name: "About Us", link: "/about" },
+    { name: "Our Services", link: "/services" },
     { name: "Episodes", link: "/episodes" },
     { name: "Blog", link: "/blog" },
     { name: "Contact", link: "/contact" },
@@ -173,7 +174,7 @@ export function NavbarDemo() {
             </div>
 
             {/* Listen Now Button */}
-            <div className="hidden lg:flex items-center">
+            {/* <div className="hidden lg:flex items-center">
               <motion.button
                 onClick={() =>
                   window.open(
@@ -191,7 +192,24 @@ export function NavbarDemo() {
               >
                 Support Us
               </motion.button>
-            </div>
+            </div> */}
+
+<div className="hidden lg:flex items-center">
+  <motion.button
+    onClick={() => handleNavigation('/support')}
+    className={`px-6 py-2 rounded-full text-sm font-medium uppercase transition-all duration-300 ${
+      isScrolled
+        ? "bg-primary text-white hover:bg-secondary"
+        : "bg-white text-primary hover:bg-gray-50"
+    }`}
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+  >
+    Scholarship
+      </motion.button>
+</div>
+
+
 
             {/* Mobile Menu Button */}
             <motion.button
@@ -244,12 +262,12 @@ export function NavbarDemo() {
                 {/* Listen Now Button for Mobile */}
                 <div className="pt-4 border-t border-gray-200">
                   <motion.button
-                    onClick={() => handleNavigation("/episodes")}
-                    className="w-full py-3 bg-primary text-white rounded-lg text-sm font-medium uppercase tracking-wide hover:bg-[#a69968] transition-colors duration-200"
+    onClick={() => handleNavigation('/support')}
+    className="w-full py-3 bg-primary text-white rounded-lg text-sm font-medium uppercase tracking-wide hover:bg-[#a69968] transition-colors duration-200"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    Listen Now
+                    Scholarship
                   </motion.button>
                 </div>
               </div>

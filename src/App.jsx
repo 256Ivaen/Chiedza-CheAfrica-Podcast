@@ -15,6 +15,8 @@ import InsightsPage from './pages/Insights';
 import InsightDetail from './components/Insight/InsightDetail';
 import ContactUs from './pages/ContactUs';
 import EpisodesPage from './pages/Episodes';
+import Services from './pages/Services';
+import Support from './pages/Support';
 
 const seoConfig = {
   default: {
@@ -220,9 +222,11 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<AboutUs />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/support" element={<Support />} />
             <Route path="/contact" element={<ContactUs />} />
 
-            Episodes Pages comming soon
+            {/* Episodes Pages comming soon */}
             <Route path="/episodes" element={<EpisodesPage />} />
             <Route path="/episodes/:id" element={<EpisodesPage />} />
             <Route path="/blog" element={<InsightsPage />} />
