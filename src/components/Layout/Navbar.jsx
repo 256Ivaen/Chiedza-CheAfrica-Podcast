@@ -205,8 +205,8 @@ export function NavbarDemo() {
     whileHover={{ scale: 1.05 }}
     whileTap={{ scale: 0.95 }}
   >
-    Support Us
-  </motion.button>
+    Scholarship
+      </motion.button>
 </div>
 
 
@@ -262,12 +262,12 @@ export function NavbarDemo() {
                 {/* Listen Now Button for Mobile */}
                 <div className="pt-4 border-t border-gray-200">
                   <motion.button
-                    onClick={() => handleNavigation("/episodes")}
-                    className="w-full py-3 bg-primary text-white rounded-lg text-sm font-medium uppercase tracking-wide hover:bg-[#a69968] transition-colors duration-200"
+    onClick={() => handleNavigation('/support')}
+    className="w-full py-3 bg-primary text-white rounded-lg text-sm font-medium uppercase tracking-wide hover:bg-[#a69968] transition-colors duration-200"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    Listen Now
+                    Scholarship
                   </motion.button>
                 </div>
               </div>

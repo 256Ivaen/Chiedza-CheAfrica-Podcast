@@ -251,8 +251,9 @@ const Services = () => {
         subtitle="Whether you want to share your story, collaborate, or support our mission, we'd love to connect with you and continue lighting Africa's path together."
         primaryButton={{
           text: "Book a Consultation",
-          onClick: () => window.location.href = "/contact"
+          onClick: () => window.location.href = "https://buymeacoffee.com/chiedzacheafrica/e/472149"
         }}
+        
         secondaryButton={{
           text: "View Service Details", 
           onClick: () => window.location.href = "/services-details"
