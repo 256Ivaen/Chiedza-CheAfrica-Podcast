@@ -1,6 +1,7 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Upload, X, ImageIcon, Loader } from "lucide-react";
+import { ArrowLeft, ArrowRight, ImageIcon, Loader, X } from "lucide-react";
+import { FileUpload } from "@ark-ui/react/file-upload";
 import { upload } from "../../utils/service";
 import { toast } from "sonner";
 
@@ -18,26 +19,25 @@ const Step2ImageUpload = ({
 }) => {
   const [uploadingImages, setUploadingImages] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
-  const thumbnailInputRef = useRef(null);
-  const contentImagesInputRef = useRef(null);
 
-  const handleThumbnailSelect = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleThumbnailChange = (details) => {
+    const files = details.acceptedFiles;
+    if (files.length > 0) {
+      const file = files[0];
+      
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please upload an image file");
+        return;
+      }
 
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please upload an image file");
-      return;
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image size must be less than 5MB");
+        return;
+      }
+
+      setThumbnailFile(file);
+      setThumbnailPreview(URL.createObjectURL(file));
     }
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size must be less than 5MB");
-      return;
-    }
-
-    setThumbnailFile(file);
-    setThumbnailPreview(URL.createObjectURL(file));
-    e.target.value = "";
   };
 
   const removeThumbnail = () => {
@@ -45,8 +45,8 @@ const Step2ImageUpload = ({
     setThumbnailPreview("");
   };
 
-  const handleContentImagesSelect = (e) => {
-    const files = Array.from(e.target.files || []);
+  const handleContentImagesChange = (details) => {
+    const files = details.acceptedFiles;
 
     if (contentImageFiles.length + files.length > 6) {
       toast.error(
@@ -72,8 +72,6 @@ const Step2ImageUpload = ({
       setContentImageFiles((prev) => [...prev, ...validFiles]);
       toast.success(`${validFiles.length} image(s) added`);
     }
-
-    e.target.value = "";
   };
 
   const removeContentImage = (index) => {
@@ -180,14 +178,14 @@ const Step2ImageUpload = ({
         {uploadingImages && uploadProgress.total > 0 && (
           <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-primary">
+              <span className="text-sm font-medium text-primary">
                 Uploading images...
               </span>
-              <span className="text-xs text-primary">
+              <span className="text-sm text-primary">
                 {uploadProgress.current} / {uploadProgress.total}
               </span>
             </div>
-            <div className="w-full bg-primary/20 rounded-full h-[2px]">
+            <div className="w-full bg-primary/20 rounded-full h-2">
               <div
                 className="bg-primary h-2 rounded-full transition-all duration-300"
                 style={{
@@ -203,41 +201,58 @@ const Step2ImageUpload = ({
           <label className="block text-xs font-medium text-gray-700 mb-2">
             Cover Image <span className="text-red-500">*</span>
           </label>
-          <div className="space-y-3">
-            <button
-              type="button"
-              onClick={() => thumbnailInputRef.current?.click()}
-              disabled={uploadingImages}
-              className="px-4 py-2 border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-lg text-sm font-medium inline-flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Upload className="w-4 h-4" />
-              Choose Cover Image
-            </button>
-            <input
-              ref={thumbnailInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleThumbnailSelect}
-              className="hidden"
-            />
-            {thumbnailPreview && (
-              <div className="relative inline-block">
-                <img
-                  src={thumbnailPreview}
-                  alt="Cover preview"
-                  className="w-48 h-32 object-cover rounded-lg border-2 border-gray-200"
-                />
-                <button
-                  type="button"
-                  onClick={removeThumbnail}
-                  disabled={uploadingImages}
-                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors disabled:opacity-50"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            )}
-          </div>
+          
+          <FileUpload.Root
+            maxFiles={1}
+            accept="image/*"
+            onFileChange={handleThumbnailChange}
+            className="flex flex-col items-start gap-3"
+          >
+            <FileUpload.Context>
+              {({ acceptedFiles }) => (
+                <>
+                  <div className="flex items-center gap-3">
+                    {/* Image Preview / Placeholder */}
+                    <div className="w-24 h-24 rounded-lg border-2 border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden">
+                      {thumbnailPreview ? (
+                        <img
+                          src={thumbnailPreview}
+                          alt="Cover preview"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <ImageIcon className="w-8 h-8 text-gray-400" />
+                      )}
+                    </div>
+                    
+                    {/* Upload/Change Button */}
+                    <FileUpload.Trigger 
+                      disabled={uploadingImages}
+                      className="px-4 py-2 bg-primary text-secondary text-xs font-medium uppercase rounded-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {thumbnailPreview ? "Change Cover Image" : "Upload Cover Image"}
+                    </FileUpload.Trigger>
+                  </div>
+                  
+                  {/* Filename and Remove */}
+                  {thumbnailFile && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-600">{thumbnailFile.name}</span>
+                      <button
+                        type="button"
+                        onClick={removeThumbnail}
+                        disabled={uploadingImages}
+                        className="text-xs text-red-500 hover:text-red-600 disabled:opacity-50"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </FileUpload.Context>
+            <FileUpload.HiddenInput />
+          </FileUpload.Root>
         </div>
 
         {/* Content Images */}
@@ -248,53 +263,60 @@ const Step2ImageUpload = ({
               (Upload 1-6 images for use in blog content)
             </span>
           </label>
-          <div className="space-y-3">
-            <button
-              type="button"
-              onClick={() => contentImagesInputRef.current?.click()}
-              disabled={contentImageFiles.length >= 6 || uploadingImages}
-              className="px-4 py-2 border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-lg text-sm font-medium inline-flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Upload className="w-4 h-4" />
-              Add Content Images ({contentImageFiles.length}/6)
-            </button>
-            <input
-              ref={contentImagesInputRef}
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleContentImagesSelect}
-              className="hidden"
-            />
-
-            {contentImageFiles.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {contentImageFiles.map((file, index) => (
-                  <div key={index} className="relative group">
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt={file.name}
-                      className="w-full h-24 object-cover rounded-lg border-2 border-gray-200"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeContentImage(index)}
-                      disabled={uploadingImages}
-                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-600 transition-all disabled:opacity-0"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                    <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[10px] px-1 py-0.5 truncate">
-                      {file.name}
-                    </div>
+          
+          <FileUpload.Root
+            maxFiles={6 - contentImageFiles.length}
+            accept="image/*"
+            multiple
+            onFileChange={handleContentImagesChange}
+            className="flex flex-col items-start gap-3"
+          >
+            <FileUpload.Context>
+              {({ acceptedFiles }) => (
+                <>
+                  <div className="flex items-center gap-3 flex-wrap">
+                    {/* Show existing content images */}
+                    {contentImageFiles.map((file, index) => (
+                      <div key={index} className="relative group">
+                        <div className="w-24 h-24 rounded-lg border-2 border-gray-200 bg-gray-50 overflow-hidden">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={file.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeContentImage(index)}
+                          disabled={uploadingImages}
+                          className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-red-600 transition-all disabled:opacity-0"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                    
+                    {/* Upload Button */}
+                    {contentImageFiles.length < 6 && (
+                      <FileUpload.Trigger 
+                        disabled={uploadingImages}
+                        className="w-24 h-24 border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 rounded-lg flex flex-col items-center justify-center gap-1 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <ImageIcon className="w-6 h-6 text-gray-400" />
+                        <span className="text-xs text-gray-600">
+                          {contentImageFiles.length}/6
+                        </span>
+                      </FileUpload.Trigger>
+                    )}
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+                </>
+              )}
+            </FileUpload.Context>
+            <FileUpload.HiddenInput />
+          </FileUpload.Root>
+          
           <p className="text-xs text-gray-500 mt-2">
-            <strong>Note:</strong> All images will be uploaded to the server and
-            available for inserting into your blog content.
+            <strong>Note:</strong> All images will be uploaded to the server and available for inserting into your blog content.
           </p>
         </div>
       </div>
