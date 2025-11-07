@@ -821,10 +821,9 @@ const InsightDetail = () => {
         {/* Content Section */}
         <section className="py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-              {/* Main Content */}
+            <div className="space-y-8">
+              {/* Main Content - Full Width */}
               <motion.div
-                className="lg:col-span-3 order-2 lg:order-1"
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, margin: "-100px" }}
@@ -898,13 +897,10 @@ const InsightDetail = () => {
                   className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-8 mb-8"
                   variants={fadeInUp}
                 >
-                  <div className="text-gray-300 text-sm leading-relaxed space-y-6 font-light prose prose-invert max-w-none">
-                    {insight.content.split("\n").map((paragraph, index) => (
-                      <p key={index} className="mb-4">
-                        {paragraph.trim()}
-                      </p>
-                    ))}
-                  </div>
+                  <div 
+                    className="text-gray-300 text-sm leading-relaxed space-y-6 font-light prose prose-invert max-w-none"
+                    dangerouslySetInnerHTML={{ __html: insight.content }}
+                  />
 
                   {/* Tags */}
                   <div className="mt-8 pt-8 border-t border-white/10">
@@ -920,6 +916,101 @@ const InsightDetail = () => {
                           #{tag}
                         </span>
                       ))}
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Sidebar Content - Now Appears Here */}
+                <motion.div
+                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-6"
+                  variants={fadeInUp}
+                >
+                  <h3 className="text-white text-sm font-light mb-4">
+                    Share this insight
+                  </h3>
+                  <div className="space-y-3">
+                    <motion.button
+                      onClick={() => handleShare("facebook")}
+                      className="w-full flex items-center space-x-3 p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors group"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Facebook className="w-4 h-4 text-blue-400" />
+                      <span className="text-gray-300 text-sm font-light group-hover:text-white transition-colors">
+                        Facebook
+                      </span>
+                    </motion.button>
+                    <motion.button
+                      onClick={() => handleShare("twitter")}
+                      className="w-full flex items-center space-x-3 p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors group"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Twitter className="w-4 h-4 text-sky-400" />
+                      <span className="text-gray-300 text-sm font-light group-hover:text-white transition-colors">
+                        Twitter
+                      </span>
+                    </motion.button>
+                    <motion.button
+                      onClick={() => handleShare("linkedin")}
+                      className="w-full flex items-center space-x-3 p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors group"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Linkedin className="w-4 h-4 text-blue-500" />
+                      <span className="text-gray-300 text-sm font-light group-hover:text-white transition-colors">
+                        LinkedIn
+                      </span>
+                    </motion.button>
+                    <motion.button
+                      onClick={() => handleShare("copy")}
+                      className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-all group ${
+                        copySuccess
+                          ? "bg-green-500/20 border-2 border-green-500/30"
+                          : "bg-white/5 hover:bg-white/10 border-2 border-transparent"
+                      }`}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <motion.div
+                        animate={copySuccess ? { rotate: 360 } : { rotate: 0 }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        {copySuccess ? (
+                          <Check className="w-4 h-4 text-green-400" />
+                        ) : (
+                          <Link2 className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
+                        )}
+                      </motion.div>
+                      <span
+                        className={`text-sm font-light transition-colors ${
+                          copySuccess
+                            ? "text-green-400"
+                            : "text-gray-300 group-hover:text-white"
+                        }`}
+                      >
+                        {copySuccess ? "Copied!" : "Copy Content"}
+                      </span>
+                    </motion.button>
+                  </div>
+
+                  <div className="mt-6 pt-6 border-t border-white/10">
+                    <h4 className="text-white text-sm font-light mb-3">
+                      About the Author
+                    </h4>
+                    <div className="flex items-start space-x-3">
+                      <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <User className="w-5 h-5 text-gray-300" />
+                      </div>
+                      <div>
+                        <p className="text-white text-sm font-light">
+                          {insight.author}
+                        </p>
+                        <p className="text-gray-300 text-xs mt-1 font-light">
+                          Expert in {insight.category.toLowerCase()} with
+                          extensive industry experience.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -1153,109 +1244,6 @@ const InsightDetail = () => {
                   </div>
                 </motion.div>
               </motion.div>
-
-              {/* Sidebar */}
-              <motion.div
-                className="lg:col-span-1 order-1 lg:order-2"
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-100px" }}
-                variants={staggerContainer}
-              >
-                <motion.div
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-6 sticky top-32"
-                  variants={fadeInUp}
-                >
-                  <h3 className="text-white text-sm font-light mb-4">
-                    Share this insight
-                  </h3>
-                  <div className="space-y-3">
-                    <motion.button
-                      onClick={() => handleShare("facebook")}
-                      className="w-full flex items-center space-x-3 p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors group"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Facebook className="w-4 h-4 text-blue-400" />
-                      <span className="text-gray-300 text-sm font-light group-hover:text-white transition-colors">
-                        Facebook
-                      </span>
-                    </motion.button>
-                    <motion.button
-                      onClick={() => handleShare("twitter")}
-                      className="w-full flex items-center space-x-3 p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors group"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Twitter className="w-4 h-4 text-sky-400" />
-                      <span className="text-gray-300 text-sm font-light group-hover:text-white transition-colors">
-                        Twitter
-                      </span>
-                    </motion.button>
-                    <motion.button
-                      onClick={() => handleShare("linkedin")}
-                      className="w-full flex items-center space-x-3 p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors group"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Linkedin className="w-4 h-4 text-blue-500" />
-                      <span className="text-gray-300 text-sm font-light group-hover:text-white transition-colors">
-                        LinkedIn
-                      </span>
-                    </motion.button>
-                    <motion.button
-                      onClick={() => handleShare("copy")}
-                      className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-all group ${
-                        copySuccess
-                          ? "bg-green-500/20 border-2 border-green-500/30"
-                          : "bg-white/5 hover:bg-white/10 border-2 border-transparent"
-                      }`}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <motion.div
-                        animate={copySuccess ? { rotate: 360 } : { rotate: 0 }}
-                        transition={{ duration: 0.5 }}
-                      >
-                        {copySuccess ? (
-                          <Check className="w-4 h-4 text-green-400" />
-                        ) : (
-                          <Link2 className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
-                        )}
-                      </motion.div>
-                      <span
-                        className={`text-sm font-light transition-colors ${
-                          copySuccess
-                            ? "text-green-400"
-                            : "text-gray-300 group-hover:text-white"
-                        }`}
-                      >
-                        {copySuccess ? "Copied!" : "Copy Content"}
-                      </span>
-                    </motion.button>
-                  </div>
-
-                  <div className="mt-6 pt-6 border-t border-white/10">
-                    <h4 className="text-white text-sm font-light mb-3">
-                      About the Author
-                    </h4>
-                    <div className="flex items-start space-x-3">
-                      <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center flex-shrink-0">
-                        <User className="w-5 h-5 text-gray-300" />
-                      </div>
-                      <div>
-                        <p className="text-white text-sm font-light">
-                          {insight.author}
-                        </p>
-                        <p className="text-gray-300 text-xs mt-1 font-light">
-                          Expert in {insight.category.toLowerCase()} with
-                          extensive industry experience.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              </motion.div>
             </div>
           </div>
         </section>
@@ -1360,6 +1348,154 @@ const InsightDetail = () => {
           }}
         />
       </div>
+
+      {/* Grid Layout CSS */}
+      <style jsx global>{`
+        /* ==================== GRID LAYOUTS ==================== */
+        /* All layouts maintain exactly 500px height on desktop */
+
+        /* Base Grid Parent */
+        .prose .blog-grid-parent {
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          grid-template-rows: repeat(5, 1fr);
+          gap: 8px;
+          margin: 1.5em 0;
+          overflow: hidden;
+          width: 100%;
+        }
+
+        /* Single Image Layout - Exactly 500px height */
+        .prose .blog-grid-single {
+          min-height: 500px;
+          max-height: 500px;
+          height: 500px;
+        }
+
+        .prose .blog-grid-single .blog-grid-div1 {
+          grid-area: 1 / 1 / 6 / 6;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          border-radius: 12px;
+          overflow: hidden;
+          width: 100%;
+          height: 100%;
+        }
+
+        /* Double Image Layout - Exactly 500px height */
+        .prose .blog-grid-double {
+          min-height: 500px;
+          max-height: 500px;
+          height: 500px;
+        }
+
+        .prose .blog-grid-double .blog-grid-div1 {
+          grid-area: 1 / 1 / 6 / 3;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          border-radius: 12px;
+          overflow: hidden;
+          width: 100%;
+          height: 100%;
+        }
+
+        .prose .blog-grid-double .blog-grid-div2 {
+          grid-area: 1 / 3 / 6 / 6;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          border-radius: 12px;
+          overflow: hidden;
+          width: 100%;
+          height: 100%;
+        }
+
+        /* Triple Image Layout - Exactly 500px height */
+        .prose .blog-grid-triple {
+          min-height: 500px;
+          max-height: 500px;
+          height: 500px;
+        }
+
+        .prose .blog-grid-triple .blog-grid-div1 {
+          grid-area: 1 / 1 / 6 / 4;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          border-radius: 12px;
+          overflow: hidden;
+          width: 100%;
+          height: 100%;
+        }
+
+        .prose .blog-grid-triple .blog-grid-div2 {
+          grid-area: 1 / 4 / 3 / 6;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          border-radius: 12px;
+          overflow: hidden;
+          width: 100%;
+          height: 100%;
+        }
+
+        .prose .blog-grid-triple .blog-grid-div3 {
+          grid-area: 3 / 4 / 6 / 6;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          border-radius: 12px;
+          overflow: hidden;
+          width: 100%;
+          height: 100%;
+        }
+
+        /* Responsive: Mobile devices (under 640px) */
+        @media (max-width: 640px) {
+          .prose .blog-grid-single,
+          .prose .blog-grid-double,
+          .prose .blog-grid-triple {
+            min-height: 300px;
+            max-height: 300px;
+            height: 300px;
+          }
+        }
+
+        /* Responsive: Tablet devices (641px to 1024px) */
+        @media (min-width: 641px) and (max-width: 1024px) {
+          .prose .blog-grid-single,
+          .prose .blog-grid-double,
+          .prose .blog-grid-triple {
+            min-height: 400px;
+            max-height: 400px;
+            height: 400px;
+          }
+        }
+
+        /* Prose styling for better text rendering */
+        .prose p {
+          margin-bottom: 1em;
+          line-height: 1.7;
+        }
+
+        .prose strong,
+        .prose b {
+          font-weight: 600;
+          color: white;
+        }
+
+        .prose ul {
+          list-style-type: disc;
+          padding-left: 1.5em;
+          margin: 1em 0;
+        }
+
+        .prose ul li {
+          margin: 0.5em 0;
+        }
+      `}</style>
     </>
   );
 };
