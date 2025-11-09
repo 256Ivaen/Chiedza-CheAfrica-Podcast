@@ -6,7 +6,6 @@ import {
   Calendar,
   Clock,
   User,
-  ArrowLeft,
   ArrowRight,
   Facebook,
   Twitter,
@@ -20,19 +19,18 @@ import {
   ThumbsUp,
   Sparkles,
   Award,
-  Send,
   Mail,
   Shield,
   UserX,
 } from "lucide-react";
 import { get, post, del } from "../../utils/service";
-import PageHero from "../ui/Shared/PageHero";
 import SectionHeader from "../ui/Shared/SectionHeader";
+import { PiArticleNyTimesBold } from "react-icons/pi";
 import CTA from "../ui/Shared/CTA";
 
 // Skeleton Components
 const SkeletonHero = () => (
-  <div className="w-full h-96 bg-gray-800 animate-pulse rounded-lg">
+  <div className="w-full h-96 bg-gray-800 animate-pulse">
     <div className="h-full flex items-center justify-center">
       <div className="text-center">
         <div className="h-8 bg-gray-700 rounded w-3/4 mx-auto mb-4"></div>
@@ -44,7 +42,7 @@ const SkeletonHero = () => (
 
 const SkeletonContent = () => (
   <div className="space-y-6">
-    <div className="bg-gray-800 rounded-lg p-6 animate-pulse">
+    <div className="bg-gray-800 p-6 animate-pulse">
       <div className="flex justify-between items-center mb-4">
         <div className="flex space-x-6">
           <div className="h-4 bg-gray-700 rounded w-20"></div>
@@ -61,14 +59,14 @@ const SkeletonContent = () => (
       <div className="h-4 bg-gray-700 rounded w-3/4"></div>
     </div>
 
-    <div className="bg-gray-800 rounded-lg p-8 animate-pulse">
+    <div className="bg-gray-800 p-8 animate-pulse">
       {[...Array(6)].map((_, i) => (
         <div key={i} className="h-4 bg-gray-700 rounded w-full mb-4"></div>
       ))}
       <div className="h-4 bg-gray-700 rounded w-2/3"></div>
     </div>
 
-    <div className="bg-gray-800 rounded-lg p-8 animate-pulse">
+    <div className="bg-gray-800 p-8 animate-pulse">
       <div className="h-6 bg-gray-700 rounded w-48 mb-6"></div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div className="h-12 bg-gray-700 rounded"></div>
@@ -80,28 +78,8 @@ const SkeletonContent = () => (
   </div>
 );
 
-const SkeletonSidebar = () => (
-  <div className="bg-gray-800 rounded-lg p-6 animate-pulse sticky top-32">
-    <div className="h-6 bg-gray-700 rounded w-32 mb-4"></div>
-    <div className="space-y-3">
-      {[...Array(4)].map((_, i) => (
-        <div key={i} className="h-12 bg-gray-700 rounded"></div>
-      ))}
-    </div>
-    <div className="h-px bg-gray-700 my-6"></div>
-    <div className="h-6 bg-gray-700 rounded w-32 mb-3"></div>
-    <div className="flex items-center space-x-3">
-      <div className="w-10 h-10 bg-gray-700 rounded-full"></div>
-      <div>
-        <div className="h-4 bg-gray-700 rounded w-20 mb-2"></div>
-        <div className="h-3 bg-gray-700 rounded w-32"></div>
-      </div>
-    </div>
-  </div>
-);
-
 const SkeletonComments = () => (
-  <div className="bg-gray-800 rounded-lg p-8 animate-pulse">
+  <div className="bg-gray-800 p-8 animate-pulse">
     <div className="h-6 bg-gray-700 rounded w-48 mb-6"></div>
     {[...Array(3)].map((_, i) => (
       <div key={i} className="border-l-2 border-gray-700 pl-4 py-4 mb-4">
@@ -556,14 +534,7 @@ const InsightDetail = () => {
 
           <section className="py-16 px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                <div className="lg:col-span-3">
-                  <SkeletonContent />
-                </div>
-                <div className="lg:col-span-1">
-                  <SkeletonSidebar />
-                </div>
-              </div>
+              <SkeletonContent />
             </div>
           </section>
 
@@ -771,481 +742,515 @@ const InsightDetail = () => {
         {commentSuccess && <Toast message="Comment submitted successfully!" />}
       </AnimatePresence>
 
-      <div className="min-h-screen">
-        {/* Dynamic Hero Section with Slideshow */}
-        <div className="relative">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentSlide}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1.5 }}
-            >
-              <PageHero
-                title={insight.title}
-                subtitle={`${insight.category} • ${insight.readTime} • ${insight.author}`}
-                image={currentHeroImage}
-              />
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Slide Indicators */}
-          {heroImages.length > 1 && (
-            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2">
-              {heroImages.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentSlide(index)}
-                  className={`transition-all duration-300 ${
-                    index === currentSlide
-                      ? "bg-primary w-8 h-2"
-                      : "bg-white/50 hover:bg-white/75 w-2 h-2"
-                  } rounded-full`}
-                  aria-label={`Go to slide ${index + 1}`}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Image Counter */}
-          {heroImages.length > 1 && (
-            <div className="absolute top-8 right-8 z-20 bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full">
-              <span className="text-white text-sm font-light">
-                {currentSlide + 1} / {heroImages.length}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Content Section */}
-        <section className="py-16 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen pt-20">
+        {/* Article Header and Hero Section */}
+        <section className="py-8 px-4 sm:px-6 lg:px-8">
           <div className="max-w-6xl mx-auto">
-            <div className="space-y-8">
-              {/* Main Content - Full Width */}
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-100px" }}
-                variants={staggerContainer}
-              >
-                {/* Stats Bar */}
-                <motion.div
-  className="mb-8 p-4 sm:p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-4"
-  variants={fadeInUp}
->
-  {/* Stats - Stack on mobile, row on larger screens */}
-  <div className="flex items-center justify-center sm:justify-start flex-wrap gap-4 sm:gap-6">
-    <div className="flex items-center space-x-2 text-gray-300">
-      <Eye className="w-4 h-4 flex-shrink-0" />
-      <span className="text-sm font-light whitespace-nowrap">
-        {insight.viewCount} views
-      </span>
-    </div>
-    <div className="flex items-center space-x-2 text-gray-300">
-      <MessageSquare className="w-4 h-4 flex-shrink-0" />
-      <span className="text-sm font-light whitespace-nowrap">
-        {comments.length} comments
-      </span>
-    </div>
-    <div className="flex items-center space-x-2 text-gray-300">
-      <Heart className="w-4 h-4 flex-shrink-0" />
-      <span className="text-sm font-light whitespace-nowrap">
-        {insight.reactionCount} reactions
-      </span>
-    </div>
-  </div>
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={staggerContainer}
+              className="space-y-8"
+            >
+              {/* Article Header - Title First */}
+              <motion.div variants={fadeInUp} className="text-start">
+                <p className="text-primary text-xs uppercase tracking-wider mb-3">
+                  {insight.category}
+                </p>
+                <h1 className="text-white text-3xl sm:text-4xl lg:text-5xl font-light mb-6 leading-tight">
+                  {insight.title}
+                </h1>
+                <div className="flex flex-wrap items-center justify-start gap-4 text-gray-400 text-sm mb-8">
+                  <div className="flex items-center space-x-2">
+                    <User className="w-4 h-4" />
+                    <span>{insight.author}</span>
+                  </div>
+                  <span>•</span>
+                  <div className="flex items-center space-x-2">
+                    <Calendar className="w-4 h-4" />
+                    <span>{insight.date}</span>
+                  </div>
+                  <span>•</span>
+                  <div className="flex items-center space-x-2">
+                    <Clock className="w-4 h-4" />
+                    <span>{insight.readTime}</span>
+                  </div>
+                </div>
+              </motion.div>
 
-  {/* Reactions - Center on mobile, right align on larger screens */}
-  <div className="flex items-center justify-center sm:justify-end space-x-1 sm:space-x-2">
-    {Object.entries(reactionTypes).map(
-      ([type, { icon: Icon, label, color, activeColor }]) => (
-        <motion.button
-          key={type}
-          onClick={() => handleReaction(type)}
-          className={`p-2 sm:p-2 rounded-lg transition-all flex-shrink-0 ${
-            userReaction === type
-              ? "bg-primary/20 border-2 border-primary/30"
-              : "bg-white/5 hover:bg-white/10 border-2 border-transparent"
-          }`}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          title={label}
-        >
-          <Icon
-            className={`w-3 h-3 sm:w-4 sm:h-4 ${
-              userReaction === type ? activeColor : color
-            }`}
-          />
-        </motion.button>
-      )
-    )}
-  </div>
-</motion.div>
+              {/* Hero Image - Centered with max-width 500px */}
+              <motion.div variants={fadeInUp} className="flex justify-center">
+                <div className="relative w-full">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={currentSlide}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 1.5 }}
+                      className="w-full h-64 sm:h-80 lg:h-[500px] rounded-2xl overflow-hidden"
+                    >
+                      <img
+                        src={currentHeroImage}
+                        alt={insight.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </motion.div>
+                  </AnimatePresence>
 
-                {/* Excerpt */}
-                <motion.div
-                  className="mb-8 p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg"
-                  variants={fadeInUp}
-                >
-                  <p className="text-gray-300 text-sm leading-relaxed font-light">
-                    {insight.excerpt}
-                  </p>
-                </motion.div>
-
-                {/* Main Content */}
-                <motion.div
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-8 mb-8"
-                  variants={fadeInUp}
-                >
-                  <div
-                    className="text-gray-300 text-sm leading-relaxed space-y-6 font-light prose prose-invert max-w-none"
-                    dangerouslySetInnerHTML={{ __html: insight.content }}
-                  />
-
-                  {/* Tags */}
-                  <div className="mt-8 pt-8 border-t border-white/10">
-                    <h3 className="text-white text-sm font-light mb-4">
-                      Related Topics
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {insight.tags?.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-3 py-1 bg-white/10 text-gray-300 text-sm rounded-full font-light"
-                        >
-                          #{tag}
-                        </span>
+                  {/* Slide Indicators */}
+                  {heroImages.length > 1 && (
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2">
+                      {heroImages.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentSlide(index)}
+                          className={`transition-all duration-300 ${
+                            index === currentSlide
+                              ? "bg-primary w-8 h-2"
+                              : "bg-white/50 hover:bg-white/75 w-2 h-2"
+                          } rounded-full`}
+                          aria-label={`Go to slide ${index + 1}`}
+                        />
                       ))}
                     </div>
-                  </div>
-                </motion.div>
+                  )}
 
-                {/* Sidebar Content - Now Appears Here */}
-                <motion.div
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-6"
-                  variants={fadeInUp}
-                >
-                  <h3 className="text-white text-sm font-light mb-4">
-                    Share this insight
-                  </h3>
-                  <div className="space-y-3">
-                    <motion.button
-                      onClick={() => handleShare("facebook")}
-                      className="w-full flex items-center space-x-3 p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors group"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Facebook className="w-4 h-4 text-blue-400" />
-                      <span className="text-gray-300 text-sm font-light group-hover:text-white transition-colors">
-                        Facebook
+                  {/* Image Counter */}
+                  {heroImages.length > 1 && (
+                    <div className="absolute top-4 right-4 z-20 bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                      <span className="text-white text-sm font-light">
+                        {currentSlide + 1} / {heroImages.length}
                       </span>
-                    </motion.button>
-                    <motion.button
-                      onClick={() => handleShare("twitter")}
-                      className="w-full flex items-center space-x-3 p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors group"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Twitter className="w-4 h-4 text-sky-400" />
-                      <span className="text-gray-300 text-sm font-light group-hover:text-white transition-colors">
-                        Twitter
-                      </span>
-                    </motion.button>
-                    <motion.button
-                      onClick={() => handleShare("linkedin")}
-                      className="w-full flex items-center space-x-3 p-3 bg-white/5 hover:bg-white/10 rounded-lg transition-colors group"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Linkedin className="w-4 h-4 text-blue-500" />
-                      <span className="text-gray-300 text-sm font-light group-hover:text-white transition-colors">
-                        LinkedIn
-                      </span>
-                    </motion.button>
-                    <motion.button
-                      onClick={() => handleShare("copy")}
-                      className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-all group ${
-                        copySuccess
-                          ? "bg-green-500/20 border-2 border-green-500/30"
-                          : "bg-white/5 hover:bg-white/10 border-2 border-transparent"
-                      }`}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <motion.div
-                        animate={copySuccess ? { rotate: 360 } : { rotate: 0 }}
-                        transition={{ duration: 0.5 }}
-                      >
-                        {copySuccess ? (
-                          <Check className="w-4 h-4 text-green-400" />
-                        ) : (
-                          <Link2 className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
-                        )}
-                      </motion.div>
-                      <span
-                        className={`text-sm font-light transition-colors ${
-                          copySuccess
-                            ? "text-green-400"
-                            : "text-gray-300 group-hover:text-white"
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Content Section - WordPress Style */}
+        <section className="py-4 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={staggerContainer}
+              className="space-y-8"
+            >
+              {/* Stats Bar */}
+              <motion.div
+                className="py-4 flex flex-col sm:flex-row items-center justify-between gap-4"
+                variants={fadeInUp}
+              >
+                <div className="flex items-center justify-center sm:justify-start flex-wrap gap-4 sm:gap-6">
+                  <div className="flex items-center space-x-2 text-gray-300">
+                    <Eye className="w-4 h-4 flex-shrink-0" />
+                    <span className="text-sm font-light whitespace-nowrap">
+                      {insight.viewCount} views
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-gray-300">
+                    <MessageSquare className="w-4 h-4 flex-shrink-0" />
+                    <span className="text-sm font-light whitespace-nowrap">
+                      {comments.length} comments
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-gray-300">
+                    <Heart className="w-4 h-4 flex-shrink-0" />
+                    <span className="text-sm font-light whitespace-nowrap">
+                      {insight.reactionCount} reactions
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-center sm:justify-end space-x-1 sm:space-x-2">
+                  {Object.entries(reactionTypes).map(
+                    ([type, { icon: Icon, label, color, activeColor }]) => (
+                      <motion.button
+                        key={type}
+                        onClick={() => handleReaction(type)}
+                        className={`p-2 sm:p-2 rounded-lg transition-all flex-shrink-0 ${
+                          userReaction === type
+                            ? "bg-primary/20 border-2 border-primary/30"
+                            : "bg-white/5 hover:bg-white/10 border-2 border-transparent"
                         }`}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        title={label}
                       >
-                        {copySuccess ? "Copied!" : "Copy Content"}
-                      </span>
-                    </motion.button>
-                  </div>
-
-                  <div className="mt-6 pt-6 border-t border-white/10">
-                    <h4 className="text-white text-sm font-light mb-3">
-                      About the Author
-                    </h4>
-                    <div className="flex items-start space-x-3">
-                      <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center flex-shrink-0">
-                        <User className="w-5 h-5 text-gray-300" />
-                      </div>
-                      <div>
-                        <p className="text-white text-sm font-light">
-                          {insight.author}
-                        </p>
-                        <p className="text-gray-300 text-xs mt-1 font-light">
-                          Expert in {insight.category.toLowerCase()} with
-                          extensive industry experience.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Comments Section */}
-                <motion.div
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-8"
-                  variants={fadeInUp}
-                >
-                  <h3 className="text-white text-lg font-light mb-6 flex items-center gap-2">
-                    <MessageSquare className="w-5 h-5 text-primary" />
-                    Comments ({comments.length})
-                  </h3>
-
-                  {/* Comment Form */}
-                  <form onSubmit={handleCommentSubmit} className="mb-8">
-                    {/* Anonymous Toggle */}
-                    <div className="flex items-center gap-3 mb-4">
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={commentForm.isAnonymous}
-                          onChange={(e) =>
-                            setCommentForm((prev) => ({
-                              ...prev,
-                              isAnonymous: e.target.checked,
-                            }))
-                          }
-                          className="sr-only"
-                        />
-                        <div
-                          className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                            commentForm.isAnonymous
-                              ? "bg-primary border-primary"
-                              : "bg-white/5 border-white/20"
+                        <Icon
+                          className={`w-3 h-3 sm:w-4 sm:h-4 ${
+                            userReaction === type ? activeColor : color
                           }`}
-                        >
-                          {commentForm.isAnonymous && (
-                            <Check className="w-3 h-3 text-white" />
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-300 text-sm">
-                          <UserX className="w-4 h-4" />
-                          <span>Comment anonymously</span>
-                        </div>
-                      </label>
-                    </div>
+                        />
+                      </motion.button>
+                    )
+                  )}
+                </div>
+              </motion.div>
 
-                    {!commentForm.isAnonymous && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                          <label className="block text-gray-300 text-sm font-light mb-2">
-                            Name *
-                          </label>
-                          <input
-                            type="text"
-                            required
-                            value={commentForm.name}
-                            onChange={(e) =>
-                              setCommentForm((prev) => ({
-                                ...prev,
-                                name: e.target.value,
-                              }))
-                            }
-                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-primary transition-colors"
-                            placeholder="Your name"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-gray-300 text-sm font-light mb-2">
-                            Email *
-                          </label>
-                          <input
-                            type="email"
-                            required
-                            value={commentForm.email}
-                            onChange={(e) =>
-                              setCommentForm((prev) => ({
-                                ...prev,
-                                email: e.target.value,
-                              }))
-                            }
-                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-primary transition-colors"
-                            placeholder="your.email@example.com"
-                          />
-                        </div>
-                      </div>
-                    )}
+              {/* Article Summary/Excerpt - Enhanced Styling */}
+              <motion.div 
+                className="py-8 px-6 sm:px-8 bg-white/5 backdrop-blur-sm border-l-4 border-primary rounded-r-lg" 
+                variants={fadeInUp}
+              >
+                <div className="flex items-start gap-3 mb-3">
 
-                    <div className="mb-4">
-                      <label className="block text-gray-300 text-sm font-light mb-2">
-                        Comment *
-                      </label>
-                      <textarea
-                        required
-                        value={commentForm.content}
+                  <PiArticleNyTimesBold className="w-5 h-5 text-primary flex-shrink-0" />
+                  <h3 className="text-white text-base font-semibold uppercase tracking-wide">
+                    Article Summary
+                  </h3>
+                </div>
+                <p className="text-gray-300 text-base sm:text-lg leading-relaxed font-light">
+                  {insight.excerpt}
+                </p>
+              </motion.div>
+
+              {/* Main Content */}
+              <motion.div className="py-6" variants={fadeInUp}>
+                <div
+                  className="text-gray-300 text-sm leading-relaxed space-y-6 font-light prose prose-invert max-w-none"
+                  dangerouslySetInnerHTML={{ __html: insight.content }}
+                />
+              </motion.div>
+
+              {/* Tags */}
+              <motion.div className="py-6 border-t border-white/10" variants={fadeInUp}>
+                <h3 className="text-white text-sm font-light mb-4">
+                  Related Topics
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {insight.tags?.map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-3 py-1 bg-white/10 text-gray-300 text-sm rounded-full font-light"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Share Section */}
+              <motion.div className="py-6 border-t border-white/10" variants={fadeInUp}>
+                <h3 className="text-white text-sm font-light mb-4">
+                  Share this insight
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  <motion.button
+                    onClick={() => handleShare("facebook")}
+                    className="flex items-center space-x-2 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Facebook className="w-4 h-4 text-blue-400" />
+                    <span className="text-gray-300 text-sm font-light">
+                      Facebook
+                    </span>
+                  </motion.button>
+                  <motion.button
+                    onClick={() => handleShare("twitter")}
+                    className="flex items-center space-x-2 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Twitter className="w-4 h-4 text-sky-400" />
+                    <span className="text-gray-300 text-sm font-light">
+                      Twitter
+                    </span>
+                  </motion.button>
+                  <motion.button
+                    onClick={() => handleShare("linkedin")}
+                    className="flex items-center space-x-2 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Linkedin className="w-4 h-4 text-blue-500" />
+                    <span className="text-gray-300 text-sm font-light">
+                      LinkedIn
+                    </span>
+                  </motion.button>
+                  <motion.button
+                    onClick={() => handleShare("copy")}
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
+                      copySuccess
+                        ? "bg-green-500/20 border-2 border-green-500/30"
+                        : "bg-white/5 hover:bg-white/10 border-2 border-transparent"
+                    }`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <motion.div
+                      animate={copySuccess ? { rotate: 360 } : { rotate: 0 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      {copySuccess ? (
+                        <Check className="w-4 h-4 text-green-400" />
+                      ) : (
+                        <Link2 className="w-4 h-4 text-gray-400" />
+                      )}
+                    </motion.div>
+                    <span
+                      className={`text-sm font-light transition-colors ${
+                        copySuccess ? "text-green-400" : "text-gray-300"
+                      }`}
+                    >
+                      {copySuccess ? "Copied!" : "Copy Content"}
+                    </span>
+                  </motion.button>
+                </div>
+              </motion.div>
+
+              {/* Author Section */}
+              <motion.div className="py-6 border-t border-white/10" variants={fadeInUp}>
+                <h4 className="text-white text-sm font-light mb-4">
+                  About the Author
+                </h4>
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <User className="w-6 h-6 text-gray-300" />
+                  </div>
+                  <div>
+                    <p className="text-white text-base font-light mb-1">
+                      {insight.author}
+                    </p>
+                    <p className="text-gray-300 text-sm font-light">
+                      Expert in {insight.category.toLowerCase()} with
+                      extensive industry experience.
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Comments Section */}
+              <motion.div className="py-8 border-t border-white/10" variants={fadeInUp}>
+                <h3 className="text-white text-lg font-light mb-6 flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-primary" />
+                  Comments ({comments.length})
+                </h3>
+
+                {/* Comment Form */}
+                <form onSubmit={handleCommentSubmit} className="mb-8">
+                  <div className="flex items-center gap-3 mb-4">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={commentForm.isAnonymous}
                         onChange={(e) =>
                           setCommentForm((prev) => ({
                             ...prev,
-                            content: e.target.value,
+                            isAnonymous: e.target.checked,
                           }))
                         }
-                        rows="4"
-                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-primary transition-colors resize-none"
-                        placeholder="Share your thoughts..."
+                        className="sr-only"
                       />
-                    </div>
-                    <motion.button
-                      type="submit"
-                      disabled={commentLoading}
-                      className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors text-sm font-light"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      {commentLoading ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                          Submitting...
-                        </>
-                      ) : (
-                        <>Post Comment</>
-                      )}
-                    </motion.button>
-                  </form>
+                      <div
+                        className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                          commentForm.isAnonymous
+                            ? "bg-primary border-primary"
+                            : "bg-white/5 border-white/20"
+                        }`}
+                      >
+                        {commentForm.isAnonymous && (
+                          <Check className="w-3 h-3 text-white" />
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-300 text-sm">
+                        <UserX className="w-4 h-4" />
+                        <span>Comment anonymously</span>
+                      </div>
+                    </label>
+                  </div>
 
-                  {/* Comments List */}
-                  <div className="space-y-6">
-                    {comments.length > 0 ? (
-                      comments.map((comment) => (
-                        <div
-                          key={comment.id}
-                          className="border-l-2 border-primary/20 pl-4 py-2"
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                              {comment.is_admin_reply ? (
-                                <Shield className="w-4 h-4 text-primary" />
-                              ) : comment.email?.includes("@anonymous.") ? (
-                                <UserX className="w-4 h-4 text-primary" />
-                              ) : (
-                                <User className="w-4 h-4 text-primary" />
+                  {!commentForm.isAnonymous && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <label className="block text-gray-300 text-sm font-light mb-2">
+                          Name *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={commentForm.name}
+                          onChange={(e) =>
+                            setCommentForm((prev) => ({
+                              ...prev,
+                              name: e.target.value,
+                            }))
+                          }
+                          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-primary transition-colors"
+                          placeholder="Your name"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-gray-300 text-sm font-light mb-2">
+                          Email *
+                        </label>
+                        <input
+                          type="email"
+                          required
+                          value={commentForm.email}
+                          onChange={(e) =>
+                            setCommentForm((prev) => ({
+                              ...prev,
+                              email: e.target.value,
+                            }))
+                          }
+                          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-primary transition-colors"
+                          placeholder="your.email@example.com"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="mb-4">
+                    <label className="block text-gray-300 text-sm font-light mb-2">
+                      Comment *
+                    </label>
+                    <textarea
+                      required
+                      value={commentForm.content}
+                      onChange={(e) =>
+                        setCommentForm((prev) => ({
+                          ...prev,
+                          content: e.target.value,
+                        }))
+                      }
+                      rows="4"
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-primary transition-colors resize-none"
+                      placeholder="Share your thoughts..."
+                    />
+                  </div>
+                  <motion.button
+                    type="submit"
+                    disabled={commentLoading}
+                    className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors text-sm font-light"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {commentLoading ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        Submitting...
+                      </>
+                    ) : (
+                      <>Post Comment</>
+                    )}
+                  </motion.button>
+                </form>
+
+                {/* Comments List */}
+                <div className="space-y-6">
+                  {comments.length > 0 ? (
+                    comments.map((comment) => (
+                      <div
+                        key={comment.id}
+                        className="border-l-2 border-primary/20 pl-4 py-2"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                            {comment.is_admin_reply ? (
+                              <Shield className="w-4 h-4 text-primary" />
+                            ) : comment.email?.includes("@anonymous.") ? (
+                              <UserX className="w-4 h-4 text-primary" />
+                            ) : (
+                              <User className="w-4 h-4 text-primary" />
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <p className="text-white text-sm font-semibold">
+                                {comment.name || comment.admin_email}
+                              </p>
+                              {Boolean(comment.is_admin_reply) && (
+                                <span className="px-2 py-1 bg-primary/20 text-primary text-xs rounded-full">
+                                  Admin
+                                </span>
+                              )}
+
+                              {comment.email?.includes("@anonymous.") && (
+                                <span className="px-2 py-1 bg-gray-500/20 text-gray-300 text-xs rounded-full">
+                                  Anonymous
+                                </span>
                               )}
                             </div>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <p className="text-white text-sm font-semibold">
-                                  {comment.name || comment.admin_email}
+                            {comment.email &&
+                              !comment.is_admin_reply &&
+                              !comment.email.includes("@anonymous.") && (
+                                <p className="text-gray-400 text-xs flex items-center gap-1 mb-2">
+                                  <Mail className="w-3 h-3" />
+                                  {comment.email}
                                 </p>
-                                {Boolean(comment.is_admin_reply) && (
-                                  <span className="px-2 py-1 bg-primary/20 text-primary text-xs rounded-full">
-                                    Admin
-                                  </span>
-                                )}
-
-                                {comment.email?.includes("@anonymous.") && (
-                                  <span className="px-2 py-1 bg-gray-500/20 text-gray-300 text-xs rounded-full">
-                                    Anonymous
-                                  </span>
-                                )}
-                              </div>
-                              {comment.email &&
-                                !comment.is_admin_reply &&
-                                !comment.email.includes("@anonymous.") && (
-                                  <p className="text-gray-400 text-xs flex items-center gap-1 mb-2">
-                                    <Mail className="w-3 h-3" />
-                                    {comment.email}
-                                  </p>
-                                )}
-                              <p className="text-gray-300 text-sm mb-1 leading-relaxed">
-                                {comment.content}
-                              </p>
-                              <p className="text-gray-500 text-xs">
-                                {new Date(
-                                  comment.created_at
-                                ).toLocaleDateString()}
-                              </p>
-                            </div>
+                              )}
+                            <p className="text-gray-300 text-sm mb-1 leading-relaxed">
+                              {comment.content}
+                            </p>
+                            <p className="text-gray-500 text-xs">
+                              {new Date(
+                                comment.created_at
+                              ).toLocaleDateString()}
+                            </p>
                           </div>
+                        </div>
 
-                          {/* Replies */}
-                          {comment.replies && comment.replies.length > 0 && (
-                            <div className="ml-8 mt-4 space-y-4">
-                              {comment.replies.map((reply) => (
-                                <div
-                                  key={reply.id}
-                                  className="border-l-2 border-primary/10 pl-4 py-2"
-                                >
-                                  <div className="flex items-start gap-3">
-                                    <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                                      {reply.is_admin_reply ? (
-                                        <Shield className="w-3 h-3 text-primary" />
-                                      ) : (
-                                        <User className="w-3 h-3 text-primary" />
+                        {/* Replies */}
+                        {comment.replies && comment.replies.length > 0 && (
+                          <div className="ml-8 mt-4 space-y-4">
+                            {comment.replies.map((reply) => (
+                              <div
+                                key={reply.id}
+                                className="border-l-2 border-primary/10 pl-4 py-2"
+                              >
+                                <div className="flex items-start gap-3">
+                                  <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                                    {reply.is_admin_reply ? (
+                                      <Shield className="w-3 h-3 text-primary" />
+                                    ) : (
+                                      <User className="w-3 h-3 text-primary" />
+                                    )}
+                                  </div>
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <p className="text-white text-sm font-semibold">
+                                        Chiedza CheAfrica
+                                      </p>
+                                      {reply.is_admin_reply && (
+                                        <span className="px-2 py-1 bg-primary/20 text-primary text-xs rounded-full">
+                                          Admin
+                                        </span>
                                       )}
                                     </div>
-                                    <div className="flex-1">
-                                      <div className="flex items-center gap-2 mb-1">
-                                        <p className="text-white text-sm font-semibold">
-                                          Chiedza CheAfrica
-                                        </p>
-                                        {reply.is_admin_reply && (
-                                          <span className="px-2 py-1 bg-primary/20 text-primary text-xs rounded-full">
-                                            Admin
-                                          </span>
-                                        )}
-                                      </div>
-                                      <p className="text-gray-300 text-sm mb-1 leading-relaxed">
-                                        {reply.content}
-                                      </p>
-                                      <p className="text-gray-500 text-xs">
-                                        {new Date(
-                                          reply.created_at
-                                        ).toLocaleDateString()}
-                                      </p>
-                                    </div>
+                                    <p className="text-gray-300 text-sm mb-1 leading-relaxed">
+                                      {reply.content}
+                                    </p>
+                                    <p className="text-gray-500 text-xs">
+                                      {new Date(
+                                        reply.created_at
+                                      ).toLocaleDateString()}
+                                    </p>
                                   </div>
                                 </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-center py-8">
-                        <MessageSquare className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-gray-400 text-sm">
-                          No comments yet. Be the first to share your thoughts!
-                        </p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                </motion.div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8">
+                      <MessageSquare className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      <p className="text-gray-400 text-sm">
+                        No comments yet. Be the first to share your thoughts!
+                      </p>
+                    </div>
+                  )}
+                </div>
               </motion.div>
-            </div>
+            </motion.div>
           </div>
         </section>
 
