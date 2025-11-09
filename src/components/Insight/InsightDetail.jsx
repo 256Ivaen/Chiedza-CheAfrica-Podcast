@@ -124,6 +124,13 @@ const InsightDetail = () => {
   const [commentLoading, setCommentLoading] = useState(false);
   const [commentSuccess, setCommentSuccess] = useState(false);
 
+  // Helper function to get absolute URLs
+  const getAbsoluteUrl = (url) => {
+    if (!url) return 'https://chiedzacheafrica.com/hero.jpg';
+    if (url.startsWith('http')) return url;
+    return `https://chiedzacheafrica.com${url.startsWith('/') ? url : '/' + url}`;
+  };
+
   // Generate device identifier
   const getDeviceIdentifier = () => {
     let deviceId = localStorage.getItem("device_identifier");
@@ -525,6 +532,11 @@ const InsightDetail = () => {
       <>
         <Helmet>
           <title>Loading Insight - Chiedza CheAfrica Podcast</title>
+          <meta name="description" content="Loading insight article from Chiedza CheAfrica Podcast" />
+          <meta property="og:title" content="Loading Insight - Chiedza CheAfrica Podcast" />
+          <meta property="og:description" content="Loading insight article from Chiedza CheAfrica Podcast" />
+          <meta property="og:type" content="website" />
+          <meta property="og:url" content={`https://chiedzacheafrica.com/blog/${id}`} />
         </Helmet>
 
         <div className="min-h-screen">
@@ -550,26 +562,39 @@ const InsightDetail = () => {
 
   if (error || !insight) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-light text-white mb-4">
-            Insight not found
-          </h1>
-          <p className="text-gray-300 text-sm mb-6">
-            {error || "The insight you're looking for doesn't exist."}
-          </p>
-          <button
-            onClick={() => navigate("/blog")}
-            className="px-6 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors text-sm font-light"
-          >
-            Back to Insights
-          </button>
+      <>
+        <Helmet>
+          <title>Insight Not Found - Chiedza CheAfrica Podcast</title>
+          <meta name="description" content="The requested insight article was not found on Chiedza CheAfrica Podcast" />
+          <meta property="og:title" content="Insight Not Found - Chiedza CheAfrica Podcast" />
+          <meta property="og:description" content="The requested insight article was not found on Chiedza CheAfrica Podcast" />
+          <meta property="og:type" content="website" />
+          <meta property="og:url" content={`https://chiedzacheafrica.com/blog/${id}`} />
+        </Helmet>
+        
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-light text-white mb-4">
+              Insight not found
+            </h1>
+            <p className="text-gray-300 text-sm mb-6">
+              {error || "The insight you're looking for doesn't exist."}
+            </p>
+            <button
+              onClick={() => navigate("/blog")}
+              className="px-6 py-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors text-sm font-light"
+            >
+              Back to Insights
+            </button>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   const currentHeroImage = heroImages[currentSlide] || insight.image;
+  const absoluteImageUrl = getAbsoluteUrl(insight.heroImage || insight.image);
+  const currentUrl = `https://chiedzacheafrica.com/blog/${id}`;
 
   return (
     <>
@@ -585,26 +610,16 @@ const InsightDetail = () => {
           content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
         />
 
-        <link
-          rel="canonical"
-          href={`https://chiedzacheafrica.com/blog/${id}`}
-        />
+        {/* Canonical URL */}
+        <link rel="canonical" href={currentUrl} />
 
+        {/* Open Graph / Facebook */}
         <meta property="og:type" content="article" />
-        <meta
-          property="og:url"
-          content={`https://chiedzacheafrica.com/blog/${id}`}
-        />
+        <meta property="og:url" content={currentUrl} />
         <meta property="og:title" content={insight.title} />
         <meta property="og:description" content={insight.excerpt} />
-        <meta
-          property="og:image"
-          content={insight.heroImage || insight.image}
-        />
-        <meta
-          property="og:image:secure_url"
-          content={insight.heroImage || insight.image}
-        />
+        <meta property="og:image" content={absoluteImageUrl} />
+        <meta property="og:image:secure_url" content={absoluteImageUrl} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content={insight.title} />
@@ -618,26 +633,23 @@ const InsightDetail = () => {
           <meta key={tag} property="article:tag" content={tag} />
         ))}
 
+        {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@chiedzacheafrica" />
         <meta name="twitter:creator" content="@chiedzacheafrica" />
-        <meta
-          name="twitter:url"
-          content={`https://chiedzacheafrica.com/blog/${id}`}
-        />
+        <meta name="twitter:url" content={currentUrl} />
         <meta name="twitter:title" content={insight.title} />
         <meta name="twitter:description" content={insight.excerpt} />
-        <meta
-          name="twitter:image"
-          content={insight.heroImage || insight.image}
-        />
+        <meta name="twitter:image" content={absoluteImageUrl} />
         <meta name="twitter:image:alt" content={insight.title} />
 
+        {/* Additional Meta Tags */}
         <meta name="language" content="English" />
         <meta name="revisit-after" content="7 days" />
         <meta name="rating" content="general" />
         <meta httpEquiv="content-language" content="en-US" />
 
+        {/* Structured Data - JSON-LD */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -646,7 +658,7 @@ const InsightDetail = () => {
             description: insight.excerpt,
             image: {
               "@type": "ImageObject",
-              url: insight.heroImage || insight.image,
+              url: absoluteImageUrl,
               width: 1200,
               height: 630,
               caption: insight.title,
@@ -671,9 +683,9 @@ const InsightDetail = () => {
             dateModified: insight.createdAt,
             mainEntityOfPage: {
               "@type": "WebPage",
-              "@id": `https://chiedzacheafrica.com/blog/${id}`,
+              "@id": currentUrl,
             },
-            url: `https://chiedzacheafrica.com/blog/${id}`,
+            url: currentUrl,
             keywords: insight.tags?.join(", "),
             articleSection: insight.category,
             wordCount: insight.content.split(" ").length,
@@ -700,6 +712,7 @@ const InsightDetail = () => {
           })}
         </script>
 
+        {/* Breadcrumb Structured Data */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -721,7 +734,7 @@ const InsightDetail = () => {
                 "@type": "ListItem",
                 position: 3,
                 name: insight.title,
-                item: `https://chiedzacheafrica.com/blog/${id}`,
+                item: currentUrl,
               },
             ],
           })}
@@ -899,7 +912,6 @@ const InsightDetail = () => {
                 variants={fadeInUp}
               >
                 <div className="flex items-start gap-3 mb-3">
-
                   <PiArticleNyTimesBold className="w-5 h-5 text-primary flex-shrink-0" />
                   <h3 className="text-white text-base font-semibold uppercase tracking-wide">
                     Article Summary
