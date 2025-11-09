@@ -18,13 +18,11 @@ import {
   ThumbsUp,
   Sparkles,
   Award,
-  ExternalLink,
-  Mail,
   Shield,
   MoreVertical,
-  Share2,
+  Mail,
 } from "lucide-react";
-import { get, del, patch } from "../../utils/service"; // Changed from post to patch
+import { get, del, patch } from "../../utils/service";
 import { toast } from "sonner";
 
 const SkeletonBox = ({ className }) => (
@@ -213,7 +211,7 @@ export default function BlogDetail() {
         setBlog(blogResponse.data);
       } else {
         toast.error("Blog not found");
-        navigate("/blogs");
+        navigate("/dashboard/blogs");
         return;
       }
 
@@ -228,6 +226,7 @@ export default function BlogDetail() {
         }
       } catch (error) {
         console.error("Error fetching comments:", error);
+        setComments([]);
       }
 
       // Fetch reactions
@@ -249,12 +248,13 @@ export default function BlogDetail() {
         }
       } catch (error) {
         console.error("Error fetching reactions:", error);
+        setReactions({ like: 0, love: 0, insightful: 0, celebrate: 0 });
       }
 
     } catch (error) {
       console.error("Error fetching blog details:", error);
       toast.error("Failed to load blog details");
-      navigate("/blogs");
+      navigate("/dashboard/blogs");
     } finally {
       setLoading(false);
     }
@@ -266,7 +266,7 @@ export default function BlogDetail() {
     }
   }, [id]);
 
-  // Toggle visibility - FIXED: Changed from post to patch
+  // Toggle visibility
   const handleToggleVisibility = async () => {
     setVisibilityLoading(true);
     try {
@@ -295,7 +295,7 @@ export default function BlogDetail() {
       const response = await del(`blogs/${id}`);
       if (response.success) {
         toast.success("Blog deleted successfully");
-        navigate("/blogs");
+        navigate("/dashboard/blogs");
       } else {
         toast.error("Failed to delete blog");
       }
@@ -345,7 +345,7 @@ export default function BlogDetail() {
             className="mb-6"
           >
             <button
-              onClick={() => navigate("/blogs")}
+              onClick={() => navigate("/dashboard/blogs")}
               className="inline-flex items-center gap-2 text-xs text-gray-600 hover:text-gray-900 font-medium"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -353,9 +353,9 @@ export default function BlogDetail() {
             </button>
           </motion.div>
 
-          {/* Main Content */}
+          {/* Main Content - Grid Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Blog Content - Left Side */}
+            {/* Blog Content - Left Side (2 columns on large screens) */}
             <div className="lg:col-span-2 space-y-6">
               {/* Header Card */}
               <motion.div
@@ -369,7 +369,7 @@ export default function BlogDetail() {
                       <Badge variant={blog.visible ? "success" : "default"}>
                         {blog.visible ? "Visible" : "Hidden"}
                       </Badge>
-                      {blog.featured && (
+                      {blog.featured === 1 && (
                         <Badge variant="primary">Featured</Badge>
                       )}
                       {visibilityLoading && (
@@ -411,7 +411,7 @@ export default function BlogDetail() {
                   </div>
 
                   <ActionsDropdown
-                    onEdit={() => navigate(`/blogs/${id}/edit`)}
+                    onEdit={() => navigate(`/dashboard/blogs/${id}/edit`)}
                     onDelete={() => setDeleteModal(true)}
                     onToggleVisibility={handleToggleVisibility}
                     isVisible={blog.visible}
@@ -419,7 +419,7 @@ export default function BlogDetail() {
                 </div>
 
                 {/* Tags */}
-                {blog.tags && blog.tags.length > 0 && (
+                {blog.tags && Array.isArray(blog.tags) && blog.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-4">
                     {blog.tags.map((tag, index) => (
                       <span
@@ -433,12 +433,14 @@ export default function BlogDetail() {
                 )}
 
                 {/* Excerpt */}
-                <p className="text-sm text-gray-700 leading-relaxed">
-                  {blog.excerpt}
-                </p>
+                {blog.excerpt && (
+                  <p className="text-sm text-gray-700 leading-relaxed">
+                    {blog.excerpt}
+                  </p>
+                )}
               </motion.div>
 
-              {/* Images */}
+              {/* Cover/Hero Images */}
               {(blog.image || blog.hero_image) && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -446,7 +448,7 @@ export default function BlogDetail() {
                   transition={{ delay: 0.1 }}
                   className="bg-white rounded-lg border border-gray-200 p-6"
                 >
-                  <h2 className="text-sm font-bold text-gray-900 mb-4">Images</h2>
+                  <h2 className="text-sm font-bold text-gray-900 mb-4">Cover Images</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {blog.image && (
                       <div>
@@ -454,17 +456,19 @@ export default function BlogDetail() {
                         <img
                           src={blog.image}
                           alt="Cover"
-                          className="w-full h-48 object-cover rounded-lg border border-gray-200"
+                          className="w-full object-cover rounded-lg border border-gray-200"
+                          style={{ maxHeight: '300px' }}
                         />
                       </div>
                     )}
-                    {blog.hero_image && (
+                    {blog.hero_image && blog.hero_image !== blog.image && (
                       <div>
                         <p className="text-xs text-gray-600 mb-2">Hero Image</p>
                         <img
                           src={blog.hero_image}
                           alt="Hero"
-                          className="w-full h-48 object-cover rounded-lg border border-gray-200"
+                          className="w-full object-cover rounded-lg border border-gray-200"
+                          style={{ maxHeight: '300px' }}
                         />
                       </div>
                     )}
@@ -472,7 +476,7 @@ export default function BlogDetail() {
                 </motion.div>
               )}
 
-              {/* Content */}
+              {/* Blog Content */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -480,11 +484,10 @@ export default function BlogDetail() {
                 className="bg-white rounded-lg border border-gray-200 p-6"
               >
                 <h2 className="text-sm font-bold text-gray-900 mb-4">Content</h2>
-                <div className="prose prose-sm max-w-none">
-                  <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap">
-                    {blog.content}
-                  </p>
-                </div>
+                <div 
+                  className="prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: blog.content }}
+                />
               </motion.div>
 
               {/* Comments Section */}
@@ -497,7 +500,7 @@ export default function BlogDetail() {
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                     <MessageSquare className="w-4 h-4 text-primary" />
-                    Comments ({comments.length})
+                    Comments ({blog.comment_count || comments.length})
                   </h2>
                 </div>
 
@@ -589,7 +592,7 @@ export default function BlogDetail() {
               </motion.div>
             </div>
 
-            {/* Sidebar - Right Side */}
+            {/* Sidebar - Right Side (1 column) */}
             <div className="lg:col-span-1 space-y-6">
               {/* Stats Card */}
               <motion.div
@@ -614,7 +617,7 @@ export default function BlogDetail() {
                       Comments
                     </span>
                     <span className="text-sm font-bold text-gray-900">
-                      {comments.length}
+                      {blog.comment_count || comments.length}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -623,7 +626,7 @@ export default function BlogDetail() {
                       Reactions
                     </span>
                     <span className="text-sm font-bold text-gray-900">
-                      {totalReactions}
+                      {blog.reaction_count || totalReactions}
                     </span>
                   </div>
                 </div>
@@ -705,11 +708,11 @@ export default function BlogDetail() {
                         {blog.view_stats.unique_views || 0}
                       </p>
                     </div>
-                    {blog.view_stats.avg_duration > 0 && (
+                    {parseFloat(blog.view_stats.avg_duration) > 0 && (
                       <div>
                         <p className="text-xs text-gray-600 mb-1">Avg. Read Time</p>
                         <p className="text-lg font-bold text-gray-900">
-                          {Math.round(blog.view_stats.avg_duration / 60)}m
+                          {Math.round(parseFloat(blog.view_stats.avg_duration) / 60)}m
                         </p>
                       </div>
                     )}
@@ -727,7 +730,7 @@ export default function BlogDetail() {
                 <h2 className="text-sm font-bold text-gray-900 mb-4">Quick Actions</h2>
                 <div className="space-y-2">
                   <button
-                    onClick={() => navigate(`/blogs/${id}/edit`)}
+                    onClick={() => navigate(`/dashboard/blogs/${id}/edit`)}
                     className="w-full px-3 py-2 border border-gray-300 text-gray-700 rounded-sm hover:bg-gray-50 transition-colors text-xs font-medium uppercase flex items-center justify-center gap-2"
                   >
                     <Edit className="w-4 h-4" />
@@ -772,6 +775,286 @@ export default function BlogDetail() {
           />
         )}
       </AnimatePresence>
+
+      {/* Rich Text & Grid Styling */}
+      <style jsx global>{`
+        /* Base text size - text-xs (0.75rem / 12px) */
+        .prose {
+          font-size: 0.75rem;
+          line-height: 1.6;
+          color: #374151;
+        }
+
+        .prose p {
+          margin-bottom: 0.75em;
+          margin-top: 0.75em;
+        }
+
+        .prose h1 {
+          font-size: 1.75em;
+          font-weight: bold;
+          margin-top: 0.5em;
+          margin-bottom: 0.5em;
+          color: #111827;
+        }
+
+        .prose h2 {
+          font-size: 1.4em;
+          font-weight: bold;
+          margin-top: 0.5em;
+          margin-bottom: 0.5em;
+          color: #111827;
+        }
+
+        .prose h3 {
+          font-size: 1.15em;
+          font-weight: bold;
+          margin-top: 0.5em;
+          margin-bottom: 0.5em;
+          color: #111827;
+        }
+
+        .prose h4 {
+          font-size: 1em;
+          font-weight: 600;
+          margin-top: 0.5em;
+          margin-bottom: 0.5em;
+          color: #111827;
+        }
+
+        .prose strong, .prose b {
+          font-weight: 600;
+          color: #111827;
+        }
+
+        .prose em, .prose i {
+          font-style: italic;
+        }
+
+        .prose u {
+          text-decoration: underline;
+        }
+
+        .prose a {
+          color: #667eea;
+          text-decoration: underline;
+          font-weight: 500;
+        }
+
+        .prose a:hover {
+          color: #5568d3;
+        }
+
+        .prose blockquote {
+          border-left: 4px solid #667eea;
+          padding-left: 1em;
+          margin: 1em 0;
+          font-style: italic;
+          color: #64748b;
+        }
+
+        .prose ul {
+          list-style-type: disc;
+          padding-left: 1.5em;
+          margin: 1em 0;
+        }
+
+        .prose ol {
+          list-style-type: decimal;
+          padding-left: 1.5em;
+          margin: 1em 0;
+        }
+
+        .prose li {
+          margin: 0.5em 0;
+          padding-left: 0.25em;
+        }
+
+        .prose li::marker {
+          color: #667eea;
+        }
+
+        .prose img {
+          margin: 0.75em 0;
+          border-radius: 0.5rem;
+          max-width: 100%;
+          height: auto;
+        }
+
+        .prose code {
+          color: #111827;
+          background-color: #f3f4f6;
+          padding: 0.2em 0.4em;
+          border-radius: 0.25rem;
+          font-size: 0.875em;
+          font-weight: 600;
+        }
+
+        .prose pre {
+          background-color: #1f2937;
+          color: #e5e7eb;
+          overflow-x: auto;
+          font-size: 0.875em;
+          margin: 1em 0;
+          border-radius: 0.5rem;
+          padding: 1em;
+        }
+
+        .prose pre code {
+          background-color: transparent;
+          color: inherit;
+          font-size: inherit;
+          font-weight: inherit;
+          padding: 0;
+        }
+
+        .prose hr {
+          border-color: #e5e7eb;
+          margin: 2em 0;
+        }
+
+        .prose table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 1em 0;
+          font-size: 0.875em;
+        }
+
+        .prose th,
+        .prose td {
+          border: 1px solid #e5e7eb;
+          padding: 0.5em;
+          text-align: left;
+        }
+
+        .prose th {
+          background-color: #f9fafb;
+          font-weight: 600;
+        }
+
+        /* ==================== GRID LAYOUTS ==================== */
+        /* All layouts maintain exactly 500px height on desktop */
+
+        /* Base Grid Parent */
+        .prose .blog-grid-parent {
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          grid-template-rows: repeat(5, 1fr);
+          gap: 8px;
+          margin: 1.5em 0;
+          overflow: hidden;
+          width: 100%;
+        }
+
+        /* Single Image Layout - Exactly 500px height */
+        .prose .blog-grid-single {
+          min-height: 500px;
+          max-height: 500px;
+          height: 500px;
+        }
+
+        .prose .blog-grid-single .blog-grid-div1 {
+          grid-area: 1 / 1 / 6 / 6;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          border-radius: 12px;
+          overflow: hidden;
+          width: 100%;
+          height: 100%;
+        }
+
+        /* Double Image Layout - Exactly 500px height */
+        .prose .blog-grid-double {
+          min-height: 500px;
+          max-height: 500px;
+          height: 500px;
+        }
+
+        .prose .blog-grid-double .blog-grid-div1 {
+          grid-area: 1 / 1 / 6 / 3;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          border-radius: 12px;
+          overflow: hidden;
+          width: 100%;
+          height: 100%;
+        }
+
+        .prose .blog-grid-double .blog-grid-div2 {
+          grid-area: 1 / 3 / 6 / 6;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          border-radius: 12px;
+          overflow: hidden;
+          width: 100%;
+          height: 100%;
+        }
+
+        /* Triple Image Layout - Exactly 500px height */
+        .prose .blog-grid-triple {
+          min-height: 500px;
+          max-height: 500px;
+          height: 500px;
+        }
+
+        .prose .blog-grid-triple .blog-grid-div1 {
+          grid-area: 1 / 1 / 6 / 4;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          border-radius: 12px;
+          overflow: hidden;
+          width: 100%;
+          height: 100%;
+        }
+
+        .prose .blog-grid-triple .blog-grid-div2 {
+          grid-area: 1 / 4 / 3 / 6;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          border-radius: 12px;
+          overflow: hidden;
+          width: 100%;
+          height: 100%;
+        }
+
+        .prose .blog-grid-triple .blog-grid-div3 {
+          grid-area: 3 / 4 / 6 / 6;
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          border-radius: 12px;
+          overflow: hidden;
+          width: 100%;
+          height: 100%;
+        }
+
+        /* Responsive: Mobile devices (under 640px) */
+        @media (max-width: 640px) {
+          .prose .blog-grid-single,
+          .prose .blog-grid-double,
+          .prose .blog-grid-triple {
+            min-height: 300px;
+            max-height: 300px;
+            height: 300px;
+          }
+        }
+
+        /* Responsive: Tablet devices (641px to 1024px) */
+        @media (min-width: 641px) and (max-width: 1024px) {
+          .prose .blog-grid-single,
+          .prose .blog-grid-double,
+          .prose .blog-grid-triple {
+            min-height: 400px;
+            max-height: 400px;
+            height: 400px;
+          }
+        }
+      `}</style>
     </div>
   );
 }
