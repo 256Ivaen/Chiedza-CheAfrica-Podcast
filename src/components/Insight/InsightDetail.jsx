@@ -831,56 +831,57 @@ const InsightDetail = () => {
               >
                 {/* Stats Bar */}
                 <motion.div
-                  className="mb-8 p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg flex items-center justify-between"
-                  variants={fadeInUp}
-                >
-                  <div className="flex items-center space-x-6">
-                    <div className="flex items-center space-x-2 text-gray-300">
-                      <Eye className="w-4 h-4" />
-                      <span className="text-sm font-light">
-                        {insight.viewCount} views
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-gray-300">
-                      <MessageSquare className="w-4 h-4" />
-                      <span className="text-sm font-light">
-                        {comments.length} comments
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-gray-300">
-                      <Heart className="w-4 h-4" />
-                      <span className="text-sm font-light">
-                        {insight.reactionCount} reactions
-                      </span>
-                    </div>
-                  </div>
+  className="mb-8 p-4 sm:p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-4"
+  variants={fadeInUp}
+>
+  {/* Stats - Stack on mobile, row on larger screens */}
+  <div className="flex items-center justify-center sm:justify-start flex-wrap gap-4 sm:gap-6">
+    <div className="flex items-center space-x-2 text-gray-300">
+      <Eye className="w-4 h-4 flex-shrink-0" />
+      <span className="text-sm font-light whitespace-nowrap">
+        {insight.viewCount} views
+      </span>
+    </div>
+    <div className="flex items-center space-x-2 text-gray-300">
+      <MessageSquare className="w-4 h-4 flex-shrink-0" />
+      <span className="text-sm font-light whitespace-nowrap">
+        {comments.length} comments
+      </span>
+    </div>
+    <div className="flex items-center space-x-2 text-gray-300">
+      <Heart className="w-4 h-4 flex-shrink-0" />
+      <span className="text-sm font-light whitespace-nowrap">
+        {insight.reactionCount} reactions
+      </span>
+    </div>
+  </div>
 
-                  {/* Reactions */}
-                  <div className="flex items-center space-x-2">
-                    {Object.entries(reactionTypes).map(
-                      ([type, { icon: Icon, label, color, activeColor }]) => (
-                        <motion.button
-                          key={type}
-                          onClick={() => handleReaction(type)}
-                          className={`p-2 rounded-lg transition-all ${
-                            userReaction === type
-                              ? "bg-primary/20 border-2 border-primary/30"
-                              : "bg-white/5 hover:bg-white/10 border-2 border-transparent"
-                          }`}
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.95 }}
-                          title={label}
-                        >
-                          <Icon
-                            className={`w-4 h-4 ${
-                              userReaction === type ? activeColor : color
-                            }`}
-                          />
-                        </motion.button>
-                      )
-                    )}
-                  </div>
-                </motion.div>
+  {/* Reactions - Center on mobile, right align on larger screens */}
+  <div className="flex items-center justify-center sm:justify-end space-x-1 sm:space-x-2">
+    {Object.entries(reactionTypes).map(
+      ([type, { icon: Icon, label, color, activeColor }]) => (
+        <motion.button
+          key={type}
+          onClick={() => handleReaction(type)}
+          className={`p-2 sm:p-2 rounded-lg transition-all flex-shrink-0 ${
+            userReaction === type
+              ? "bg-primary/20 border-2 border-primary/30"
+              : "bg-white/5 hover:bg-white/10 border-2 border-transparent"
+          }`}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          title={label}
+        >
+          <Icon
+            className={`w-3 h-3 sm:w-4 sm:h-4 ${
+              userReaction === type ? activeColor : color
+            }`}
+          />
+        </motion.button>
+      )
+    )}
+  </div>
+</motion.div>
 
                 {/* Excerpt */}
                 <motion.div
