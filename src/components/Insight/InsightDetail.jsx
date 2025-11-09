@@ -897,7 +897,7 @@ const InsightDetail = () => {
                   className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-8 mb-8"
                   variants={fadeInUp}
                 >
-                  <div 
+                  <div
                     className="text-gray-300 text-sm leading-relaxed space-y-6 font-light prose prose-invert max-w-none"
                     dangerouslySetInnerHTML={{ __html: insight.content }}
                   />
@@ -1474,6 +1474,53 @@ const InsightDetail = () => {
           }
         }
 
+        /* ==================== FORCED WHITE TEXT OVERRIDES ==================== */
+        /* Nuclear option to force white text and override all inline styles */
+        .prose.prose-invert,
+        .prose.prose-invert *:not(style):not(script) {
+          color: white !important;
+        }
+
+        /* Specifically target Microsoft Word styles with black text */
+        .prose.prose-invert .MsoNormal,
+        .prose.prose-invert [style*="color: rgb(0, 0, 0)"],
+        .prose.prose-invert [style*="color:#000000"],
+        .prose.prose-invert [style*="color: black"],
+        .prose.prose-invert [style*="color: #000"] {
+          color: white !important;
+        }
+
+        /* Override any element with color styling */
+        .prose.prose-invert [style*="color"] {
+          color: white !important;
+        }
+
+        /* Ensure all text elements are white */
+        .prose.prose-invert p,
+        .prose.prose-invert h1,
+        .prose.prose-invert h2,
+        .prose.prose-invert h3,
+        .prose.prose-invert h4,
+        .prose.prose-invert h5,
+        .prose.prose-invert h6,
+        .prose.prose-invert span,
+        .prose.prose-invert div,
+        .prose.prose-invert strong,
+        .prose.prose-invert b,
+        .prose.prose-invert em,
+        .prose.prose-invert i,
+        .prose.prose-invert a,
+        .prose.prose-invert li,
+        .prose.prose-invert ul,
+        .prose.prose-invert ol {
+          color: white !important;
+        }
+
+        /* Force inheritance for nested elements */
+        .prose.prose-invert * {
+          color: inherit !important;
+        }
+
         /* Prose styling for better text rendering */
         .prose p {
           margin-bottom: 1em;
@@ -1483,7 +1530,7 @@ const InsightDetail = () => {
         .prose strong,
         .prose b {
           font-weight: 600;
-          color: white;
+          color: white !important;
         }
 
         .prose ul {
@@ -1494,6 +1541,7 @@ const InsightDetail = () => {
 
         .prose ul li {
           margin: 0.5em 0;
+          color: white !important;
         }
       `}</style>
     </>
